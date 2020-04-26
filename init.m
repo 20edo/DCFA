@@ -63,7 +63,7 @@ sc.Iyz=nan;                 % Coupling inertia property     [Kg/mm]
 
 % element
 
-el.sc           % Section of the element
+el.sc=sc;       % Section of the element
 el.L=nan;       % Length                        [mm]
 el.mass=nan;    % Mass per unit length          [Kg/mm]
 el.w=nan;       % Weigth per unit length        [N/mm]
