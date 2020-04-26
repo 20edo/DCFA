@@ -11,6 +11,8 @@
 %               
 %           
 %
+%% Adding required repositories
+addpath('Section')
 %% Engineering constant definition
 global g
 g=9.81;        % Gravity acceleration          [m/s^2]
