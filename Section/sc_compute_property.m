@@ -2,8 +2,9 @@ function sc=sc_compute_property(sc)
 
 % Calculate the elastic and insertial propreties of a section
 % The function handles must be defined to accept arrays and return arrays
-% with the same dimension (trick: add y.*0+z.*0)
-% Missing torsion
+% with the same dimension (trick: add y.*0+z.*0).
+% Torsion properties are not computed because they are very expensive, to
+% compute torsion properties see sc_torsion
 %%
 % DCFA swept wing assignement
 %

@@ -25,16 +25,16 @@ if sc.cart==true
     sc.Iy=integral2(@(y,z) z.^2.*sc.rho(y,z),sc.Ymin,sc.Ymax,sc.Zmin,sc.Zmax);
     sc.Iz=integral2(@(y,z) y.^2.*sc.rho(y,z),sc.Ymin,sc.Ymax,sc.Zmin,sc.Zmax);
     sc.Iyz=integral2(@(y,z) y.*z.*sc.rho(y,z),sc.Ymin,sc.Ymax,sc.Zmin,sc.Zmax);
-    
+    sc.Jp=integral2(@(y,z) (y.^2+z.^2).*sc.rho(y,z),sc.Ymin,sc.Ymax,sc.Zmin,sc.Zmax);
 %% Polar coordinates        y=r.*cos(t)/z=r.sin(t)
 elseif sc.polar==true
     sc.m=intergal2(@(r,t) sc.rho(r,t).*r, sc.Thmin,sc.Thmax,sc.Rhomin,sc.Rhomax);
     sc.ycg=1/sc.m*integral2(@(r,t) r.*cos(t).*r.*sc.rho(r,t),sc.Thmin,sc.Thmax,sc.Rhomin,sc.Rhomax);
     sc.zcg=1/sc.m*integral2(@(r,t) r.*sin(t).*r.*sc.rho(r,t),sc.Thmin,sc.Thmax,sc.Rhomin,sc.Rhomax);
-    sc.Iy=integral2(@(r,tz) (r.*sin(t)).^2.*sc.rho(y,z),sc.Thmin,sc.Thmax,sc.Rhomin,sc.Rhomax);
-    sc.Iz=integral2(@(r,tz) (r.*cos(t)).^2.*sc.rho(y,z),sc.Thmin,sc.Thmax,sc.Rhomin,sc.Rhomax);
-    sc.Iyz=integral2(@(r,tz) r.*sin(t).*r.*cos(t).*sc.rho(y,z),sc.Thmin,sc.Thmax,sc.Rhomin,sc.Rhomax);
-    
+    sc.Iy=integral2(@(r,t) (r.*sin(t)).^2.*sc.rho(y,z).*r,sc.Thmin,sc.Thmax,sc.Rhomin,sc.Rhomax);
+    sc.Iz=integral2(@(r,t) (r.*cos(t)).^2.*sc.rho(y,z).*r,sc.Thmin,sc.Thmax,sc.Rhomin,sc.Rhomax);
+    sc.Iyz=integral2(@(r,t) r.*sin(t).*r.*cos(t).*sc.rho(y,z).*r,sc.Thmin,sc.Thmax,sc.Rhomin,sc.Rhomax);
+    sc.Jp=integral2(@(r,t) r.^2.*rho(r,t).*r,sc.Thmin,sc.Thmax,sc.Rhomin,sc.Rhomax);
 else
     error('Section is not defined properly')
 end

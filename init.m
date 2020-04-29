@@ -32,7 +32,8 @@ sc.Rhomin=@(th) nan;        % Coordinate of the 'lower' rho boundary
 sc.Rhomax=@(th) nan;        % Coordinate of the 'upper' rho boundary
 sc.Thmin=nan;               % Coordinate of the 'lower' th boundary
 sc.Thmax=nan;               % Coordinate of the 'upper' th boundary
-% All functions must be defined in the same reference of the geometry
+% All functions must be defined in the same reference of the geometry (pol
+% or cart)
 sc.E=@(y,z) nan;            % Young modulus of the point in the section
 sc.G=@(y,z) nan;            % Shear modulus of the pooint in the section
 sc.rho=@(y,z) nan;          % Density of the point of the section
@@ -49,16 +50,19 @@ sc.EA=nan;                  % Elastic stiffness (traction)  [N]
 sc.GA=nan;                  % Elastic stiffness (shear)     [N]
 sc.za=nan;                  % z coordinate of elastic axis  [mm]
 sc.ya=nan;                  % y coordinate of elastic axis  [mm]
-sc.zm=nan;                  % z coordinate of inertia axis  [mm]
-sc.ym=nan;                  % y coordinate of inertia axis  [mm]
 sc.Iy=nan;                  % Inertia property wrt y axis   [Kg/mm]
 sc.Iz=nan;                  % Inertia property wrt z axis   [Kg/mm]
 sc.Iyz=nan;                 % Coupling inertia property     [Kg/mm]
+sc.GJ=nan;                  % Torsional stiffness
+sc.yct=nan;                 % Coordinate of the shear center[mm]
+sc.zct=nan;                 % Coordinate of the shear center[mm] 
+sc.Jp=nan;                  % Polar moment of inertia       [kg*mm^2]
 % functions defined on sc:
 % sc_inertia
 % sc_elastic
 % sc_compute_property
 % sc_constant_p_square
+% sc_torsion
 
 
 % element
@@ -86,6 +90,9 @@ el.K=NaN(6);    % Stiffness matrix              6*6 matrix
 el.C=NaN(6);    % Dissipation matrix            6*6 matrix
 % functions defined on el: 
 %               
+
+% Beam (to do)
+
 
 % node
 nd.init_pos=NaN(6,1);       % Initial position          [x,y,z,thx,thy,thz]
