@@ -28,14 +28,14 @@ if sc.cart==true
     sc.EJyz=integral2(@(y,z) y.*z.*sc.E(y,z),sc.Ymin,sc.Ymax,sc.Zmin,sc.Zmax);
     
 %% Polar coordinates        y=r.*cos(t)/z=r.sin(t)
-elseif sc.polar==true
-    sc.GA=intergal2(@(r,t) sc.G(r,t).*r, sc.Thmin,sc.Thmax,sc.Rhomin,sc.Rhomax);
-    sc.EA=intergal2(@(r,t) sc.E(r,t).*r, sc.Thmin,sc.Thmax,sc.Rhomin,sc.Rhomax);
-    sc.ya=1/sc.EA*integral2(@(r,t) r.*cos(t).*r.*sc.E(r,t),sc.Thmin,sc.Thmax,sc.Rhomin,sc.Rhomax);
-    sc.zcg=1/sc.EA*integral2(@(r,t) r.*sin(t).*r.*sc.E(r,t),sc.Thmin,sc.Thmax,sc.Rhomin,sc.Rhomax);
-    sc.EJy=integral2(@(r,tz) (r.*sin(t)).^2.*sc.E(y,z),sc.Thmin,sc.Thmax,sc.Rhomin,sc.Rhomax);
-    sc.EJz=integral2(@(r,tz) (r.*cos(t)).^2.*sc.E(y,z),sc.Thmin,sc.Thmax,sc.Rhomin,sc.Rhomax);
-    sc.EJyz=integral2(@(r,tz) r.*sin(t).*r.*cos(t).*sc.E(y,z),sc.Thmin,sc.Thmax,sc.Rhomin,sc.Rhomax);
+elseif sc.pol==true
+    sc.GA=integral2(@(t,r) sc.G(r,t).*r, sc.Thmin,sc.Thmax,sc.Rhomin,sc.Rhomax);
+    sc.EA=integral2(@(t,r) sc.E(r,t).*r, sc.Thmin,sc.Thmax,sc.Rhomin,sc.Rhomax);
+    sc.ya=1/sc.EA*integral2(@(t,r) r.*cos(t).*r.*sc.E(r,t),sc.Thmin,sc.Thmax,sc.Rhomin,sc.Rhomax);
+    sc.za=1/sc.EA*integral2(@(t,r) r.*sin(t).*r.*sc.E(r,t),sc.Thmin,sc.Thmax,sc.Rhomin,sc.Rhomax);
+    sc.EJy=integral2(@(t,r) (r.*sin(t)).^2.*sc.E(r,t),sc.Thmin,sc.Thmax,sc.Rhomin,sc.Rhomax);
+    sc.EJz=integral2(@(t,r) (r.*cos(t)).^2.*sc.E(r,t),sc.Thmin,sc.Thmax,sc.Rhomin,sc.Rhomax);
+    sc.EJyz=integral2(@(t,r) r.*sin(t).*r.*cos(t).*sc.E(r,t),sc.Thmin,sc.Thmax,sc.Rhomin,sc.Rhomax);
     
 else
     error('Section is not defined properly')

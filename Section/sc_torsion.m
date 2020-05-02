@@ -23,9 +23,9 @@ function sc=sc_torsion(sc,Hmax,np)
 if nargin==1
     np=1e2;
     if sc.cart==true
-        Hmax=sc.Ymax/10;
+        Hmax=sqrt(sc.Ymax^2+sc.Zmax(sc.Ymax)^2)/10;
     else
-        Hmax=sc.Rhomax(sc.Thmin);
+        Hmax=sc.Rhomax(sc.Thmin)/10;
     end
 elseif nargin ==2
     np=1e2;
@@ -41,10 +41,14 @@ if sc.cart==true
     %y=y([2:end/2, end/2+2:end]);
     %z=z([2:end/2, end/2+2:end]);
     pgon=polyshape(y,z);
+    Edges=[1:4];
 elseif sc.pol==true
     th=linspace(sc.Thmin, sc.Thmax, np);
-    pgon=polyshape({sc.Rhomax(th).*cos(th) Sc.Rhomin(th).*cos(th)},...
-        {sc.Rhomax(th).*sin(th) Sc.Rhomin(th).*sin(th)});
+    pgon=polyshape({sc.Rhomax(th).*cos(th),sc.Rhomin(th).*cos(th)},...
+        {sc.Rhomax(th).*sin(th),sc.Rhomin(th).*sin(th)});
+    Edges=[1];
+    y=0;
+    z=0;
 else
     error('Section is not defined properly')
 end
@@ -69,7 +73,8 @@ specifyCoefficients(model,'m',0,...
                           'f',0); 
 %% B.C
 bc=@(location,state) location.y.*location.nx-location.x.*location.ny;
-applyBoundaryCondition(model,'neumann','Edge',1:4,'g',bc);
+applyBoundaryCondition(model,'neumann','Edge',Edges,'g',bc);
+
 %% Solution
 result = solvepde(model);
 
@@ -83,10 +88,10 @@ if sc.cart==true
     sc.Ymin,sc.Ymax,sc.Zmin,sc.Zmax,...
         'AbsTol',1e-3);
 elseif sc.pol==true
-    sc.GJ=integral2(@(ro,th) integrand(y,z,sc,result,rho,th),...
+    sc.GJ=integral2(@(t,r) integrand(y,z,sc,result,r,t),...
         sc.Thmin,sc.Thmax,sc.Rhomin,sc.Rhomax);
-    sc.yct=-1/sc.Iy*integral2(@(ro,th) integrand2(y,z,sc,result,rho,th),...
+    sc.yct=-1/sc.Iy*integral2(@(t,r) integrand2(y,z,sc,result,r,t),...
         sc.Thmin,sc.Thmax,sc.Rhomin,sc.Rhomax);
-    sc.zct=1/sc.Iz*integral2(@(ro,th) integrand3(y,z,sc,result,rho,th),...
+    sc.zct=1/sc.Iz*integral2(@(t,r) integrand3(y,z,sc,result,r,t),...
         sc.Thmin,sc.Thmax,sc.Rhomin,sc.Rhomax);
 end

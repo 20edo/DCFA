@@ -1,6 +1,6 @@
-function sc=sc_constant_p_square(l,E,G,rho)
+function sc=sc_constant_p_circle(R,E,G,rho)
 
-% Returns a square section of side l and constant properties
+% Returns a circular section of radius R and constant properties
 % Improve this function: write the exact values instad of integrating
 % numerically
 %%
@@ -21,15 +21,15 @@ function sc=sc_constant_p_square(l,E,G,rho)
 % Upper-case letter are referred to the geometry
 % (Check ym in DCFA 4.26 is y cg)
 sc.cart=false;              % True if the section is defined as z=@(y)              [bool]
-sc.Zmin=@(y) nan;           % Coordinate of the 'lower' boundary
-sc.Zmax=@(y) nan;           % Coordinate uf the 'upper boundary
+sc.Zmin=nan;           % Coordinate of the 'lower' boundary
+sc.Zmax=nan;           % Coordinate uf the 'upper boundary
 sc.Ymin= nan;               % Coordinate of the 'lower' x boundary
 sc.Ymax= nan;               % Coordinate of the 'upper' x boundary
-sc.pol=false;               % True if the section is defined in polar coordinates
-sc.Rhomin=@(th) nan;        % Coordinate of the 'lower' rho boundary
-sc.Rhomax=@(th) nan;        % Coordinate of the 'upper' rho boundary
-sc.Thmin=nan;               % Coordinate of the 'lower' th boundary
-sc.Thmax=nan;               % Coordinate of the 'upper' th boundary
+sc.pol=true;               % True if the section is defined in polar coordinates
+sc.Rhomin=@(th) 0.*th;        % Coordinate of the 'lower' rho boundary
+sc.Rhomax=@(th) R+0.*th;        % Coordinate of the 'upper' rho boundary
+sc.Thmin=0;               % Coordinate of the 'lower' th boundary
+sc.Thmax=2*pi;               % Coordinate of the 'upper' th boundary
 % All functions must be defined in the same reference of the geometry (pol
 % or cart)
 sc.m= nan;                  % Mass of the section
@@ -52,21 +52,16 @@ sc.GJ=nan;                  % Torsional stiffness
 sc.yct=nan;                 % Coordinate of the shear center[mm]
 sc.zct=nan;                 % Coordinate of the shear center[mm] 
 sc.Jp=nan;                  % Polar moment of inertia
-sc.cart=true;
-sc.Zmax=@(y) l/2+y.*0;
-sc.Zmin=@(y) -l/2+y.*0;
-sc.Ymax=l/2;
-sc.Ymin=-l/2;
-sc.pol=false;               % True if the section is defined in polar coordinates
-sc.Rhomin=@(th) nan;        % Coordinate of the 'lower' rho boundary
-sc.Rhomax=@(th) nan;        % Coordinate of the 'upper' rho boundary
-sc.Thmin=nan;               % Coordinate of the 'lower' th boundary
-sc.Thmax=nan;               % Coordinate of the 'upper' th boundary
+sc.cart=false;
+sc.Zmax=nan;
+sc.Zmin=nan;
+sc.Ymax=nan;
+sc.Ymin=nan;
+
 % All functions must be defined in the same reference of the geometry
-sc.E=@(y,z) E+0.*y+0.*z;
-sc.G=@(y,z) G+0.*y+0.*z;
-sc.rho=@(y,z) rho+0.*y+0.*z;
-sc=sc_inertia(sc);
-sc=sc_elastic(sc);
+sc.E=@(Rho,th) E+0.*Rho+0.*th;
+sc.G=@(Rho,th) G+0.*Rho+0.*th;
+sc.rho=@(Rho,th) rho+0.*Rho+0.*th;
+sc=sc_compute_property(sc);
 
 end
