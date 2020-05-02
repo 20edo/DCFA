@@ -98,9 +98,9 @@ b.rho=@(x,y,z) nan;        % Density of the point of the beam
 % (Properties)
 b.L=nan;                   % Length of the beam     [m]
 b.in=nan;                  % Vector of the internal nodes of the beam
-b.nel=nan;                     % number of elements
-% (matrices)
+% 
 b.M=nan;                   % Mass matrix of the bar
+b.C=nan;                   % Dissipation matrix of the bar
 b.K=nan;                   % Stiffness matrix of the bar
 
 % functions defined on b:

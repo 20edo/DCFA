@@ -13,7 +13,16 @@
 %               
 %           
 %
-function M = el_mass_assembly(m, zM, yM, Ix, Iy, Iz, Iyz, L)
+function el = el_mass_assembly(el)
+
+m=el.sc.m;
+zM=el.sc.zcg;
+yM=el.sc.ycg;
+Ix=el.sc.Jp;
+Iy=el.sc.Iy;
+Iz=el.sc.Iz;
+Iyz=el.sc.Iyz;
+L=el.L;
 
 % DoF organisation [u1 v1 w1 th1 phi1 psi1 u2 v2 w2 th2 phi2 psi2]'
 
@@ -31,4 +40,6 @@ M = [[        (L*m)/3,               (L*m*yM)/4,                (L*m*zM)/4,     
 [ -(L^2*m*zM)/24,            -(Iyz*L^2)/40, -(L^2*(21*Iy - 26*m))/840,  (L^2*m*yM)/30,   -(L^3*(7*Iy + 6*m))/840,             (Iyz*L^3)/120,  (L^2*m*zM)/24,              (Iyz*L^2)/40, (L^2*(21*Iy + 44*m))/840,  (L^2*m*yM)/20,    (L^3*(7*Iy + 2*m))/210,             -(Iyz*L^3)/30];
 [  (L^2*m*yM)/24, (L^2*(21*Iz - 26*m))/840,              (Iyz*L^2)/40,  (L^2*m*zM)/30,             (Iyz*L^3)/120,   -(L^3*(7*Iz + 6*m))/840, -(L^2*m*yM)/24, -(L^2*(21*Iz + 44*m))/840,            -(Iyz*L^2)/40,  (L^2*m*zM)/20,             -(Iyz*L^3)/30,    (L^3*(7*Iz + 2*m))/210]];
  
+
+el.M=M;
 end

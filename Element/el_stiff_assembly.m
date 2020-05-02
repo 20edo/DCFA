@@ -13,7 +13,16 @@
 %               
 %           
 %
-function K = el_stiff_assembly(EA,zA,yA,GJ,EJy,EJz,EJyz,L)
+function el = el_stiff_assembly(el)
+
+EA=el.sc.EA;
+zA=el.sc.za;
+yA=el.sc.ya;
+GJ=el.sc.GJ;
+EJy=el.sc.EJy;
+EJz=el.sc.EJz;
+EJyz=el.sc.EJyz;
+L=el.L;
 
 % DoF organisation [u1 v1 w1 th1 phi1 psi1 u2 v2 w2 th2 phi2 psi2]'
 
@@ -29,4 +38,6 @@ K = [[       EA/L,              0,              0,     0,     (EA*zA)/L,    -(EA
 [          0,              0,              0, -GJ/L,             0,             0,          0,              0,              0,  GJ/L,             0,             0];
 [ -(EA*zA)/L,  -(6*EJyz)/L^2,   -(6*EJy)/L^2,     0,     (2*EJy)/L,   -(2*EJyz)/L,  (EA*zA)/L,   (6*EJyz)/L^2,    (6*EJy)/L^2,     0,     (4*EJy)/L,   -(4*EJyz)/L];
 [  (EA*yA)/L,    (6*EJz)/L^2,   (6*EJyz)/L^2,     0,   -(2*EJyz)/L,     (2*EJz)/L, -(EA*yA)/L,   -(6*EJz)/L^2,  -(6*EJyz)/L^2,     0,   -(4*EJyz)/L,     (4*EJz)/L]];
+
+el.k=K;
 end
