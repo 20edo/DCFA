@@ -13,7 +13,7 @@
 %               
 %           
 %
-function K = stiff_assembly_el(EA,zA,yA,GJ,EJy,EJz,EJyz,L)
+function K = el_stiff_assembly(EA,zA,yA,GJ,EJy,EJz,EJyz,L)
 
 % DoF organisation [u1 v1 w1 th1 phi1 psi1 u2 v2 w2 th2 phi2 psi2]'
 
