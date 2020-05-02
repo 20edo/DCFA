@@ -13,7 +13,7 @@
 %               
 %           
 %
-function M = el_mass_assembly(m, zM, yM, Ix, Iy, Iz, Iyz, L)
+function M = mass_assembly_el(m, zM, yM, Ix, Iy, Iz, Iyz, L)
 
 % DoF organisation [u1 v1 w1 th1 phi1 psi1 u2 v2 w2 th2 phi2 psi2]'
 
