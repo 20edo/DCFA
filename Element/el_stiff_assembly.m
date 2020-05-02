@@ -39,5 +39,5 @@ K = [[       EA/L,              0,              0,     0,     (EA*zA)/L,    -(EA
 [ -(EA*zA)/L,  -(6*EJyz)/L^2,   -(6*EJy)/L^2,     0,     (2*EJy)/L,   -(2*EJyz)/L,  (EA*zA)/L,   (6*EJyz)/L^2,    (6*EJy)/L^2,     0,     (4*EJy)/L,   -(4*EJyz)/L];
 [  (EA*yA)/L,    (6*EJz)/L^2,   (6*EJyz)/L^2,     0,   -(2*EJyz)/L,     (2*EJz)/L, -(EA*yA)/L,   -(6*EJz)/L^2,  -(6*EJyz)/L^2,     0,   -(4*EJyz)/L,     (4*EJz)/L]];
 
-el.k=K;
+el.K=K;
 end

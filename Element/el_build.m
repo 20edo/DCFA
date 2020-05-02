@@ -62,8 +62,8 @@ sc=sc_torsion(sc);
 %% Set element properties
 el.sc=sc;
 el.L=abs(indx.x-insx.x);
-el.M=el_mass_assembly(el);
-el.K=el_stiff_assembly(el);
+el=el_mass_assembly(el);
+el=el_stiff_assembly(el);
 end
 
 
