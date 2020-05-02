@@ -1,6 +1,6 @@
-function sc=sc_constant_p_square(l,E,G,rho)
+function sc=sc_constant_p_rect(a,b,E,G,rho)
 
-% Returns a square section of side l and constant properties
+% Returns a rectangular section of sides a(along y) and b (along z) and constant properties
 % Improve this function: write the exact values instad of integrating
 % numerically
 %%
@@ -53,10 +53,10 @@ sc.yct=nan;                 % Coordinate of the shear center[mm]
 sc.zct=nan;                 % Coordinate of the shear center[mm] 
 sc.Jp=nan;                  % Polar moment of inertia
 sc.cart=true;
-sc.Zmax=@(y) l/2+y.*0;
-sc.Zmin=@(y) -l/2+y.*0;
-sc.Ymax=l/2;
-sc.Ymin=-l/2;
+sc.Zmax=@(y) b/2+y.*0;
+sc.Zmin=@(y) -b/2+y.*0;
+sc.Ymax=a/2;
+sc.Ymin=-a/2;
 sc.pol=false;               % True if the section is defined in polar coordinates
 sc.Rhomin=@(th) nan;        % Coordinate of the 'lower' rho boundary
 sc.Rhomax=@(th) nan;        % Coordinate of the 'upper' rho boundary
@@ -66,7 +66,6 @@ sc.Thmax=nan;               % Coordinate of the 'upper' th boundary
 sc.E=@(y,z) E+0.*y+0.*z;
 sc.G=@(y,z) G+0.*y+0.*z;
 sc.rho=@(y,z) rho+0.*y+0.*z;
-sc=sc_inertia(sc);
-sc=sc_elastic(sc);
+sc=sc_compute_property(sc);
 
 end
