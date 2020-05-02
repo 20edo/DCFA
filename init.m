@@ -13,7 +13,6 @@
 %
 %% Adding required repositories
 addpath('Section')
-addpath('Beam')
 %% Engineering constant definition
 global g
 g=9.81;        % Gravity acceleration          [m/s^2]
