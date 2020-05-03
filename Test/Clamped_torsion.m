@@ -1,5 +1,5 @@
 % This is a test:
-% Displacement of a clamped beam subject to pure traction
+% Displacement of a clamped beam subject to shear in the y direction
 cd ..
 init
 clear all, close all, clc
@@ -11,15 +11,19 @@ G=27*1e6;       % Shear modulus
 rho=2700;       % Density alluminium
 nel=5;          % Number of elements
 l=10;           % Side of the square
-N=1e3;          % Traction
+Mx=1e3;         % Torque
 
-% /|
-% /|------------------------  ----> N
-% /|
 %% Build beam
 
 beam=b_constant_p_square(L,l,E,G,rho,nel);
-
+for i=1:length(beam.el)
+    beam.el(i).sc.ycg=0;
+    beam.el(i).sc.zcg=0;
+    beam.el(i).sc.ya=0;
+    beam.el(i).sc.za=0;
+    beam.el(i).sc.yct=0;
+    beam.el(i).sc.yct=0;
+end
 %% Constraints
 K=beam.K(7:end,7:end);
 M=beam.M(7:end,7:end);
@@ -27,19 +31,19 @@ M=beam.M(7:end,7:end);
 %% Force
 
 f=zeros(size(M,1),1);
-f(end-5)=N;
+f(end-2)=Mx;
 
 %% Exact solution
 
-exact_u_right=N/beam.el(1).sc.EA.*beam.L;
+exact_th_right=Mx/beam.el(1).sc.GJ.*beam.L;
 
 %% Solution
 
 u=K\f;
-u_right=u(end-5);
+th_right=u(end-2);
 
 %% Disp
-disp('Calculated u:')
-disp(u_right)
-disp('Exact u:')
-disp(exact_u_right)
+disp('Calculated th:')
+disp(th_right)
+disp('Exact th:')
+disp(exact_th_right)

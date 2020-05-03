@@ -1,5 +1,5 @@
 % This is a test:
-% Displacement of a clamped beam subject to pure traction
+% Displacement of a clamped beam subject to shear in the y direction
 cd ..
 init
 clear all, close all, clc
@@ -11,11 +11,8 @@ G=27*1e6;       % Shear modulus
 rho=2700;       % Density alluminium
 nel=5;          % Number of elements
 l=10;           % Side of the square
-N=1e3;          % Traction
+Ty=1e3;          % Traction
 
-% /|
-% /|------------------------  ----> N
-% /|
 %% Build beam
 
 beam=b_constant_p_square(L,l,E,G,rho,nel);
@@ -27,19 +24,19 @@ M=beam.M(7:end,7:end);
 %% Force
 
 f=zeros(size(M,1),1);
-f(end-5)=N;
+f(end-3)=Ty;
 
 %% Exact solution
 
-exact_u_right=N/beam.el(1).sc.EA.*beam.L;
+exact_v_right=(-beam.L^3/6+beam.L^3/2)*Ty/beam.el(1).sc.EJy;
 
 %% Solution
 
 u=K\f;
-u_right=u(end-5);
+v_right=u(end-3);
 
 %% Disp
 disp('Calculated u:')
-disp(u_right)
+disp(v_right)
 disp('Exact u:')
-disp(exact_u_right)
+disp(exact_v_right)

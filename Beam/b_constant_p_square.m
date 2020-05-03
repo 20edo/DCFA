@@ -33,8 +33,14 @@ b.rho=@(x,y,z) rho+0.*x+0.*y+0.*z;;        % Density of the point of the beam
 % (Properties)
 b.L=L;                   % Length of the beam     [m]
 b.in=nan;                  % Vector of the internal nodes of the beam
-b.nel=nel;               % Number of elements
+b.nel=1;               % Number of elements
 
 b=b_build_elements(b);
+element=b.el;
+b.el=[];
+for i=linspace(0,l,nel)
+    b.el=[b.el element];
+end
+b.nel=nel;
 b=build_matrices(b);
 end
