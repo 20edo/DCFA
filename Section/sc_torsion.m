@@ -40,12 +40,12 @@ if sc.cart==true
     % Eliminate duplicate points (Check, not working)
     %y=y([2:end/2, end/2+2:end]);
     %z=z([2:end/2, end/2+2:end]);
-    pgon=polyshape(y,z);
+    pgon=polyshape(y,z,'Simplify',true);
     Edges=[1:4];
 elseif sc.pol==true
     th=linspace(sc.Thmin, sc.Thmax, np);
     pgon=polyshape({sc.Rhomax(th).*cos(th),sc.Rhomin(th).*cos(th)},...
-        {sc.Rhomax(th).*sin(th),sc.Rhomin(th).*sin(th)});
+        {sc.Rhomax(th).*sin(th),sc.Rhomin(th).*sin(th)},'Simplify',true);
     Edges=[1];
     y=0;
     z=0;
