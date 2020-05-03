@@ -1,7 +1,7 @@
-function sc=sc_constant_p_square(l,E,G,rho)
+function sc=sc_constant_p_square_test(l,E,G,rho)
 
-% Returns a square section of side l and constant properties.
-% Torsion properties are included.
+% Returns a square section of side l and constant properties. Use this
+% function to test the procedure to solve the section.
 %%
 % DCFA swept wing assignement
 %
@@ -65,23 +65,7 @@ sc.Thmax=nan;               % Coordinate of the 'upper' th boundary
 sc.E=@(y,z) E+0.*y+0.*z;
 sc.G=@(y,z) G+0.*y+0.*z;
 sc.rho=@(y,z) rho+0.*y+0.*z;
-%% Inertia
-sc.m=rho*l.^2;
-sc.ycg=0;
-sc.zcg=0;
-sc.Iy=l^4/12;
-sc.Iz=l^4/12;
-sc.Iyz=0;
-sc.Jp=sc.m*l^4/6;
-%% Elastic
-sc.GA=G.*l^2;
-sc.EA=E.*l^2;
-sc.ya=0;
-sc.za=0;
-sc.EJy=E*sc.Iy;
-sc.EJz=E*sc.Iz;
-sc.EJyz=0;
-sc.GJ=2.25*(l/2)^4*G;
-sc.yct=0;
-sc.zct=0;
+sc=sc_inertia(sc);
+sc=sc_elastic(sc);
+
 end

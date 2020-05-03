@@ -30,7 +30,8 @@ M=beam.M(7:end,7:end);
 
 [V,D]=eig(K,M);
 
-%% Exact solution
+%% Exact solution 
+%CHECK why 2 times?
 
 exact_k=[1.875104 4.694091 7.854757 10.995541 14.137168]';
 exact_w=sqrt(beam.el(1).sc.EJy/beam.el(1).sc.m/L^4).*exact_k.^2;

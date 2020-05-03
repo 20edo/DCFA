@@ -1,6 +1,9 @@
-function b=b_constant_p_square(L,l,E,G,rho,nel)
+function b=b_constant_p_square_test(L,l,E,G,rho,nel)
 % Creates a beam with constant properties and square section of side l. The
-% length of the beam is L. nin is the number of internal nodes.
+% length of the beam is L. nin is the number of internal nodes. It
+% calculates a the laplacian for all section even though they are all
+% equal. Use this function to test the improvements made in solving
+% sections.
 %%
 % DCFA swept wing assignement
 %
@@ -28,15 +31,14 @@ b.Thmax=@(x) nan;          % Coordinate of the 'upper' th boundary
 % All functions must be defined in the same reference of the geometry (pol
 % or cart)
 b.E=@(x,y,z) E+0.*x+0.*y+0.*z;        % Young modulus of the point in the beam
-b.G=@(x,y,z) G+0.*x+0.*y+0.*z;;          % Shear modulus of the pooint in the beam
-b.rho=@(x,y,z) rho+0.*x+0.*y+0.*z;;        % Density of the point of the beam
+b.G=@(x,y,z) G+0.*x+0.*y+0.*z;          % Shear modulus of the pooint in the beam
+b.rho=@(x,y,z) rho+0.*x+0.*y+0.*z;        % Density of the point of the beam
 % (Properties)
 b.L=L;                   % Length of the beam     [m]
 b.in=nan;                  % Vector of the internal nodes of the beam
 b.nel=nel;               % Number of elements
 
 
-%% Speed up since the section is constant
-b=b_build_elements_constant_p_square(b);
+b=b_build_elements(b);
 b=b_build_matrices(b);
 end
