@@ -17,7 +17,7 @@ x=(insx.x+indx.x)/2;
 
 
 %% Initialise section and set geometric and material properties
-
+sc=sc_init();
 sc.cart=b.cart;              % True if the section is defined as z=@(y)              [bool]
 sc.Zmin=@(y) b.Zmin(x,y);           % Coordinate of the 'lower' boundary
 sc.Zmax=@(y) b.Zmax(x,y);           % Coordinate uf the 'upper boundary
@@ -33,26 +33,6 @@ sc.Thmax=b.Thmax(x);               % Coordinate of the 'upper' th boundary
 sc.E=@(y,z) b.E(x,y,z);            % Young modulus of the point in the section
 sc.G=@(y,z) b.G(x,y,z);            % Shear modulus of the pooint in the section
 sc.rho=@(y,z) b.rho(x,y,z);          % Density of the point of the section
-sc.m= nan;                  % Mass of the section
-sc.ycg=nan;                 % ycg of the section
-sc.zcg=nan;                 % zcg of the section
-sc.Iy=nan;                  % Inertia wrt y axis
-sc.Iz=nan;                  % Inertia wrt z axis
-sc.Iyz=nan;                 % Inertia (coupling term)
-sc.EJy=nan;                 % Elastic stiffness wrt y axis  [N*mm^2]
-sc.EJz=nan;                 % Elastic stiffness wrt z axis  [N*mm^2]
-sc.EJyz=nan;                % Coupling elastic stiffness    [N*mm^2]
-sc.EA=nan;                  % Elastic stiffness (traction)  [N]
-sc.GA=nan;                  % Elastic stiffness (shear)     [N]
-sc.za=nan;                  % z coordinate of elastic axis  [mm]
-sc.ya=nan;                  % y coordinate of elastic axis  [mm]
-sc.Iy=nan;                  % Inertia property wrt y axis   [Kg/mm]
-sc.Iz=nan;                  % Inertia property wrt z axis   [Kg/mm]
-sc.Iyz=nan;                 % Coupling inertia property     [Kg/mm]
-sc.GJ=nan;                  % Torsional stiffness
-sc.yct=nan;                 % Coordinate of the shear center[mm]
-sc.zct=nan;                 % Coordinate of the shear center[mm] 
-sc.Jp=nan;                  % Polar moment of inertia [kg*mm^2]
 
 %% Define constant section variables
 l=sc.Ymax-sc.Ymin;

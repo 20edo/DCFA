@@ -32,9 +32,11 @@ b.G=@(x,y,z) G+0.*x+0.*y+0.*z;;          % Shear modulus of the pooint in the be
 b.rho=@(x,y,z) rho+0.*x+0.*y+0.*z;;        % Density of the point of the beam
 % (Properties)
 b.L=L;                   % Length of the beam     [m]
-b.in=nan;                  % Vector of the internal nodes of the beam
+b.in=nan;                % Vector of the internal nodes of the beam
 b.nel=nel;               % Number of elements
-
+% Geometry of the beam in 3d space
+b.o=nan(3,1);              % Coordinates of the origin of the beam              [3*1]
+b.v=nan(3,1);              % Coordinates of the versor along the beam develops  [3*1]
 
 %% Speed up since the section is constant
 b=b_build_elements_constant_p_square(b);

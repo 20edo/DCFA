@@ -1,10 +1,5 @@
-function in=in_init()
-% Initialize an internal node
-% in.x                    Position of the node along the beam axis    [mm]
-% in.d                    Displacement of the node [6*1]              [mm]
-% functions defined on internal node;
-%
-%%
+% This is a commented example of structure built with this program
+
 % DCFA swept wing assignement
 %
 % Teamwork
@@ -16,5 +11,6 @@ function in=in_init()
 %               
 %           
 %
-in.x=nan;
-in.d=zeros(6,1);
+
+%% Build the first beam
+b_constant_p_square(1e3,10,70,27000,

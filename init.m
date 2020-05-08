@@ -16,6 +16,8 @@ addpath('Section')
 addpath('Element')
 addpath('Beam')
 addpath('internal_nodes')
+addpath('External_nodes')
+addpath('Model')
 %% Engineering constant definition
 global g
 g=9.81;        % Gravity acceleration          [m/s^2]
@@ -102,13 +104,41 @@ b.nel=nan;                     % number of elements
 % (matrices)
 b.M=nan;                   % Mass matrix of the bar
 b.K=nan;                   % Stiffness matrix of the bar
-
+% Geometry of the beam in 3d space
+b.o=nan(3,1);              % Coordinates of the origin of the beam              [3*1]
+b.v=nan(3,1);              % Coordinates of the versor along the beam develops  [3*1]
+% The following fields exist if and only if the beam is inside a model
+% Constraint are specified by a vector that contains true if the dof is
+% constrained and false if the dof is not.
+b.oc=nan(6,1);             % Constraint at the origin                           [6*1]
+b.ec=nan(6,1);             % Constaint at the end                               [6*1]
+b.on=nan;                  % Number associated to the node at the origin
+b.en=nan;                  % Number associated to the node at the end
+b.name=[];                 % Optional name of the beam (string)
 % functions defined on b:
 % b_build_elemnts
 
+
 % Internal node
-in.x=nan;         % Position along the beam axis
-in.d=zeros(6,1);      % Displacement vector [6*1] vector  [mm]
+in.x=nan;               % Position along the beam axis
+in.d=zeros(6,1);        % Displacement vector [6*1] vector  [mm]
+
+% External node
+en.x=nan(3,1);              % Position in the 3d space [3*1]    [mm]
+en.d=zeros(6,1);            % Displacement vector [6*1] vector  [mm]
+en.c=nan(6,1);              % Constraint 
+en.M=nan(6);                % Mass matrix
+en.K=nan(6);                % Stiffness matrix
+en.C=nan(6);                % Dissipation matrix
+
+
+% model
+m.en=[];                    % Extrenal nodes (where more than one beam join or
+                            % masses, forces, constraints,... are applied)
+m.b=[];
+m.M=nan;                    % Mass matrix of the model
+m.K=nan;                    % Stiffness matrix of the model
+
 
 % % % % % node
 % % % % nd.init_pos=NaN(6,1);       % Initial position          [x,y,z,thx,thy,thz]
