@@ -1,4 +1,4 @@
-function STL_3D(beam)
+function [displ] = STL_3D(beam)
 
 % This function gives a 3D representation of the displacements in
 % u,v,w,theta.
