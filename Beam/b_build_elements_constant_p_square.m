@@ -32,7 +32,9 @@ end
 if isnan(b.in)==true
     b.in=[];
     for j=linspace(0,b.L,nin)
-        b.in=[b.in in_init(j)];
+        node=in_init();
+        node.x=j;
+        b.in=[b.in node];
     end    
 end
 %% Build elements

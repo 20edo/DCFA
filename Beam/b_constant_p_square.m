@@ -14,6 +14,7 @@ function b=b_constant_p_square(L,l,E,G,rho,nel)
 %           
 %
 % Beam
+b=b_init();
 % (Geometry)
 b.cart=true;              % True if the section is defined as z=@(y)              [bool]
 b.Zmin=@(x,y) -l/2+0.*x+0.*y;         % Coordinate of the 'lower' boundary
@@ -32,9 +33,7 @@ b.G=@(x,y,z) G+0.*x+0.*y+0.*z;;          % Shear modulus of the pooint in the be
 b.rho=@(x,y,z) rho+0.*x+0.*y+0.*z;;        % Density of the point of the beam
 % (Properties)
 b.L=L;                   % Length of the beam     [m]
-b.in=nan;                  % Vector of the internal nodes of the beam
 b.nel=nel;               % Number of elements
-
 
 %% Speed up since the section is constant
 b=b_build_elements_constant_p_square(b);

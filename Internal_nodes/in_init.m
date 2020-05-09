@@ -1,5 +1,9 @@
-function in=in_init(x)
-% Initialize an internal node, at the coordinate x with all dof.
+function in=in_init()
+% Initialize an internal node
+% in.x                    Position of the node along the beam axis    [mm]
+% in.d                    Displacement of the node [6*1]              [mm]
+% functions defined on internal node;
+%
 %%
 % DCFA swept wing assignement
 %
@@ -12,5 +16,5 @@ function in=in_init(x)
 %               
 %           
 %
-in.x=x;
+in.x=nan;
 in.d=zeros(6,1);
