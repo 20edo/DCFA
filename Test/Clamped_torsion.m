@@ -47,3 +47,9 @@ disp('Calculated th:')
 disp(th_right)
 disp('Exact th:')
 disp(exact_th_right)
+
+
+for i = 2:nel+1
+    beam.in(i).d = u(1+6*(i-2):6*(i-1),1);
+end
+[displ] = STL_3D(beam)
