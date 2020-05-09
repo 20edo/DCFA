@@ -14,20 +14,33 @@ function m=m_add_beam(m,b)
 %
 
 % Create/assign first and last node to the beam
-if any(m.en(:).x==b.o)
-    node=en_free(b.on);
-    m.en=[m.en node];
-    b.on=length(m.en);
-else
-    b.on=find(m.en(:).x==b.o);
+% Are the first or the node of the beam already in the model?
+origin=false;
+eend=false;
+for i=1:length(m.en)
+    if isequal(m.en(i).x,b.o)
+        origin=i;
+    elseif isequal(m.en(i).x,b.o+b.L*b.v)
+        eend=i;
+    end
 end
 
-if any(m.en(:).x==b.o+b.L*b.v)
+if  origin       
+    b.on=origin; % If there is a node coincident with the origin, save its coordinate
+    
+else            % else, create one
+    node=en_free(b.o);
+    m.en=[m.en node];
+    b.on=length(m.en);
+end
+
+% Same for the end of the beam
+if  eend
+    b.en=eend;
+else
     node=en_free(b.o+b.L*b.v);
     m.en=[m.en node];
     b.en=length(m.en);
-else
-    b.en=find(m.en(:).x==b.o+b.L*b.v);
 end
 
 % Add beam to the model

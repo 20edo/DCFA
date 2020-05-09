@@ -46,4 +46,5 @@ el.sc=sc;
 el.L=abs(indx.x-insx.x);
 el=el_mass_assembly(el);
 el=el_stiff_assembly(el);
+el.C=zeros(size(el.M));
 end

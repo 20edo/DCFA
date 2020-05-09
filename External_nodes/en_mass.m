@@ -1,4 +1,4 @@
-function en=en_mass(position)
+function en=en_mass(position,M)
 % This function creates a lumped mass node
 % Position---> 3*1 vector (position of the node)
 % M       ---> mass
@@ -19,7 +19,7 @@ function en=en_mass(position)
 
 if isequal(size(position),[1,3])
     position=position';
-elseif ~isequal(size(position),[1,3])
+elseif ~isequal(size(position),[3,1])
     error('position is not defined properly');
 end
 

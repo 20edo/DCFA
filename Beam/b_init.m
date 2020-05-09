@@ -22,6 +22,7 @@ function b=b_init()
 % b.nel                       % number of elements
 % % (matrices)
 % b.M                         % Mass matrix of the bar
+% b.C                         % Dissipation matrix ( default value 0)
 % b.K                         % Stiffness matrix of the bar
 % % Geometry of the beam in 3d space
 % b.o                         % Coordinates of the origin of the beam              [3*1]
@@ -74,6 +75,7 @@ b.in=nan;                  % Vector of the internal nodes of the beam
 b.nel=nan;                     % number of elements
 % (matrices)
 b.M=nan;                   % Mass matrix of the bar
+b.C=0;                     % Disspation matrix
 b.K=nan;                   % Stiffness matrix of the bar
 % Geometry of the beam in 3d space
 b.o=nan(3,1);              % Coordinates of the origin of the beam              [3*1]
@@ -85,6 +87,6 @@ b.oc=nan(6,1);             % Constraint at the origin                           
 b.ec=nan(6,1);             % Constaint at the end                               [6*1]
 b.on=nan;                  % Number associated to the node at the origin
 b.en=nan;                  % Number associated to the node at the end
-b.name=[];                 % Optional name of the beam (string)
+b.name=nan;                 % Optional name of the beam (string)
 % functions defined on b:
 % b_build_elemnts
