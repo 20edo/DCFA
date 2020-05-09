@@ -23,34 +23,36 @@ function [displ] = STL_3D(beam)
 L = beam.L;
 nel = beam.nel;
 %% Displacements
-dL = beam.el.L(1);
-clear x
-eps = @(x,xa,xb) ((2*x - (xb+xa))/(xb-xa));
-N = [(1-eps)/2,                   0,                   0,         0,                             0,                            0, (1+eps)/2,                   0,                   0,         0,                              0,                             0;
+dL = beam.el(1).L;
+displ = []; % vector of displacements [u v w th]'
+for i = 1:nel-1
+    xa = beam.in(i).x;
+    xb = beam.in(i+1).x;
+    clear x 
+    x = linspace(xa, xb, 3); % we evaluate the displacements for 10 points inside each elements
+    x = x(1:end-1); %otherwise we take into account 2 times the same node
+    for h = 1:size(x,2)
+        eps =(2*x(h)- (xb+xa))/(xb-xa);
+        N = [(1 - eps)/2,                   0,                   0,         0,                             0,                            0, (1+eps)/2,                   0,                   0,         0,                              0,                             0;
              0, 1/4*(2-3*eps+eps^3),                   0,         0,                             0, 1/4*(1-eps-eps^2+eps^3)*dL/2,         0, 1/4*(2+3*eps-eps^3),                   0,         0,                              0, 1/4*(-1-eps+eps^2+eps^3)*dL/2;
              0,                   0, 1/4*(2-3*eps+eps^3),         0, -1/4*(1-eps-eps^2+eps^3)*dL/2,                            0,         0,                   0, 1/4*(2+3*eps-eps^3),         0, -1/4*(-1-eps+eps^2+eps^3)*dL/2,                             0;
              0,                   0,                   0, (1-eps)/2,                             0,                            0,         0,                   0,                   0, (1+eps)/2,                              0,                            0];
-displ = []; % vector of displacements [u v w th]'
-for i = 1:nel-1
-    xa = beam.in.x(i);
-    xb = beam.in.x(i+1);
-    clear x 
-    x = linspace(xa, xb, 10); % we evaluate the displacements for 10 points inside each elements
-    x = x(1:end-1); %otherwise we take into account 2 times the same node
-    displ_temp = N * [beam.in.d(i); neam.in.d(i+1)];
-    displ = [displ displ_temp];
-    %displ = [u(x1) u(x2)...
-    %         v(x1) v(x2)...
-    %         w(x1) w(x2)...
-    %         th(x1) th(x2)...]   4Xnel
+        displ_temp = N * [beam.in(i).d; beam.in(i+1).d];
+        displ = [displ displ_temp];
+        %displ = [u(x1) u(x2)...
+        %         v(x1) v(x2)...
+        %         w(x1) w(x2)...
+        %         th(x1) th(x2)...]   4Xnel
+    end
 end
 
-xa = beam.in.x(nel);
-xb = beam.in.x(nel+1);
+xa = beam.in(nel).x;
+xb = beam.in(nel+1).x;
 clear x 
 x = linspace(xa, xb, 10); % now we are interested in the free end
-displ_temp = N * [beam.in.d(i); neam.in.d(i+1)];
+displ_temp = N * [beam.in(i).d; beam.in(i+1).d];
 displ = [displ displ_temp];
+
 N_points = size(displ,2);
 %% 3D plot
 %% Create the beam structure
@@ -102,16 +104,16 @@ v = displ(2,:);
 w = displ(3,:);
 ang = displ(4,:);
 
-for i = 1:l
-    Node = OrigMesh.Nodes(:,i);
+for j = 1:l
+    Node = OrigMesh.Nodes(:,j);
     perturbNode = Node;
     k = round(Node(1)/(L/N_points));
-    perturbNode(2) = Node(2)*cos(ang)-Node(3)*sin(ang); % CHECK!!!!!
-    perturbNode(3) = Node(3)*cos(ang)+Node(2)*sin(ang); % CHECK!!!!!
+    perturbNode(2) = Node(2)*cos(ang)-Node(3)*sin(ang);
+    perturbNode(3) = Node(3)*cos(ang)+Node(2)*sin(ang); 
     perturbNode(1) = perturbNode(1)+u;
     perturbNode(2) = perturbNode(2)+v;
     perturbNode(3) = perturbNode(3)+w;
-    PerturbNodes(:,i) = perturbNode;
+    PerturbNodes(:,j) = perturbNode;
 end
     figure
     TR = triangulation(tmp,PerturbNodes.');

@@ -1,63 +1,35 @@
 %% *Wing Mounted engine (DCFA D.4.3)* 
 %% Data initialization 
-
 clear; clc; close all
 %% 
 % Wing span [m]
-
 b = 20;
-%% 
 % Bending stiffness [N*m^2]
-
 EJ = 1e6; 
-%% 
 % Torsional stiffness [N*m^2]
-
 GJ = 1e4; 
-%% 
 % Mass per unit span [Kg/m]
-
 m = 50; 
-%% 
 % Polar inertia per unit span, [Kg*m^2/m]
-
 J_p = 10; 
-%% 
 % Center of mass offset, [m]
-
 d = 0.2; 
-%% 
 % Mass of engine [kg]
-
-M_engine = 500; 
-%% 
+M_engine = 500;  
 % Forward offset of engine CM, [m]
-
 y_engine = 1; 
-%% 
 % Vertical offset of engine CM, [m]
-
 z_engine = -.5; 
-%% 
 % Inertia tensor of engine, [Kg*m^2]
-
 J_engine = diag([50, 1, 50]); 
-%% 
 % Number of elements on the wing
-
 N = 20; 
-%% 
 % Engine's node
-
-N_engine = 8
-%% 
+N_engine = 8;
 % Element length
-
 DL = b / N;
-%% 
 % Change number of modes
-
-i_ROM_max =9
+i_ROM_max = 9;
 %% Build mass matrix and stiffness matrix
 % $$0 = \delta \mathcal{W} = -\int_l \delta w_{/xx}^T EJ w_{/xx} dx - \int_l 
 % \delta\theta_{/x}^TGJ\theta_{/x}dx-\int_l\delta_{CM}^Tm\ddot_{w}_{CM}dx - \int_{l}\delta\theta^TJ_P\ddot{\theta} 
@@ -94,13 +66,11 @@ Ke([1, 2, 4, 5], [1, 2, 4, 5]) = Keww;
 
 %% 
 % Whole problem matrices
-
 M = zeros(3 * (N + 1), 3 * (N + 1));
 K = zeros(3 * (N + 1), 3 * (N + 1));
 
 %% 
 % Assembly
-
 for i = 1:N
     M(3 * (i-1) +1:3 * (i+1),3 * (i-1) +1:3 * (i+1)) = M(3 * (i-1) +1:3 * (i+1),3 * (i-1) +1:3 * (i+1)) + Me;
     K(3 * (i-1) +1:3 * (i+1),3 * (i-1) +1:3 * (i+1)) = K(3 * (i-1) +1:3 * (i+1),3 * (i-1) +1:3 * (i+1)) + Ke;
@@ -108,13 +78,10 @@ end
 % assembling matrix 6x6 considering 3X3 element in common
 %% 
 % Clamp constraint at the free end
-
 M = M(4:end, 4:end); % for the free wing
 K = K(4:end, 4:end);
 %% 
 % Engine contribution: kinematics 
-
-
 Z_engine = [0, z_engine, 0;
             0 , 0, -z_engine;
             1, 0, y_engine]; % see [D.232]
@@ -123,32 +90,24 @@ MM_engine = Z_engine' * M_engine * Z_engine;
 
 %% 
 % Eigenvalues of the clamped wing 
-
-
 [V, w2] = eig(K, M);
 w2 = diag(w2);
 [~, II] = sort(w2); % we sort to the lower to the higher
-w = sqrt(w2(II));
+%w = sqrt(w2(II));
 V = [zeros(3, 3 * N); V(:, II)];
-ii = [[1:3:3*(N+1)]'; [3:3:3*(N+1)]'];
-
+ii = [(1:3:3*(N+1))'; (3:3:3*(N+1))'];
 for i = 1:size(V, 2)
     ij = find(abs(V(:, i)) == max(abs(V(ii, i))));
     V(:, i) = V(:, i) ./ V(ij, i);
 end
 
-
 %% 
 % Node coordinates (b is the wing span) 
 
-x = [0:N]' / N * b;
+x = (0:N)' / N * b;
 %% 
 % Chose how many modes we want to keep in the ROM
-
-
-%i_ROM = [1:15]';
-
-i_ROM = [1:i_ROM_max]';
+i_ROM = (1:i_ROM_max)';
 
 %%  Calculation of the "exact" modes with engine 
 % $$(\mathbf{M}+\mathbf{M}_{\mathrm{engine}})\mathbf{\ddot{u}}+\mathbf{Ku} = 
@@ -164,10 +123,10 @@ MM(3 * N_engine - 2:3 * N_engine, 3 * N_engine - 2:3 * N_engine) = MM(3 * N_engi
 
 [V, w2] = eig(K, MM);
 w2 = diag(w2);
-[dmy, II] = sort(w2);
+[~, II] = sort(w2);
 w = sqrt(w2(II));
 V = [zeros(3, 3 * N); V(:, II)];
-ii = [[1:3:3*(N+1)]'; [3:3:3*(N+1)]'];
+ii = [(1:3:3*(N+1))'; (3:3:3*(N+1))'];
 
 for i = 1:size(V, 2)
     ij = find(abs(V(:, i)) == max(abs(V(ii, i))));
@@ -189,12 +148,12 @@ M_exact = V_exact(4:end, :)' * MM * V_exact(4:end, :);
 
 [V, w2] = eig(K, M);
 w2 = diag(w2);
-[dmy, II] = sort(w2);
-w = sqrt(w2(II));
+[~, II] = sort(w2);
+%w = sqrt(w2(II));
 V = [zeros(3, 3 * N); V(:, II)];
-ii = [[1:3:3*(N+1)]'; [3:3:3*(N+1)]'];
+ii = [(1:3:3*(N+1))'; (3:3:3*(N+1))'];
 
-for i = 1:size(V, 2),
+for i = 1:size(V, 2)
     ij = find(abs(V(:, i)) == max(abs(V(ii, i))));
     V(:, i) = V(:, i) ./ V(ij, i); % normalization with max abs. 
 end
@@ -208,16 +167,16 @@ M_corrected = V_corrected(4:end, :)' * M * V_corrected(4:end, :) + ...
 
 [VV, ww2] = eig(K_corrected, M_corrected);
 ww2 = diag(ww2);
-[dmy, II] = sort(ww2);
+[~, II] = sort(ww2);
 w_corrected = sqrt(ww2(II));
 V = V_corrected * VV(:, II);
-ii = [[1:3:3*(N+1)]'; [3:3:3*(N+1)]'];
+ii = [(1:3:3*(N+1))'; (3:3:3*(N+1))'];
 
-for i = 1:size(V, 2),
+for i = 1:size(V, 2)
     ij = find(abs(V(:, i)) == max(abs(V(ii, i))));
     V(:, i) = V(:, i) ./ V(ij, i);
 
-    if (V(:, i)' * V_exact(:, i) < 0),
+    if (V(:, i)' * V_exact(:, i) < 0)
         V(:, i) = -V(:, i);
     end
 
@@ -229,8 +188,8 @@ V_corrected = V;
 
 [V, w2] = eig(K, M);
 w2 = diag(w2);
-[dmy, II] = sort(w2);
-w = sqrt(w2(II));
+[~, II] = sort(w2);
+%w = sqrt(w2(II));
 V = V(:, II);
 % solve for the static problem
 U = K\[zeros(3 * N_engine - 3, 3); eye(3); zeros(size(K, 1) - 3 * N_engine, 3)];
@@ -241,8 +200,8 @@ U = K\[zeros(3 * N_engine - 3, 3); eye(3); zeros(size(K, 1) - 3 * N_engine, 3)];
 
 V = [V(:, i_ROM(1:end - 3)), U]; % i add the static solution at the shapemode of the clear system
 V = [zeros(3, size(V, 2)); V];
-ii = [[1:3:3*(N+1)]'; [3:3:3*(N+1)]'];
-for i = 1:size(V, 2),
+ii = [(1:3:3*(N+1))'; (3:3:3*(N+1))'];
+for i = 1:size(V, 2)
     ij = find(abs(V(:, i)) == max(abs(V(ii, i))));
     V(:, i) = V(:, i)./V(ij, i);
 end
@@ -263,14 +222,14 @@ M_static = V_static(4:end, :)' * M * V_static(4:end, :) +...
             % as did before (fot the corrected "a posteriori" method)
 [VV, ww2] = eig(K_static, M_static);
 ww2 = diag(ww2);
-[dmy, II] = sort(ww2);
+[~, II] = sort(ww2);
 w_static = sqrt(ww2(II));
 V = V_static*VV(:, II);
-ii = [[1:3:3*(N+1)]'; [3:3:3*(N+1)]'];
-for i = 1:size(V, 2),
+ii = [(1:3:3*(N+1))'; (3:3:3*(N+1))'];
+for i = 1:size(V, 2)
     ij = find(abs(V(:, i)) == max(abs(V(ii, i))));
     V(:, i) = V(:, i)./V(ij, i);
-    if (V(:, i)'*V_exact(:, i) < 0),
+    if (V(:, i)'*V_exact(:, i) < 0)
         V(:, i) = -V(:, i);
     end
 end
@@ -279,16 +238,18 @@ V_static = V;
 %% Substructuring: Craig and Bamptom 
 % Partition the dof of the problem in reduced (r) and interface (i). 
 
-i_i = [3 * N_engine - 2:3 * N_engine]'; % interface dof (in contact with the engine)
-i_r = [[1:3 * N_engine - 3], [3 * N_engine + 1:3 * N]]'; % reduced dof (not in contact with the engine)
+i_i = (3 * N_engine - 2:3 * N_engine)'; % interface dof (in contact with the engine)
+i_r = [(1:3 * N_engine - 3), (3 * N_engine + 1:3 * N)]'; % reduced dof (not in contact with the engine)
 KK = K(i_r, i_r); 
 MM = M(i_r, i_r);
 %% 
 % $$\mathbf{M}_{rr}\ddot{\mathbf{u}}_r +  \mathbf{K}_{rr}\ddot{\mathbf{u}}_r  
 % = 0$$
 
-[VV, ww2] = eig(KK, MM);
-V = [VV([1:3*N_engine - 3], :); zeros(3, 3 * N - 3); VV(3 * N_engine - 2:end, :)];
+[VV, ~] = eig(KK, MM);
+V = [VV((1:3*N_engine - 3), :); ...
+    zeros(3, 3 * N - 3); ...
+    VV(3 * N_engine - 2:end, :)];
 %% 
 % Consider the reduced equation: $\mathbf{K_{rr}u_{r}}+\mathbf{K_{ri}u_i} = 
 % 0$, we have that $\mathbf{u_r} = -\mathbf{K_{rr}}^{-1}\mathbf{K_{ri}u_i}$
@@ -307,7 +268,7 @@ U = [U(1:3 * N_engine - 3, :); eye(3); U(3 * N_engine - 2:end, :)];
 
 V = [V(:, i_ROM(1:end -3)), U]; % we add the new solution at the shapemode of the clear system
 V = [zeros(3, size(V, 2)); V];
-ii = [[1:3:3*(N+1)]'; [3:3:3*(N+1)]'];
+ii = [(1:3:3*(N+1))'; (3:3:3*(N+1))'];
 
 for i = 1:size(V, 2)
     ij = find(abs(V(:, i)) == max(abs(V(ii, i))));
@@ -321,10 +282,10 @@ M_cb = V_cb(4:end, :)' * M * V_cb(4:end, :) +...
 
 [VV, ww2] = eig(K_cb, M_cb);
 ww2 = diag(ww2);
-[dmy, II] = sort(ww2);
+[~, II] = sort(ww2);
 w_cb = sqrt(ww2(II));
 V = V_cb * VV(:, II);
-ii = [[1:3:3*(N+1)]'; [3:3:3*(N+1)]']; 
+ii = [(1:3:3*(N+1))'; (3:3:3*(N+1))']; 
 
 for i = 1:size(V, 2)
     ij = find(abs(V(:, i)) == max(abs(V(ii, i))));
@@ -356,10 +317,10 @@ MM(3 * N_engine - 2:3 * N_engine, 3 * N_engine - 2:3 * N_engine) = MM(3 * N_engi
 
 [V, w2] = eig(K, MM);
 w2 = diag(w2);
-[dmy, II] = sort(w2);
+[~, II] = sort(w2);
 w = sqrt(w2(II));
 V = [zeros(3, 3 * N); V(:, II)];
-ii = [[1:3:3*(N+1)]'; [3:3:3*(N+1)]'];
+ii = [(1:3:3*(N+1))'; (3:3:3*(N+1))'];
 
 for i = 1:size(V, 2)
     ij = find(abs(V(:, i)) == max(abs(V(ii, i))));
@@ -380,7 +341,7 @@ ww2 = diag(ww2);
 [dmy, II] = sort(ww2);
 w_bm = sqrt(ww2(II));
 V = V_bm * VV(:, II);
-ii = [[1:3:3*(N+1)]'; [3:3:3*(N+1)]'];
+ii = [(1:3:3*(N+1))'; (3:3:3*(N+1))'];
 
 for i = 1:size(V, 2)
     ij = find(abs(V(:, i)) == max(abs(V(ii, i))));
@@ -411,6 +372,74 @@ for i = 1:length(i_ROM)
     plot(x, V_exact(3:3:end, i), x, V_corrected(3:3:end, i), x, V_static(3:3:end, i), x, V_cb(3:3:end, i), x, V_bm(3:3:end, i));
     xlabel('x');
     ylabel('\theta');
-    legend('exact', 'corrected', 'static', 'Craig-Bampton', 'boundary mass',"Location","bestoutside");
-    
+    legend('exact', 'corrected', 'static', 'Craig-Bampton', 'boundary mass',"Location","bestoutside");   
+end
+%%
+%% Create the beam structure
+% These are geometric properties along [x,y,z]
+W = 20;
+H = 2;
+L = 1;
+% Vertices of the beam
+V = [0 0 0;
+     W 0 0;
+     W H 0;
+     0 H 0;
+     0 0 L;
+     W 0 L;
+     W H L;
+     0 H L];
+ % triangular facets of the beam (you need to start from somewhere)
+ V = V - [0 H/2 L/2];
+ F = [1 2 3;
+      1 3 4;
+      1 2 6;
+      5 6 1;
+      1 4 5;
+      5 8 4;
+      2 3 7;
+      6 7 2;
+      4 3 7;
+      7 8 4;
+      5 6 7;
+      5 8 7];
+close all
+%patch('Faces',F, 'Vertices', V, 'FaceColor','blue', 'FaceAlpha',0.8 )
+%% Save to STL file (not sure it is necessary...) 
+% to later remesh it with a finer mesh
+TR = triangulation(F,V);
+stlwrite(TR,'wing.stl')
+%% Import STL file and mesh it 3D
+% we use tetraeda with only 4 vertexes (linear)
+model = createpde(1);
+importGeometry(model,'wing.stl');
+OrigMesh = generateMesh(model, 'Hmin',b/N, 'Hmax', b/N, 'GeometricOrder', 'linear');
+% if you don't close this figure the next one overlays on it
+pdeplot3D(model)
+title('model')
+%% We are now introducing the displacements 
+% including a rotation around the x axis...
+l = length(OrigMesh.Nodes);
+PerturbNodes = OrigMesh.Nodes;
+tmp = OrigMesh.Elements.';
+for j = 1:9
+    for i = 1:l
+        Node = OrigMesh.Nodes(:,i);
+        perturbNode = Node;
+        k = round(Node(1)/(b/N));
+        freq  = w_exact(j);
+        delta = V_exact(1+k*3,j);
+        theta = V_exact(3+k*3,j);
+        ang = theta/freq; %
+        perturbNode(2) = Node(2)*cos(ang)-Node(3)*sin(ang);
+        perturbNode(3) = Node(3)*cos(ang)+Node(2)*sin(ang);
+        perturbNode(3) = perturbNode(3)+delta;
+        PerturbNodes(:,i) = perturbNode;
+    end
+    figure
+    TR = triangulation(tmp,PerturbNodes.');
+    [f,p] = freeBoundary(TR);
+    trisurf(f,p(:,1),p(:,2),p(:,3), ...
+       'FaceColor',rand(3,1),'FaceAlpha',0.8);
+     axis('equal')
 end
