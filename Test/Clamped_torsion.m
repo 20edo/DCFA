@@ -11,7 +11,7 @@ G=27*1e6;       % Shear modulus
 rho=2700;       % Density alluminium
 nel=5;          % Number of elements
 l=10;           % Side of the square
-Mx=1e3;         % Torque
+Mx=1e8;         % Torque
 
 %% Build beam
 

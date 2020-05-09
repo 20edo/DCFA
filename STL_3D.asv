@@ -50,7 +50,7 @@ xa = beam.in(nel).x;
 xb = beam.in(nel+1).x;
 clear x 
 x = linspace(xa, xb, 3); % now we are interested in the free end
-displ_temp = N * [beam.in(nel).d; beam.in(nel+1).d];
+displ_temp = N * [beam.in(i).d; beam.in(i+1).d];
 displ = [displ displ_temp];
 
 N_points = size(displ,2);
@@ -103,22 +103,18 @@ u = displ(1,:);
 v = displ(2,:);
 w = displ(3,:);
 ang = displ(4,:);
-% [~,I]=sort(OrigMesh.Nodes(1,:));
-% ordered_nodes=OrigMesh.Nodes(:,I);
+[~,I]=sort(OrigMesh.Nodes(1,:));
+ordered_nodes=Or
 
 for j = 1:l
-    Node = OrigMesh.Nodes(:,j);
+    Node = ordered_nodes(:,j);
     perturbNode = Node;
-    k =round(Node(1)/(L/N_points));
-    k=k+1;
-    if k > N_points
-        k = N_points;
-    end
-    perturbNode(2) = Node(2)*cos(ang(k))-Node(3)*sin(ang(k));
-    perturbNode(3) = Node(3)*cos(ang(k))+Node(2)*sin(ang(k)); 
-    perturbNode(1) = perturbNode(1)+u(k);
-    perturbNode(2) = perturbNode(2)+v(k);
-    perturbNode(3) = perturbNode(3)+w(k);
+    k = round(Node(1)/(L/N_points));
+    perturbNode(2) = Node(2)*cos(ang(k+1))-Node(3)*sin(ang(k+1));
+    perturbNode(3) = Node(3)*cos(ang(k+1))+Node(2)*sin(ang(k+1)); 
+    perturbNode(1) = perturbNode(1)+u(k+1);
+    perturbNode(2) = perturbNode(2)+v(k+1);
+    perturbNode(3) = perturbNode(3)+w(k+1);
     PerturbNodes(:,j) = perturbNode;
 end
     figure
