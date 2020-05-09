@@ -1,4 +1,4 @@
-function [w] = numerical_solution(N, M, K, nel, L, plot_cond, dof)
+function [w, V] = ROM_solver(N, M, K, nel, L, plot_cond, dof)
 
 % This function gives the eigenshapes relative to the firsts N eigenvalues    
 % given:
@@ -78,10 +78,6 @@ end
 w = sqrt(lambda_k); 
 V = Vk; %eigenvector matrix
 
-%% results
-
-% disp(w)
-% disp(V)
 
 %% plot of the dof
 % CHECK: to implement for a 3-D structure

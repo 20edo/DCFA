@@ -22,8 +22,8 @@ K=beam.K(7:end,7:end);
 M=beam.M(7:end,7:end);
 
 %% Solution
-
-w = numerical_solution(N, M, K, nel, L);
+plot_cond=0;
+w = ROM_solver(N, M, K, nel, L, plot_cond);
 
 %% Exact solution
 
