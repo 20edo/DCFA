@@ -11,11 +11,11 @@ G=27*1e6;       % Shear modulus
 rho=2700;       % Density alluminium
 nel=20;         % Number of elements
 l=10;           % Side of the square
-N=10;           % Number of eigenshapes i want to evaluate
+N=3;           % Number of eigenshapes i want to evaluate
 
 %% Build beam
 
-beam=b_constant_p_square(L,l,E,G,rho,nel);
+beam=b_constant_p_square_test(L,l,E,G,rho,nel);
 
 %% Constraints
 K=beam.K(7:end,7:end);

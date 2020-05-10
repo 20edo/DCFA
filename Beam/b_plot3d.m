@@ -136,7 +136,7 @@ for j = 1:l
     perturbNode(3) = perturbNode(3)+w(k);
     PerturbNodes(:,j) = perturbNode;
 end
-    fig=figure
+    fig=figure;
     TR = triangulation(tmp,PerturbNodes.');
     [f,p] = freeBoundary(TR);
     trisurf(f,p(:,1),p(:,2),p(:,3), ...

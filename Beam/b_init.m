@@ -26,7 +26,8 @@ function b=b_init()
 % b.K                         % Stiffness matrix of the bar
 % % Geometry of the beam in 3d space
 % b.o                         % Coordinates of the origin of the beam              [3*1]
-% b.v                         % Coordinates of the versor along the beam develops  [3*1]
+% b.vx                        % Coordinates of the versor along the beam develops  [3*1]
+% b.vy                        % Coordinates of the y versor of the section         [3*1]
 % % Constraint are specified by a vector that contains true if the dof is
 % % constrained and false if the dof is not.
 % b.oc                        % Constraint at the origin                           [6*1]
@@ -79,7 +80,8 @@ b.C=0;                     % Disspation matrix
 b.K=nan;                   % Stiffness matrix of the bar
 % Geometry of the beam in 3d space
 b.o=nan(3,1);              % Coordinates of the origin of the beam              [3*1]
-b.v=nan(3,1);              % Coordinates of the versor along the beam develops  [3*1]
+b.vx=nan(3,1);             % Coordinates of the versor along the beam develops  [3*1]
+b.vy=nan(3,1);             % Coordinates of the y versor of the section         [3*1] 
 % The following fields exist if and only if the beam is inside a model
 % Constraint are specified by a vector that contains true if the dof is
 % constrained and false if the dof is not.
@@ -87,6 +89,6 @@ b.oc=nan(6,1);             % Constraint at the origin                           
 b.ec=nan(6,1);             % Constaint at the end                               [6*1]
 b.on=nan;                  % Number associated to the node at the origin
 b.en=nan;                  % Number associated to the node at the end
-b.name=nan;                 % Optional name of the beam (string)
+b.name=nan;                % Optional name of the beam (string)
 % functions defined on b:
 % b_build_elemnts

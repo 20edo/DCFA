@@ -20,7 +20,7 @@ eend=false;
 for i=1:length(m.en)
     if isequal(m.en(i).x,b.o)
         origin=i;
-    elseif isequal(m.en(i).x,b.o+b.L*b.v)
+    elseif isequal(m.en(i).x,b.o+b.L*b.vx)
         eend=i;
     end
 end
@@ -38,7 +38,7 @@ end
 if  eend
     b.en=eend;
 else
-    node=en_free(b.o+b.L*b.v);
+    node=en_free(b.o+b.L*b.vx);
     m.en=[m.en node];
     b.en=length(m.en);
 end

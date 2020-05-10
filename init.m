@@ -106,7 +106,8 @@ b.M=nan;                   % Mass matrix of the bar
 b.K=nan;                   % Stiffness matrix of the bar
 % Geometry of the beam in 3d space
 b.o=nan(3,1);              % Coordinates of the origin of the beam              [3*1]
-b.v=nan(3,1);              % Coordinates of the versor along the beam develops  [3*1]
+b.vx=nan(3,1);             % Coordinates of the versor along the beam develops  [3*1]
+b.vy=nan(3,1);             % Coordinates of the y versor of the section         [3*1] 
 % The following fields exist if and only if the beam is inside a model
 % Constraint are specified by a vector that contains true if the dof is
 % constrained and false if the dof is not.
