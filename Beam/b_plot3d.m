@@ -23,10 +23,10 @@ function [fig] = b_plot3d(beam,n_sec)
 %           
 %
 if nargin ==1
-    n_sec=2;
+    n_sec=3;
     keep_stl=false;
 elseif nargin==2
-    n_sec=2;
+    n_sec=3;
 end
 n_sec=n_sec+1;
 %% Beam proprierties
@@ -60,8 +60,15 @@ xa = beam.in(nel).x;
 xb = beam.in(nel+1).x;
 clear x 
 x = linspace(xa, xb, n_sec); % now we are interested in the free end
-displ_temp = N * [beam.in(nel).d; beam.in(nel+1).d];
-displ = [displ displ_temp];
+for h = 1:size(x,2)
+    eps =(2*x(h)- (xb+xa))/(xb-xa);
+    N = [(1 - eps)/2,                   0,                   0,         0,                             0,                            0, (1+eps)/2,                   0,                   0,         0,                              0,                             0;
+         0, 1/4*(2-3*eps+eps^3),                   0,         0,                             0, 1/4*(1-eps-eps^2+eps^3)*dL/2,         0, 1/4*(2+3*eps-eps^3),                   0,         0,                              0, 1/4*(-1-eps+eps^2+eps^3)*dL/2;
+         0,                   0, 1/4*(2-3*eps+eps^3),         0, -1/4*(1-eps-eps^2+eps^3)*dL/2,                            0,         0,                   0, 1/4*(2+3*eps-eps^3),         0, -1/4*(-1-eps+eps^2+eps^3)*dL/2,                             0;
+         0,                   0,                   0, (1-eps)/2,                             0,                            0,         0,                   0,                   0, (1+eps)/2,                              0,                            0];
+    displ_temp = N * [beam.in(nel).d; beam.in(nel+1).d];
+    displ = [displ displ_temp];
+end
 
 N_points = size(displ,2);
 %% 3D plot
@@ -107,7 +114,7 @@ stlwrite(TR,[name,'.stl'])
 % we use tetraeda with only 4 vertexes (linear)
 model = createpde(1);
 importGeometry(model,[name,'.stl']);
-OrigMesh = generateMesh(model, 'Hmin',L/N_points, 'Hmax', L/N_points, 'GeometricOrder', 'linear');
+OrigMesh = generateMesh(model, 'Hmin',L/(N_points-1), 'Hmax', L/(N_points-1), 'GeometricOrder', 'linear');
 % if you don't close this figure the next one overlays on it
 pdeplot3D(model)
 %% Now we take into account the displacements
@@ -124,7 +131,7 @@ ang = displ(4,:);
 for j = 1:l
     Node = OrigMesh.Nodes(:,j);
     perturbNode = Node;
-    k =floor(Node(1)/(L/N_points));
+    k =round(Node(1)/(L/(N_points-1)));
     k=k+1;
     if k > N_points
         k = N_points;
