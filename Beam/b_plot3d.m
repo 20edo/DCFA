@@ -1,4 +1,4 @@
-function [displ] = STL_3D(beam)
+function [fig] = b_plot3d(beam,n_sec)
 
 % This function gives a 3D representation of the displacements in
 % u,v,w,theta.
@@ -6,7 +6,10 @@ function [displ] = STL_3D(beam)
 %
 % Input:
 % beam is the structure of the beam that contains all its proprierties
-
+% n_sec     number of " artificial " sections between two internal nodes
+% (default value=2)
+% keep_stl  True if you want to keep the stl of the original model (defult
+% value false)
 %%
 % DCFA swept wing assignement
 %
@@ -19,6 +22,13 @@ function [displ] = STL_3D(beam)
 %               
 %           
 %
+if nargin ==1
+    n_sec=2;
+    keep_stl=false;
+elseif nargin==2
+    n_sec=2;
+end
+n_sec=n_sec+1;
 %% Beam proprierties
 L = beam.L;
 nel = beam.nel;
@@ -29,7 +39,7 @@ for i = 1:nel-1
     xa = beam.in(i).x;
     xb = beam.in(i+1).x;
     clear x 
-    x = linspace(xa, xb, 3); % we evaluate the displacements for 10 points inside each elements
+    x = linspace(xa, xb, n_sec); % we evaluate the displacements for 10 points inside each elements
     x = x(1:end-1); %otherwise we take into account 2 times the same node
     for h = 1:size(x,2)
         eps =(2*x(h)- (xb+xa))/(xb-xa);
@@ -49,7 +59,7 @@ end
 xa = beam.in(nel).x;
 xb = beam.in(nel+1).x;
 clear x 
-x = linspace(xa, xb, 3); % now we are interested in the free end
+x = linspace(xa, xb, n_sec); % now we are interested in the free end
 displ_temp = N * [beam.in(nel).d; beam.in(nel+1).d];
 displ = [displ displ_temp];
 
@@ -87,11 +97,16 @@ patch('Faces',F, 'Vertices', V, 'FaceColor','blue', 'FaceAlpha',0.8 )
 %% Save to STL file (not sure it is necessary...) 
 % to later remesh it with a finer mesh
 TR = triangulation(F,V);
-stlwrite(TR,'wing.stl')
+if any(isnan(beam.name)) || isempty(beam.name)
+    name='noname';
+else 
+    name=beam.name;
+end
+stlwrite(TR,[name,'.stl'])
 %% Import STL file and mesh it 3D
 % we use tetraeda with only 4 vertexes (linear)
 model = createpde(1);
-importGeometry(model,'wing.stl');
+importGeometry(model,[name,'.stl']);
 OrigMesh = generateMesh(model, 'Hmin',L/N_points, 'Hmax', L/N_points, 'GeometricOrder', 'linear');
 % if you don't close this figure the next one overlays on it
 pdeplot3D(model)
@@ -109,7 +124,7 @@ ang = displ(4,:);
 for j = 1:l
     Node = OrigMesh.Nodes(:,j);
     perturbNode = Node;
-    k =round(Node(1)/(L/N_points));
+    k =floor(Node(1)/(L/N_points));
     k=k+1;
     if k > N_points
         k = N_points;
@@ -121,12 +136,18 @@ for j = 1:l
     perturbNode(3) = perturbNode(3)+w(k);
     PerturbNodes(:,j) = perturbNode;
 end
-    figure
+    fig=figure
     TR = triangulation(tmp,PerturbNodes.');
     [f,p] = freeBoundary(TR);
     trisurf(f,p(:,1),p(:,2),p(:,3), ...
        'FaceColor',rand(3,1),'FaceAlpha',0.8);
      axis('equal')
+     title(name)
+     %% Delete stl
+     if ~keep_stl
+         filename=[name,'.stl'];
+         delete(filename)
+     end
 end
 
 

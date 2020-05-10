@@ -11,7 +11,7 @@ G=27*1e6;       % Shear modulus
 rho=2700;       % Density alluminium
 nel=5;          % Number of elements
 l=10;           % Side of the square
-Mx=1e8;         % Torque
+Mx=3e7;         % Torque
 
 %% Build beam
 
@@ -47,9 +47,9 @@ disp('Calculated th:')
 disp(th_right)
 disp('Exact th:')
 disp(exact_th_right)
-
+beam.name='ClampedTorsionBeam'
 
 for i = 2:nel+1
     beam.in(i).d = u(1+6*(i-2):6*(i-1),1);
 end
-[displ] = STL_3D(beam)
+[fig] = b_plot3d(beam);
