@@ -1,4 +1,4 @@
-function [fig] = b_plot3d(beam,n_sec)
+function [fig] = b_plot3d(beam,options)
 
 % This function gives a 3D representation of the displacements in
 % u,v,w,theta.
@@ -6,10 +6,11 @@ function [fig] = b_plot3d(beam,n_sec)
 %
 % Input:
 % beam is the structure of the beam that contains all its proprierties
-% n_sec     number of " artificial " sections between two internal nodes
-% (default value=2)
-% keep_stl  True if you want to keep the stl of the original model (defult
-% value false)
+% option is a structure including:
+% plot = true / false - plot the beam with and without deformation
+% plotColor = 'string' - face color of the plot
+% saveSTL = true / false - save the beam to STL with and without deformation
+% ovs = 4 - oversampling factor in the visualization of the displacements
 %%
 % DCFA swept wing assignement
 %
@@ -22,13 +23,6 @@ function [fig] = b_plot3d(beam,n_sec)
 %               
 %           
 %
-if nargin ==1
-    n_sec=3;
-    keep_stl=false;
-elseif nargin==2
-    n_sec=3;
-end
-n_sec=n_sec+1;
 %% Beam proprierties
 L = beam.L;
 nel = beam.nel;
@@ -39,7 +33,7 @@ for i = 1:nel-1
     xa = beam.in(i).x;
     xb = beam.in(i+1).x;
     clear x 
-    x = linspace(xa, xb, n_sec); % we evaluate the displacements for 10 points inside each elements
+    x = linspace(xa, xb, options.ovs); % we evaluate the displacements for 10 points inside each elements
     x = x(1:end-1); %otherwise we take into account 2 times the same node
     for h = 1:size(x,2)
         eps =(2*x(h)- (xb+xa))/(xb-xa);
@@ -59,7 +53,7 @@ end
 xa = beam.in(nel).x;
 xb = beam.in(nel+1).x;
 clear x 
-x = linspace(xa, xb, n_sec); % now we are interested in the free end
+x = linspace(xa, xb, options.ovs); % now we are interested in the free end
 for h = 1:size(x,2)
     eps =(2*x(h)- (xb+xa))/(xb-xa);
     N = [(1 - eps)/2,                   0,                   0,         0,                             0,                            0, (1+eps)/2,                   0,                   0,         0,                              0,                             0;
@@ -73,7 +67,9 @@ end
 N_points = size(displ,2);
 %% 3D plot
 %% Create the beam structure
+% Create the beam structure.
 % These are geometric properties along [x,y,z]
+% Assumes the section of the beam to be 1/10 of its length
 W = L;
 H = W/10;
 LL = W/10;
@@ -86,8 +82,9 @@ V = [0 0 0;
      W 0 LL;
      W H LL;
      0 H LL];
- % triangular facets of the beam (you need to start from somewhere)
+ % Center beam around (0,0)
  V = V - [0 H/2 LL/2];
+ % Triangular facets of the beam (you need to start from somewhere)
  F = [1 2 3;
       1 3 4;
       1 2 6;
@@ -100,23 +97,31 @@ V = [0 0 0;
       7 8 4;
       5 6 7;
       5 8 7];
-patch('Faces',F, 'Vertices', V, 'FaceColor','blue', 'FaceAlpha',0.8 )
-%% Save to STL file (not sure it is necessary...) 
-% to later remesh it with a finer mesh
-TR = triangulation(F,V);
-if any(isnan(beam.name)) || isempty(beam.name)
-    name='noname';
-else 
-    name=beam.name;
+% Save to STL file
+if options.saveSTL
+    TR = triangulation(F,V);
+    stlwrite(TR,'beam.stl')
 end
-stlwrite(TR,[name,'.stl'])
-%% Import STL file and mesh it 3D
-% we use tetraeda with only 4 vertexes (linear)
+
+%% Mesh the beam in 3D
+% we use tetraheda with only 4 vertexes (linear)
 model = createpde(1);
-importGeometry(model,[name,'.stl']);
-OrigMesh = generateMesh(model, 'Hmin',L/(N_points-1), 'Hmax', L/(N_points-1), 'GeometricOrder', 'linear');
-% if you don't close this figure the next one overlays on it
-pdeplot3D(model)
+geometryFromMesh(model,V.',F.');
+% Mesh the beam with 'linear' tetrahedra, to save memory and complexity.
+% In any case the mesh is not used to compute the solution
+% The element size is the same for which the displacements have been computed.
+OrigMesh = generateMesh(model, ...
+    'Hmin',L/(N_points-1), 'Hmax', L/(N_points-1), ...
+    'GeometricOrder', 'linear');
+if options.plot
+    TR = triangulation(OrigMesh.Elements.',OrigMesh.Nodes.');
+    [f,p] = freeBoundary(TR);
+    trisurf(f,p(:,1),p(:,2),p(:,3), ...
+        'FaceColor',options.plotColor,'FaceAlpha',0.8);
+    %pdeplot3D(model)
+    axis('equal');
+    title('Original beam without deformation');
+end
 %% Now we take into account the displacements
 l = length(OrigMesh.Nodes);
 PerturbNodes = OrigMesh.Nodes;
@@ -125,38 +130,34 @@ u = displ(1,:);
 v = displ(2,:);
 w = displ(3,:);
 ang = displ(4,:);
-% [~,I]=sort(OrigMesh.Nodes(1,:));
-% ordered_nodes=OrigMesh.Nodes(:,I);
 
 for j = 1:l
-    Node = OrigMesh.Nodes(:,j);
-    perturbNode = Node;
-    k =round(Node(1)/(L/(N_points-1)));
-    k=k+1;
-    if k > N_points
-        k = N_points;
-    end
-    perturbNode(2) = Node(2)*cos(ang(k))-Node(3)*sin(ang(k));
-    perturbNode(3) = Node(3)*cos(ang(k))+Node(2)*sin(ang(k)); 
-    perturbNode(1) = perturbNode(1)+u(k);
-    perturbNode(2) = perturbNode(2)+v(k);
-    perturbNode(3) = perturbNode(3)+w(k);
-    PerturbNodes(:,j) = perturbNode;
+    Node                = OrigMesh.Nodes(:,j);
+    perturbNode         = Node;
+    k                   = round(Node(1)/(L/(N_points-1))) + 1;
+    perturbNode(2)      = Node(2)*cos(ang(k))-Node(3)*sin(ang(k));
+    perturbNode(3)      = Node(3)*cos(ang(k))+Node(2)*sin(ang(k));
+    perturbNode(1)      = perturbNode(1)+u(k);
+    perturbNode(2)      = perturbNode(2)+v(k);
+    perturbNode(3)      = perturbNode(3)+w(k);
+    PerturbNodes(:,j)   = perturbNode;
 end
-    fig=figure;
+if options.plot
+    fig = figure
     TR = triangulation(tmp,PerturbNodes.');
     [f,p] = freeBoundary(TR);
     trisurf(f,p(:,1),p(:,2),p(:,3), ...
-       'FaceColor',rand(3,1),'FaceAlpha',0.8);
-     axis('equal')
-     title(name)
-     %% Delete stl
-     if ~keep_stl
-         filename=[name,'.stl'];
-         delete(filename)
-     end
+        'FaceColor',options.plotColor,'FaceAlpha',0.8);
+    axis('equal');
+    title('Deformed beam');
 end
-
+if options.saveSTL
+    TR = triangulation(tmp,PerturbNodes.');
+    [f,p] = freeBoundary(TR);
+    TR = triangulation(f,p);
+    stlwrite(TR,'beamDeformed.stl')
+end
+end
 
 
 

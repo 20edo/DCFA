@@ -39,7 +39,7 @@ L_shaped_structure=m_add_beam(L_shaped_structure,beam_1);   % Add beam to the mo
 %% Build and add the second beam to the model
 beam_2=b_constant_p_square(5e3,30,70*1e6,27*1e6,2700,30);
 beam_2.name='beam_2';
-beam_2.o=beam_1.o+beam_1.L*beam_1.v;    % Beam 2 origin is coincident with the end of beam 1
+beam_2.o=beam_1.o+beam_1.L*beam_1.vx;    % Beam 2 origin is coincident with the end of beam 1
 beam_2.vx=[0,1,0]';                     % Beam 2 is aligned with the global y axis
 beam_2.vy=[0,0,1]';                     % Set the versor of the y local axis of the beam
 beam_2.oc=true(6,1);                    % Beam 2 is clamped at the origin
@@ -54,14 +54,14 @@ L_shaped_structure=m_add_beam(L_shaped_structure,beam_2);
 
 beam_3=b_constant_p_square(5e3,30,70*1e6,27*1e6,2700,30);
 beam_3.name='beam_3';
-beam_3.o=beam_1.o+beam_1.L*beam_1.v;    % Beam 3 origin is coincident with the end of beam 1
+beam_3.o=beam_1.o+beam_1.L*beam_1.vx;    % Beam 3 origin is coincident with the end of beam 1
 beam_3.vx=[0,-1,0]';                    % Beam 3 is aligned with the global -y axis
 beam_3.vy=[0,0,1]';                     % Set the versor of the y local axis of the beam
 beam_3.oc=true(6,1);                    % Beam 3 is clamped at the origin
 beam_3.ec=true(6,1);                    % Beam 3 is clamped (with a lumped mass) at the end
 
 
-lumped_mass=en_mass(beam_3.o+beam_1.L*beam_3.v,1e3);    % Create a lumped mass external node 1e3 Kg
+lumped_mass=en_mass(beam_3.o+beam_1.L*beam_3.vx,1e3);    % Create a lumped mass external node 1e3 Kg
 T_shaped_structure=L_shaped_structure;
 T_shaped_structure.en=[T_shaped_structure.en lumped_mass];
 
