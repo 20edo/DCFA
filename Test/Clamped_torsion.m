@@ -52,4 +52,11 @@ beam.name='ClampedTorsionBeam'
 for i = 2:nel+1
     beam.in(i).d = u(1+6*(i-2):6*(i-1),1);
 end
-[fig] = b_plot3d(beam);
+options.plot        = 1;
+options.plotColor   = 'green';
+options.saveSTL     = 0;
+options.ovs         = 4;
+[fig] = b_plot3d(beam, options);
+
+% return where I come from ... home sweet home
+cd ./test
