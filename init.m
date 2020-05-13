@@ -102,6 +102,7 @@ b.L=nan;                   % Length of the beam     [m]
 b.in=nan;                  % Vector of the internal nodes of the beam
 b.nel=nan;                     % number of elements
 % (matrices)
+b.A=nan;                   % Incidence matrix of the beam
 b.M=nan;                   % Mass matrix of the bar
 b.K=nan;                   % Stiffness matrix of the bar
 % Geometry of the beam in 3d space

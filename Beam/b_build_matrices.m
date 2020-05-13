@@ -12,9 +12,9 @@ function b=build_matrices(b)
 %               
 %           
 %
-b.M=zeros(6*(b.nel+1));
-b.K=zeros(6*(b.nel+1));
-b.C=zeros(6*(b.nel+1));
+b.M=sparse(zeros(6*(b.nel+1)));
+b.K=sparse(zeros(6*(b.nel+1)));
+b.C=sparse(zeros(6*(b.nel+1)));
 for i=1:b.nel
     b.M(6*(i-1)+1:6*(i+1),6*(i-1)+1:6*(i+1))=b.M(6*(i-1)+1:6*(i+1),6*(i-1)+1:6*(i+1))+b.el(i).M;
     b.K(6*(i-1)+1:6*(i+1),6*(i-1)+1:6*(i+1))=b.K(6*(i-1)+1:6*(i+1),6*(i-1)+1:6*(i+1))+b.el(i).K;

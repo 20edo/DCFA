@@ -48,7 +48,7 @@ L_shaped_structure=m_add_beam(L_shaped_structure,beam_2);
 
 %% Compute matrices
 
-% L_shaped_structure=m_compute_matrices(L_shaped_structure);
+L_shaped_structure=m_compute_matrices(L_shaped_structure);
 
 %% Build a T structure with a lumped mass at the -y end
 
@@ -69,7 +69,7 @@ T_shaped_structure=m_add_beam(L_shaped_structure,beam_3);
 
 %% Compute matrices
 
-% T_shaped_structure=m_compute_matrices(L_shaped_structure);
+T_shaped_structure=m_compute_matrices(T_shaped_structure);
 
 
 

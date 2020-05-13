@@ -21,6 +21,7 @@ function b=b_init()
 % b.in                        % Vector of the internal nodes of the beam
 % b.nel                       % number of elements
 % % (matrices)
+% b.A                         % Incidence matrix of the beam
 % b.M                         % Mass matrix of the bar
 % b.C                         % Dissipation matrix ( default value 0)
 % b.K                         % Stiffness matrix of the bar
@@ -75,6 +76,7 @@ b.L=nan;                   % Length of the beam     [m]
 b.in=nan;                  % Vector of the internal nodes of the beam
 b.nel=nan;                     % number of elements
 % (matrices)
+b.A=nan;                   % Incidence matrix of the beam
 b.M=nan;                   % Mass matrix of the bar
 b.C=0;                     % Disspation matrix
 b.K=nan;                   % Stiffness matrix of the bar
