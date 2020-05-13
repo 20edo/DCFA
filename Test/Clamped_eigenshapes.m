@@ -27,15 +27,9 @@ K=beam.K(7:end,7:end);
 M=beam.M(7:end,7:end);
 
 %% Solution
-
-[V,D]=eig(K,M);
-
-%% Exact solution 
-%CHECK why 2 times?
-
-exact_k=[1.875104 4.694091 7.854757 10.995541 14.137168]';
-exact_w=sqrt(beam.el(1).sc.EJy/beam.el(1).sc.m/L^4).*exact_k.^2;
+[w, V] = ROM_solver(14, M, K);
+% [V,D,FLAG]=eigs(K,M,size(K,2));
 
 %% Disp
-disp(sqrt(diag(D)))
+disp(w)
 disp(exact_w)

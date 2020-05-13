@@ -1,9 +1,10 @@
-function [w, V] = ROM_solver(N, M, K, nel, L, plot_cond, dof)
+function [w, V, k] = ROM_solver(N, M, K, nel, L, plot_cond, dof)
 
 % This function gives the eigenshapes relative to the firsts N eigenvalues    
 % given:
 % N is the number of eigenshpaes we want to study;
-% the complete Mass matrix (M) and Stiffness matrix (K);
+% M is the complete Mass matrix;
+% K is the complete Stiffness matrix;
 % nel is the number of element considered;
 % L is the length of the beam;
 % dof are the number of degree of freedom we wanted to analyse. (if not specified
