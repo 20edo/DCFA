@@ -39,7 +39,7 @@ A(3,3) = dot(X3, X3Prime);
 N = size(b.M,1)/3;
 Ar = repmat(A, 1, N);
 Ac = mat2cell(Ar, size(A,1), repmat(size(A,2),1,N));
-R = blkdiag(Ac{:});                                   
+R = sparse(blkdiag(Ac{:}));                                   
 
 % rotate matrices
 b.M = R*b.M*R';

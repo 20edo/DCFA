@@ -44,6 +44,17 @@ model.C = sparse(zeros(dof));
 %                               internal beam2    
 %                                              ....
 
+% Take care of the node matrices
+index=zeros(1,6);
+for i=1:n_node
+    index=6*(i-1)+1;
+    index=(index:index+5);
+    model.M(index,index)=model.M(index,index)+model.en(i).M;
+    model.K(index,index)=model.K(index,index)+model.en(i).K;
+    model.C(index,index)=model.C(index,index)+model.en(i).C;
+end 
+
+
 % k is how many dof has been already added to the big matrix
 k = 6*size(dof_node,2);
 

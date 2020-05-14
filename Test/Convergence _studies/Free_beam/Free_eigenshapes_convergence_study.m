@@ -16,7 +16,7 @@ L=1e3;          % Length of the beam
 E=70*1e6;       % Young modulus
 G=27*1e6;       % Shear modulus
 rho=2700;       % Density alluminium
-nel=1000;        % Number of elements
+nel=10;        % Number of elements
 l=10;           % Side of the square
 
 
@@ -26,12 +26,30 @@ l=10;           % Side of the square
 cd ..
 
 for i=1:length(nel)
-    %% Build beam
+    %% Build model
     tic
     beam=b_constant_p_square(L,l,E,G,rho,nel(i));
-    M=beam.M;
-    K=beam.K;
-
+    beam.o=[0,0,0]';
+    beam.vx=[1,0,0]';
+    beam.vy=[0 1 0]';
+    beam.oc=true(6,1);
+    
+    free_beam=m_init;
+    node=en_init;
+    node.x=[0,0,0]';
+    node.K=1e3*sparse(eye(size(node.K)));
+    node.M=sparse(zeros(size(node.K)));
+    node.C=sparse(zeros(size(node.K)));
+    node.c=false(6,1);
+    free_beam.en=node;
+    
+    free_beam=m_add_beam(free_beam,beam);
+    
+    free_beam=m_compute_matrices(free_beam);
+    
+    M=free_beam.M;
+    K=free_beam.K;
+    
     %% Solution
     [w, V, k] = ROM_solver(14, M, K);
     % [V,D,FLAG]=eigs(K,M,size(K,2));

@@ -2,9 +2,14 @@
 % Transverse vibrations of clamped-free (cantilever) uniform Euler-Bernoulli beam).
 cd ..
 cd ..
+cd ..
 init
 clear all, close all, clc
-cd Test\
+cd Test\'Convergence _studies'\Clamped_beam\
+%% Exact solution
+load('w_esatta.mat')
+
+
 %% Data
 L=1e3;          % Length of the beam
 E=70*1e6;       % Young modulus
@@ -13,11 +18,10 @@ rho=2700;       % Density alluminium
 nel=round(linspace(4,500,10));        % Number of elements
 l=10;           % Side of the square
 
-
-%% Exact solution
-load('w_esatta.mat')
 error=zeros(size(nel));
 
+cd ..
+cd ..
 cd ..
 
 for i=1:length(nel)
