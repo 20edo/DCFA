@@ -13,21 +13,19 @@ nel=10;         % Number of elements
 l=10;           % Side of the square
 
 %% Build beam
-% if ~exist('gcp')
-%     parpool(4);
-% end
-% 
-% tic
-% spmd
-%     beam=b_constant_p_square_test(L,l,E,G,rho,nel);
-% end
-% t_parallel=toc;
-% 
-% t_serial=tic
-% beam=b_constant_p_square_test(L,l,E,G,rho,nel);
-% t_serial=toc(t_serial);
+if ~exist('gcp')
+    parpool(4);
+end
 
-beam=b_constant_p_square(L,l,E,G,rho,nel);
+tic
+spmd
+    beam=b_constant_p_square_test(L,l,E,G,rho,nel);
+end
+t_parallel=toc;
+
+tic(T
+beam=b_constant_p_square_test(L,l,E,G,rho,nel);
+t_serial=toc;
 %% Exact solution
 
 exact_k=[1.875104 4.694091 7.854757 10.995541 14.137168]';

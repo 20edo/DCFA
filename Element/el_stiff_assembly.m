@@ -39,5 +39,26 @@ K = [[       EA/L,              0,              0,     0,     (EA*zA)/L,    -(EA
 [ -(EA*zA)/L,  -(6*EJyz)/L^2,   -(6*EJy)/L^2,     0,     (2*EJy)/L,   -(2*EJyz)/L,  (EA*zA)/L,   (6*EJyz)/L^2,    (6*EJy)/L^2,     0,     (4*EJy)/L,   -(4*EJyz)/L];
 [  (EA*yA)/L,    (6*EJz)/L^2,   (6*EJyz)/L^2,     0,   -(2*EJyz)/L,     (2*EJz)/L, -(EA*yA)/L,   -(6*EJz)/L^2,  -(6*EJyz)/L^2,     0,   -(4*EJyz)/L,     (4*EJz)/L]];
 
+
+
+% Change of reference
+
+R=[ 1   0   0   0   0   0
+    0   1   0   el.sc.yct   0  0
+    0   0   1   -el.sc.zct  0  0
+    0   0   0   1   0   0
+    0   0   0   0   1   0
+    0   0   0   0   0   1];
+
+R=sparse(R);
+
+R=blkdiag(R,R);
+
+K=R*K*transpose(R);
+
+
+el.K=sparse(K);
+
+
 el.K=K;
 end

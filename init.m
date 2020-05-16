@@ -22,6 +22,8 @@ addpath('Model')
 global g
 g=9.81;        % Gravity acceleration          [m/s^2]
 
+global np
+np=6;          % Number of cores available
 %% Data structures definition:
 
 % section   

@@ -41,5 +41,23 @@ M = [[ (L*m)/3,                   (m*yM)/2,                   (m*zM)/2,         
 [  (L*m*yM)/12,     Iz/10 - (13*L^2*m)/420,                     Iyz/10,  (L^2*m*zM)/30,                (Iyz*L)/30, - (L^3*m)/140 - (Iz*L)/30, -(L*m*yM)/12,   - Iz/10 - (11*L^2*m)/210,                    -Iyz/10,  (L^2*m*zM)/20,             -(2*Iyz*L)/15, (m*L^3)/105 + (2*Iz*L)/15]];
  
 
+% Change of reference
+
+R=[ 1   0   0   0   0   0
+    0   1   0   el.sc.yct   0  0
+    0   0   1   -el.sc.zct  0  0
+    0   0   0   1   0   0
+    0   0   0   0   1   0
+    0   0   0   0   0   1];
+
+R=sparse(R);
+
+R=blkdiag(R,R);
+
+M=R*M*transpose(R);
+
+
+el.M=sparse(M);
+
 el.M=M;
 end
