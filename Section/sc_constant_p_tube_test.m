@@ -1,7 +1,8 @@
-function sc=sc_constant_p_tube(R,t,E,G,rho)
+function sc=sc_constant_p_tube_test(R,t,E,G,rho)
 
 % Returns a circular tube of radius R and thickness t and constant properties
-
+% Improve this function: write the exact values instad of integrating
+% numerically
 %%
 % DCFA swept wing assignement
 %
@@ -30,28 +31,6 @@ sc.cart=false;
 sc.E=@(Rho,th) E+0.*Rho+0.*th;
 sc.G=@(Rho,th) G+0.*Rho+0.*th;
 sc.rho=@(Rho,th) rho+0.*Rho+0.*th;
-% sc=sc_compute_property(sc);
-
-% Inertia properties
-sc.ycg=0;
-sc.zcg=0;
-sc.Iy=pi/4*(R^4-(R-t)^4)/4;
-sc.Iz=pi/4*(R^4-(R-t)^4)/4;
-sc.Iyz=0;
-sc.Jp=pi/2*(R^4-(R-t)^4)/4;
-
-% Elastic properties
-sc.GA=sc.G(0,0)*pi*(R^2-(R-t)^2);
-sc.EA=sc.E(0,0)*pi*(R^2-(R-t)^2);
-sc.ya=0;
-sc.za=0;
-sc.EJy=sc.E(0,0)*sc.Iy;
-sc.EJz=sc.EJy;
-sc.EJyx=0;
-
-% Torsion properties
-sc.ycg=0;
-sc.zcg=0;
-sc.GJ=sc.Jp*sc.G(0,0);
+sc=sc_compute_property(sc);
 
 end

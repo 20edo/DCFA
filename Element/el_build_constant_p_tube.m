@@ -1,4 +1,4 @@
-function el=el_build(b,insx,indx)
+function el=el_build_constant_p_tube(b,insx,indx)
 % Builds the element between two nodes, given the beam property.
 %%
 % DCFA swept wing assignement
@@ -17,7 +17,6 @@ x=(insx.x+indx.x)/2;
 
 
 %% Initialise section and set geometric and material properties
-
 sc=sc_init();
 sc.cart=b.cart;              % True if the section is defined as z=@(y)              [bool]
 sc.Zmin=@(y) b.Zmin(x,y);           % Coordinate of the 'lower' boundary
@@ -35,18 +34,14 @@ sc.E=@(y,z) b.E(x,y,z);            % Young modulus of the point in the section
 sc.G=@(y,z) b.G(x,y,z);            % Shear modulus of the pooint in the section
 sc.rho=@(y,z) b.rho(x,y,z);          % Density of the point of the section
 
-
-
+%% Define constant section variables
+R=sc.Rhomax(x,0);
+t=R-sc.Rhomin(x,0);
+E=sc.E(0,0);
+G=sc.G(0,0);
+rho=sc.rho(0,0);
 %% Compute section properties
-sc=sc_compute_property(sc); % Calculate inertia and elastic properties
-sc=sc_torsion(sc);          % Calculate yct and zct
-sc_ct=sc_move_geo_reference(sc);    
-sc_ct=sc_torsion(sc_ct);    % Calculate GJ wrt ct
-sc_ct=sc
-sc.GJ=sc_ct.GJ;             % Assign the correct GJ
-
-
-
+sc=sc_constant_p_tube(R,t,E,G,rho);
 %% Set element properties
 el.sc=sc;
 el.L=abs(indx.x-insx.x);
@@ -54,5 +49,3 @@ el=el_mass_assembly(el);
 el=el_stiff_assembly(el);
 el.C=zeros(size(el.M));
 end
-
-
