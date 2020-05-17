@@ -1,0 +1,99 @@
+% This script builds the beam that represent the fuselage of the aircraft
+% The origin is set at the nose of the aircraft, the x axis is align with
+% the fuselage ond points to the front
+
+%% Discretisation parameters
+nel_nose=30;
+nel_front_fuselage=30;
+nel_rear_fuselage=30;
+nel_front_tail=30;
+nel_rear_tail=30;
+
+%% Parameters of the fuselage
+R_fus= 10;       % Radius of the fuselage
+t_fus=0.10;      % Thickness of the fuselage
+R_mid_tail=2;    % Radius of the tail fuselage at the clamp with the rudder
+
+%% Material properties (Aluminium)
+
+E=70*1e3;   % Young modulus
+G=27*1e3;   % Shear modulus
+rho=2700;   % Density
+
+%% Nose
+
+L=norm(aircraft.en(1).x-aircraft.en(2).x,2);
+R= @(x) R_fus*x/L;
+t= @(x) t_fus+0.*x;
+nose=b_constant_p_tube(L,R,t,E,G,rho,nel_nose);
+nose.o=aircraft.en(1).x;
+nose.vx=[-1 0 0]';
+nose.vy=[0 1 0]';
+nose.name='nose';
+
+%% Front fuselage
+
+L=norm(aircraft.en(2).x-aircraft.en(3).x,2);
+R= @(x) R_fus+0.*x;
+t= @(x) t_fus+0.*x;
+front_fuselage=b_constant_p_tube(L,R,t,E,G,rho,nel_front_fuselage);
+front_fuselage.o=aircraft.en(2).x;
+front_fuselage.vx=[-1 0 0]';
+front_fuselage.vy=[0 1 0]';
+front_fuselage.name='front_fuselage';
+
+%% Rear fuselage
+
+L=norm(aircraft.en(3).x-aircraft.en(4).x,2);
+R= @(x) R_fus+0.*x;
+t= @(x) t_fus+0.*x;
+rear_fuselage=b_constant_p_tube(L,R,t,E,G,rho,nel_rear_fuselage);
+rear_fuselage.o=aircraft.en(3).x;
+rear_fuselage.vx=[-1 0 0]';
+rear_fuselage.vy=[0 1 0]';
+rear_fuselage.name='rear_fuselage';
+
+%% Front tail
+
+L=norm(aircraft.en(4).x-aircraft.en(5).x,2);
+R= @(x) R_fus+0.*x;
+t= @(x) t_fus+0.*x;
+front_tail=b_constant_p_tube(L,R,t,E,G,rho,nel_front_tail);
+front_tail.o=aircraft.en(4).x;
+front_tail.vx=aircraft.en(5).x-aircraft.en(4).x;
+front_tail.vx=front_tail.vx/norm(front_tail.vx,2);
+front_tail.vy=[0 1 0]';
+front_tail.name='front_tail';
+
+%% Rear tail
+
+L=norm(Node4.x-Node5.x,2);
+R= @(x) R_fus+0.*x;
+t= @(x) t_fus+0.*x;
+rear_tail=b_constant_p_tube(L,R,t,E,G,rho,nel_front_tail);
+rear_tail.o=Node4.x;
+rear_tail.vx=Node4.x-Node5.x;
+rear_tail.vx=rear_tail.vx/norm(rear_tail.vx,2);
+rear_tail.vy=[0 1 0]';
+rear_tail.name='rear_tail';
+
+fuselage_beams=[nose, front_fuselage, rear_fuselage, front_tail, rear_tail];
+
+%% Clear non usefull variables
+clear E
+clear G
+clear i
+clear L
+clear nel_front_fuselage
+clear nel_front_tail
+clear nel_nose
+clear nel_rear_fuselage
+clear nel_rear_tail
+clear R
+clear R_fus
+clear R_mid_tail
+clear front_fuselage
+clear rear_fuselage
+clear nose
+clear front_tail
+clear rear_tail

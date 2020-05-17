@@ -35,8 +35,8 @@ sc.G=@(y,z) b.G(x,y,z);            % Shear modulus of the pooint in the section
 sc.rho=@(y,z) b.rho(x,y,z);          % Density of the point of the section
 
 %% Define constant section variables
-R=sc.Rhomax(x,0);
-t=R-sc.Rhomin(x,0);
+R=b.Rhomax(x,0);
+t=R-b.Rhomin(x,0);
 E=sc.E(0,0);
 G=sc.G(0,0);
 rho=sc.rho(0,0);
