@@ -33,11 +33,11 @@ cd Aircraft\
 
 %% Define the nodes of the beam
 Node1=en_free([0,0,0]);     % Where the node begins
-Node2=en_free([-1 0 0]);    % Where the section from conical becomes cylindrical
-Node3=en_free([-5 0 0]);    % Where the wings are clamped
-Node4=en_free([-10 0 0]);   % Where the conical section of the tail begins
-Node5=en_free([-12 0 0.5]); % Where the rudder is clamped
-Node6=en_free([-14 0 1]);   % Where the aircraft ends
+Node2=en_free([-10 0 0]);    % Where the section from conical becomes cylindrical
+Node3=en_free([-50 0 0]);    % Where the wings are clamped
+Node4=en_free([-100 0 0]);   % Where the conical section of the tail begins
+Node5=en_free([-120 0 0.5]); % Where the rudder is clamped
+Node6=en_free([-140 0 1]);   % Where the aircraft ends
 
 %% Initialize model
 
@@ -63,6 +63,13 @@ end
 %% Compute properties
 
 aircraft=m_compute_matrices(aircraft);
+
+options.plot_original          = 1;
+options.plot_deformed          = 1;
+options.plotColor              = 'green';
+options.saveSTL                = 0;
+options.point_section          = 4;
+[fig] = model_plot3d(aircraft,options)
 
 
 

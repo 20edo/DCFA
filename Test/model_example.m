@@ -37,7 +37,7 @@ beam_1.ec=true(6,1);        % The first beam is clamped at the end (with beam_2)
 L_shaped_structure=m_add_beam(L_shaped_structure,beam_1);   % Add beam to the model
 
 %% Build and add the second beam to the model
-beam_2=b_constant_p_square(5e3,30,70*1e6,27*1e6,2700,30);
+beam_2=b_constant_p_square(2e3,30,70*1e6,27*1e6,2700,30);
 beam_2.name='beam_2';
 beam_2.o=beam_1.o+beam_1.L*beam_1.vx;    % Beam 2 origin is coincident with the end of beam 1
 beam_2.vx=[0,1,0]';                     % Beam 2 is aligned with the global y axis
@@ -52,7 +52,7 @@ L_shaped_structure=m_compute_matrices(L_shaped_structure);
 
 %% Build a T structure with a lumped mass at the -y end
 
-beam_3=b_constant_p_square(5e3,30,70*1e6,27*1e6,2700,30);
+beam_3=b_constant_p_square(2e3,30,70*1e6,27*1e6,2700,30);
 beam_3.name='beam_3';
 beam_3.o=beam_1.o+beam_1.L*beam_1.vx;    % Beam 3 origin is coincident with the end of beam 1
 beam_3.vx=[0,-1,0]';                    % Beam 3 is aligned with the global -y axis
@@ -71,6 +71,16 @@ T_shaped_structure=m_add_beam(L_shaped_structure,beam_3);
 
 T_shaped_structure=m_compute_matrices(T_shaped_structure);
 
+%% prova
+
+
+
+options.plot_original          = 1;
+options.plot_deformed          = 1;
+options.plotColor              = 'green';
+options.saveSTL                = 0;
+options.point_section          = 2;
+[fig] = model_plot3d(T_shaped_structure,options)
 
 
 
