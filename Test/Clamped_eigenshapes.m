@@ -9,7 +9,7 @@ L=1e3;          % Length of the beam
 E=70*1e6;       % Young modulus
 G=27*1e6;       % Shear modulus
 rho=2700;       % Density alluminium
-nel=10;         % Number of elements
+nel=100;         % Number of elements
 l=10;           % Side of the square
 
 %% Build beam
@@ -36,10 +36,11 @@ exact_w=sqrt(beam.el(1).sc.EJy/beam.el(1).sc.m/L^4).*exact_k.^2;
 %% Constraints
 K=beam.K(7:end,7:end);
 M=beam.M(7:end,7:end);
-
 %% Solution
 [w, V] = ROM_solver(14, M, K);
-% [V,D,FLAG]=eigs(K,M,size(K,2));
+w = real(w); 
+[VV,D,FLAG]=eigs(K,M,14,'smallestabs');
+sqrtw = diag(D).^0.5;
 
 %% Disp
 disp(w)

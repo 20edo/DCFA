@@ -44,6 +44,8 @@ sc=sc_constant_p_square(l,E,G,rho);
 %% Set element properties
 el.sc=sc;
 el.L=abs(indx.x-insx.x);
+% el.sc.Iy = 0; 
+% el.sc.Iz = 0; 
 el=el_mass_assembly(el);
 el=el_stiff_assembly(el);
 el.C=zeros(size(el.M));
