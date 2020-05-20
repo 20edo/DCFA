@@ -5,7 +5,7 @@ init
 clear all, close all, clc
 
 %% Data
-L=1e3;          % Length of the beam
+L=100;          % Length of the beam
 E=70*1e6;       % Young modulus
 G=27*1e6;       % Shear modulus
 rho=2700;       % Density alluminium

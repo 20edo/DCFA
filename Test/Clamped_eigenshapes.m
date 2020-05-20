@@ -2,14 +2,14 @@
 % Transverse vibrations of clamped-free (cantilever) uniform Euler-Bernoulli beam).
 cd ..
 init
-clear all, close all, clc
+clear all, clc
 
 %% Data
-L=1e3;          % Length of the beam
+L=100;          % Length of the beam
 E=70*1e6;       % Young modulus
 G=27*1e6;       % Shear modulus
 rho=2700;       % Density alluminium
-nel=100;         % Number of elements
+nel=10;         % Number of elements
 l=10;           % Side of the square
 
 %% Build beam
@@ -39,8 +39,10 @@ M=beam.M(7:end,7:end);
 %% Solution
 [w, V] = ROM_solver(14, M, K);
 w = real(w); 
-[VV,D,FLAG]=eigs(K,M,14,'smallestabs');
-sqrtw = diag(D).^0.5;
+[VV,D,FLAG]=eigs(K,M,100,'smallestabs');
+w = diag(D).^0.5;
+V = VV; 
+
 
 %% Disp
 disp(w)

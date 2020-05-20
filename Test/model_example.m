@@ -25,7 +25,7 @@ node_1=en_ground([0,0,0]);
 L_shaped_structure.en=node_1;
 
 %% Build and add the first beam to the model
-beam_1=b_constant_p_square(1e3,100,70*1e6,27*1e6,2700,30);  % Build beam
+beam_1=b_constant_p_square(100,10,70*1e6,27*1e6,2700,10);  % Build beam
 beam_1.name='beam_1';       % Give a name to the beam (optional)
 beam_1.o=[0,0,0]';          % Set the origin of the first beam
 beam_1.vx=[1,0,0]';         % Set the versor of the first beam 
@@ -37,7 +37,7 @@ beam_1.ec=true(6,1);        % The first beam is clamped at the end (with beam_2)
 L_shaped_structure=m_add_beam(L_shaped_structure,beam_1);   % Add beam to the model
 
 %% Build and add the second beam to the model
-beam_2=b_constant_p_square(2e3,30,70*1e6,27*1e6,2700,30);
+beam_2=b_constant_p_square(200,30,70*1e6,27*1e6,2700,10);
 beam_2.name='beam_2';
 beam_2.o=beam_1.o+beam_1.L*beam_1.vx;    % Beam 2 origin is coincident with the end of beam 1
 beam_2.vx=[0,1,0]';                     % Beam 2 is aligned with the global y axis
@@ -48,11 +48,11 @@ L_shaped_structure=m_add_beam(L_shaped_structure,beam_2);
 
 %% Compute matrices
 
-L_shaped_structure=m_compute_matrices(L_shaped_structure);
+% L_shaped_structure=m_compute_matrices(L_shaped_structure);
 
 %% Build a T structure with a lumped mass at the -y end
 
-beam_3=b_constant_p_square(2e3,30,70*1e6,27*1e6,2700,30);
+beam_3=b_constant_p_square(200,30,70*1e6,27*1e6,2700,10);
 beam_3.name='beam_3';
 beam_3.o=beam_1.o+beam_1.L*beam_1.vx;    % Beam 3 origin is coincident with the end of beam 1
 beam_3.vx=[0,-1,0]';                    % Beam 3 is aligned with the global -y axis
@@ -72,8 +72,12 @@ T_shaped_structure=m_add_beam(L_shaped_structure,beam_3);
 T_shaped_structure=m_compute_matrices(T_shaped_structure);
 
 %% prova
-
-
+cd Playground
+n = size(L_shaped_structure.M,1); 
+y0 = zeros(2*n,1); 
+f = @(t) [zeros(3,1); 1e7; zeros(n-4,1)]; 
+T_shaped_structure = m_solution_dynamic_problem(...
+    T_shaped_structure,[0,1000],y0,f,5);
 
 options.plot_original          = 1;
 options.plot_deformed          = 1;
