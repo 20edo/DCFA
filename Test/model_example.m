@@ -3,9 +3,7 @@
 % DCFA swept wing assignement
 %
 % Teamwork
-% Team members: Pasturenzi Lorenzo    944610
-%               Tacchi Alberto        944579
-%               Venti Edoardo         944421
+% Team members: Venti Edoardo         944421
 %               Zemello Matteo        942003
 %               Zucchelli Umberto     952952
 %               
@@ -30,14 +28,16 @@ beam_1.name='beam_1';       % Give a name to the beam (optional)
 beam_1.o=[0,0,0]';          % Set the origin of the first beam
 beam_1.vx=[1,0,0]';         % Set the versor of the first beam 
                             % (aligned with the global x axis)
-beam_1.vy=[0,0,1]';         % Set the versor of the y local axis of the beam
+beam_1.vy=[0,1,0]';         % Set the versor of the y local axis of the beam
                             
 beam_1.oc=true(6,1);        % The first beam is clamped at the origin (with node_1==ground)
 beam_1.ec=true(6,1);        % The first beam is clamped at the end (with beam_2)
 L_shaped_structure=m_add_beam(L_shaped_structure,beam_1);   % Add beam to the model
 
+
+
 %% Build and add the second beam to the model
-beam_2=b_constant_p_square(200,30,70*1e6,27*1e6,2700,10);
+beam_2=b_constant_p_square(200,30,70*1e6,27*1e6,2700,30);
 beam_2.name='beam_2';
 beam_2.o=beam_1.o+beam_1.L*beam_1.vx;    % Beam 2 origin is coincident with the end of beam 1
 beam_2.vx=[0,1,0]';                     % Beam 2 is aligned with the global y axis
@@ -48,11 +48,11 @@ L_shaped_structure=m_add_beam(L_shaped_structure,beam_2);
 
 %% Compute matrices
 
-% L_shaped_structure=m_compute_matrices(L_shaped_structure);
+L_shaped_structure=m_compute_matrices(L_shaped_structure);
 
 %% Build a T structure with a lumped mass at the -y end
 
-beam_3=b_constant_p_square(200,30,70*1e6,27*1e6,2700,10);
+beam_3=b_constant_p_square(200,30,70*1e6,27*1e6,2700,30);
 beam_3.name='beam_3';
 beam_3.o=beam_1.o+beam_1.L*beam_1.vx;    % Beam 3 origin is coincident with the end of beam 1
 beam_3.vx=[0,-1,0]';                    % Beam 3 is aligned with the global -y axis
@@ -75,16 +75,23 @@ T_shaped_structure=m_compute_matrices(T_shaped_structure);
 cd Playground
 n = size(L_shaped_structure.M,1); 
 y0 = zeros(2*n,1); 
-f = @(t) [zeros(3,1); 1e7; zeros(n-4,1)]; 
-T_shaped_structure = m_solution_dynamic_problem(...
-    T_shaped_structure,[0,1000],y0,f,5);
-
+% f vorrei che avesse dimenzioni iniziali 
+f = @(t) [zeros(3,1); 1e8*(t>0); zeros(n-4,1)]; 
+L_shaped_structure = m_solution_dynamic_problem(...
+    L_shaped_structure,[-1,1000],y0,f,15);
+cd ..
+cd .. 
+cd Model
 options.plot_original          = 1;
 options.plot_deformed          = 1;
 options.plotColor              = 'green';
 options.saveSTL                = 0;
 options.point_section          = 2;
-[fig] = model_plot3d(T_shaped_structure,options)
+[fig] = m_plot3d(L_shaped_structure,options)
+hold on 
+quiver3(0,0,0,5,0,0)
+quiver3(0,0,0,0,5,0)
+quiver3(0,0,0,0,0,5)
 
 
 

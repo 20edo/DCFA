@@ -39,7 +39,7 @@ M=beam.M(7:end,7:end);
 %% Solution
 [w, V] = ROM_solver(14, M, K);
 w = real(w); 
-[VV,D,FLAG]=eigs(K,M,100,'smallestabs');
+[VV,D,FLAG]=eigs(K,M,14,'smallestabs');
 w = diag(D).^0.5;
 V = VV; 
 

@@ -78,16 +78,15 @@ end
 
 %% Constraint 
 % explicit the external constraint eliminating rows and columns 
-pippo = 0; 
+n_dv = 0; % number of contraint already applied to the model
 for i=1:length(model.en)
     for k=1:6
         if model.en(i).c(k) % remove row and column 6(i-1)+k
-            index = 6*(i-1)+k-pippo;
+            index = 6*(i-1)+k-n_dv;
             model.M = model.M([1:index-1,index+1:end],[1:index-1,index+1:end]);
             model.K = model.K([1:index-1,index+1:end],[1:index-1,index+1:end]);
             model.C = model.C([1:index-1,index+1:end],[1:index-1,index+1:end]);
-            disp(index)
-            pippo = pippo + 1; 
+            n_dv = n_dv + 1; 
         end
     end            
 end
