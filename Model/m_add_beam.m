@@ -4,23 +4,22 @@ function m=m_add_beam(m,b)
 % DCFA swept wing assignement
 %
 % Teamwork
-% Team members: Pasturenzi Lorenzo    944610
-%               Tacchi Alberto        944579
-%               Venti Edoardo         944421
+% Team members: Venti Edoardo         944421
 %               Zemello Matteo        942003
 %               Zucchelli Umberto     952952
 %               
 %           
 %
 
+toll=1e-10;     % Distance between two node under which they are collapsed on the same node
 % Create/assign first and last node to the beam
 % Are the first or the node of the beam already in the model?
 origin=false;
 eend=false;
 for i=1:length(m.en)
-    if isequal(m.en(i).x,b.o)
+    if norm(m.en(i).x-b.o)<toll
         origin=i;
-    elseif isequal(m.en(i).x,b.o+b.L*b.vx)
+    elseif norm(m.en(i).x-(b.o+b.L*b.vx))<toll
         eend=i;
     end
 end
