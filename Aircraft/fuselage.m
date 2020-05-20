@@ -12,7 +12,7 @@ nel_rear_tail=30;
 %% Parameters of the fuselage
 R_fus= 10;       % Radius of the fuselage
 t_fus=0.10;      % Thickness of the fuselage
-R_mid_tail=2;    % Radius of the tail fuselage at the clamp with the rudder
+R_mid_tail=4;    % Radius of the tail fuselage at the clamp with the rudder
 
 %% Material properties (Aluminium)
 
@@ -72,13 +72,26 @@ R= @(x)  R_mid_tail-(R_mid_tail-2*t_fus)/L*x+0.00001;
 t= @(x) t_fus+0.*x;
 rear_tail=b_constant_p_tube(L,R,t,E,G,rho,nel_rear_tail);
 rear_tail.o=aircraft.en(5).x;
-rear_tail.vx=aircraft.en(5).x-aircraft.en(6).x;
+rear_tail.vx=aircraft.en(6).x-aircraft.en(5).x;
 rear_tail.vx=rear_tail.vx/norm(rear_tail.vx,2);
 rear_tail.vy=[0 1 0]';
 rear_tail.name='rear_tail';
 
 fuselage_beams=[nose, front_fuselage, rear_fuselage, front_tail, rear_tail];
 
+
+
+% %% Plot rear tail 
+% model=m_init;
+% model.en=aircraft.en(5);
+% model=m_add_beam(model,rear_tail);
+% options.plot_original          = 1;
+% options.plot_deformed          = 1;
+% options.plotColor              = 'green';
+% options.saveSTL                = 0;
+% options.ovs                    = 4;
+% options.point_section          = 4;
+% m_plot3d(model, options)
 %% Clear non usefull variables
 clear E
 clear G
