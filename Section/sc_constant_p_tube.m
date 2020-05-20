@@ -39,6 +39,7 @@ sc.Iy=pi/4*(R^4-(R-t)^4)/4;
 sc.Iz=pi/4*(R^4-(R-t)^4)/4;
 sc.Iyz=0;
 sc.Jp=pi/2*(R^4-(R-t)^4)/4;
+sc.m=(R^2-(R-t)^2)*pi*rho;
 
 % Elastic properties
 sc.GA=sc.G(0,0)*pi*(R^2-(R-t)^2);
@@ -47,11 +48,11 @@ sc.ya=0;
 sc.za=0;
 sc.EJy=sc.E(0,0)*sc.Iy;
 sc.EJz=sc.EJy;
-sc.EJyx=0;
+sc.EJyz=0;
 
 % Torsion properties
-sc.ycg=0;
-sc.zcg=0;
+sc.yct=0;
+sc.zct=0;
 sc.GJ=sc.Jp*sc.G(0,0);
 
 end
