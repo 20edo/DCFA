@@ -1,6 +1,18 @@
-% This script builds the beam that represent the fuselage of the aircraft
+% This script builds the beam that represent the wings of the aircraft
 % The origin is set at the nose of the aircraft, the x axis is align with
 % the fuselage ond points to the front
+
+%%
+% DCFA swept wing assignement
+%
+% Teamwork
+% Team members: Venti Edoardo         944421
+%               Zemello Matteo        942003
+%               Zucchelli Umberto     952952
+%               
+%           
+%
+
 
 %% Discretisation parameters
 nel_1=30;
@@ -15,6 +27,7 @@ x1=[0 10 0]';                                   % Relative position of the engin
 x2=[0 20 0]';                                   % Relative position of the engine 2 (right) wrt node 3
 x3=[0 30 0]';                                   % Relative position of the tip of the wing (right) wrt node 3
 
+sq=[1.2 1 0.8];                                 % latus of the squares of the different sections of the wing
 Node7=en_mass(aircraft.en(3).x+x1,M);           % Position of the right engine closer to the root
 Node8=en_mass(aircraft.en(3).x+x2,M);           % Position of the right engine farther from the root
 Node9=en_free(aircraft.en(3).x+x3);             % Position of the tip of the right wing
@@ -37,7 +50,7 @@ rho=2700;   % Density
 % First beam of the right wing
 
 L=norm(aircraft.en(7).x-aircraft.en(3).x,2);
-l=1.2;
+l=sq(1);
 r_wing1=b_constant_p_square(L,l,E,G,rho,nel_1);
 r_wing1.o=aircraft.en(3).x;
 r_wing1.vx=aircraft.en(7).x-aircraft.en(3).x;
@@ -48,7 +61,7 @@ r_wing1.name='r_wing1';
 % Second beam of the right wing
 
 L=norm(aircraft.en(8).x-aircraft.en(7).x,2);
-l=1;
+l=sq(2);
 r_wing2=b_constant_p_square(L,l,E,G,rho,nel_2);
 r_wing2.o=aircraft.en(7).x;
 r_wing2.vx=aircraft.en(8).x-aircraft.en(7).x;
@@ -60,7 +73,7 @@ r_wing2.name='r_wing2';
 % Third beam of the right wing
 
 L=norm(aircraft.en(9).x-aircraft.en(8).x,2);
-l=0.8;
+l=sq(3);
 r_wing3=b_constant_p_square(L,l,E,G,rho,nel_3);
 r_wing3.o=aircraft.en(8).x;
 r_wing3.vx=aircraft.en(9).x-aircraft.en(8).x;
@@ -68,10 +81,12 @@ r_wing3.vx=r_wing3.vx/norm(r_wing3.vx,2);
 r_wing3.vy=[0 1 0]';
 r_wing3.name='r_wing3';
 
+%% Left wing 
+
 % First beam of the left wing
 
 L=norm(aircraft.en(10).x-aircraft.en(3).x,2);
-l=1.2;
+l=sq(1);
 l_wing1=b_constant_p_square(L,l,E,G,rho,nel_1);
 l_wing1.o=aircraft.en(3).x;
 l_wing1.vx=aircraft.en(10).x-aircraft.en(3).x;
@@ -82,7 +97,7 @@ l_wing1.name='l_wing1';
 % Second beam of the left wing
 
 L=norm(aircraft.en(11).x-aircraft.en(10).x,2);
-l=1;
+l=sq(2);
 l_wing2=b_constant_p_square(L,l,E,G,rho,nel_2);
 l_wing2.o=aircraft.en(10).x;
 l_wing2.vx=aircraft.en(11).x-aircraft.en(10).x;
@@ -93,7 +108,7 @@ l_wing2.name='l_wing2';
 % Third beam of the left wing
 
 L=norm(aircraft.en(12).x-aircraft.en(11).x,2);
-l=0.8;
+l=sq(3);
 l_wing3=b_constant_p_square(L,l,E,G,rho,nel_3);
 l_wing3.o=aircraft.en(11).x;
 l_wing3.vx=aircraft.en(12).x-aircraft.en(11).x;
@@ -111,6 +126,7 @@ end
 
 %% Clear unusefull variables
 
+clear sq
 clear E
 clear G
 clear i

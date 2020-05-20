@@ -35,22 +35,27 @@ cd Aircraft\
 aircraft=m_init();
 
 %% Build the beams
+
 fuselage 
 
 wings
 
+Ttail
 
 %% Compute properties
 
 aircraft=m_compute_matrices(aircraft);
 
-options.plot_original          = 1;
-options.plot_deformed          = 1;
-options.plotColor              = 'green';
-options.saveSTL                = 0;
-options.point_section          = 4;
-[fig] = m_plot3d(aircraft,options)
+%% Plot
 
-
+% 
+% options.plot_original          = 1;
+% options.plot_deformed          = 1;
+% options.plotColor              = 'green';
+% options.saveSTL                = 0;
+% options.point_section          = 4;
+% [fig] = m_plot3d(aircraft,options)
+% 
+% 
 
 
