@@ -6,9 +6,7 @@
 % DCFA swept wing assignement
 %
 % Teamwork
-% Team members: Pasturenzi Lorenzo    944610
-%               Tacchi Alberto        944579
-%               Venti Edoardo         944421
+% Team members: Venti Edoardo         944421
 %               Zemello Matteo        942003
 %               Zucchelli Umberto     952952
 %               
@@ -31,34 +29,16 @@ addpath('Model')
 
 cd Aircraft\
 
-%% Define the nodes of the beam
-Node1=en_free([0,0,0]);     % Where the node begins
-Node2=en_free([-15 0 0]);    % Where the section from conical becomes cylindrical
-Node3=en_free([-50 0 0]);    % Where the wings are clamped
-Node4=en_free([-100 0 0]);   % Where the conical section of the tail begins
-Node5=en_free([-120 0 3]); % Where the rudder is clamped
-Node6=en_free([-140 0 6.5]);   % Where the aircraft ends
 
 %% Initialize model
 
 aircraft=m_init();
-aircraft.en=[Node1, Node2, Node3, Node4, Node5, Node6];
-
-% clear unuseful variables
-clear Node1
-clear Node2
-clear Node3
-clear Node4
-clear Node5
-clear Node6
-clear i
 
 %% Build the beams
-fuselage
+fuselage 
 
-for i=1:length(fuselage_beams)
-    aircraft=m_add_beam(aircraft,fuselage_beams(i));
-end
+wings
+
 
 %% Compute properties
 
