@@ -46,29 +46,33 @@ for r = 1:size(model.b,2)
     F=[];
     
     if beam.cart == 1 %cartesian coordinates
-        if options.point_section > 2
-            n=options.point_section*2-2; % the 2 external points are the same for upper
-            % section & bottom section
-        else
-            n=options.point_section*2;
-        end
+%         if options.point_section > 2
+%             n=options.point_section*2-2; % the 2 external points are the same for upper
+%             % section & bottom section
+%         end
+%         n=options.point_section*2;
+        n = 4;
         % Given the complex geometry of the wing we use the Chebyschev-Gaus_Lobatto
         % points to draw the section of the airfoil
-        angle_cgl=linspace(pi,pi/2,options.point_section);
-        ymax = beam.Ymax(0);
-        ymin = beam.Ymin(0);
-        y_up=(cos(angle_cgl)+0.5)*(ymax-ymin);
+        
+        
+%         angle_cgl=linspace(pi,pi/2,options.point_section);
+         ymax = beam.Ymax(0);
+         ymin = beam.Ymin(0);
+%         y_up=(cos(angle_cgl)+0.5)*(ymax-ymin);
+y_up=[-0.5 0.5]*(ymax-ymin);
         y_up=y_up';
         y_bot=flip(y_up);
         ymax_end = beam.Ymax(L);
         ymin_end = beam.Ymin(L);
-        y_end_up=(cos(angle_cgl)+0.5)*(ymax_end-ymin_end);
+%         y_end_up=(cos(angle_cgl)+0.5)*(ymax_end-ymin_end);
+y_end_up=[-0.5 0.5]*(ymax_end-ymin_end);
         y_end_up=y_end_up';
         y_end_bot=flip(y_end_up);
-        if options.point_section > 2
-            y_bot=y_bot(2:end-1);
-            y_end_bot=y_end_bot(2:end-1);
-        end
+%         if options.point_section > 2
+%             y_bot=y_bot(2:end-1);
+%             y_end_bot=y_end_bot(2:end-1);
+%         end
         x_0_up=zeros(size(y_up,1),1);
         x_0_bot=zeros(size(y_bot,1),1);
         x_end_up=ones(size(y_up,1),1).*L;
@@ -218,7 +222,7 @@ for r = 1:size(model.b,2)
     % In any case the mesh is not used to compute the solution
     % The element size is the same for which the displacements have been computed.
     OrigMesh = generateMesh(modello, ...
-        'Hmin',L/n, 'Hmax', L/n, ...   % CHECK
+        'Hmax', L/nel, ...   % CHECK 'Hmin',L/(nel), 
         'GeometricOrder', 'linear');
     %% Now we take into account the displacements
     clear i
@@ -267,7 +271,7 @@ for r = 1:size(model.b,2)
     modello = createpde(1);
     geometryFromMesh(modello,V.',F.');
     OrigMesh_global = generateMesh(modello, ...
-        'Hmin',L/n, 'Hmax', L/n, ...   % CHECK
+        'Hmax', L/nel, ...   % CHECK 'Hmin',L/(nel), 
         'GeometricOrder', 'linear');
     Support(r).Undeformed_Mesh= OrigMesh_global;
     Support(r).Mesh_elements= tmp;
