@@ -1,4 +1,4 @@
-function [fig] = model_plot3d(model,options)
+function [fig] = m_plot3d(model,options)
 
 % This function gives a 3D representation of the displacements in
 % u,v,w,theta.
@@ -18,9 +18,7 @@ function [fig] = model_plot3d(model,options)
 % DCFA swept wing assignement
 %
 % Teamwork
-% Team members: Pasturenzi Lorenzo    944610
-%               Tacchi Alberto        944579
-%               Venti Edoardo         944421
+% Team members: Venti Edoardo         944421
 %               Zemello Matteo        942003
 %               Zucchelli Umberto     952952
 %               

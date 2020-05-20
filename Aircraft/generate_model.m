@@ -36,8 +36,8 @@ Node1=en_free([0,0,0]);     % Where the node begins
 Node2=en_free([-10 0 0]);    % Where the section from conical becomes cylindrical
 Node3=en_free([-50 0 0]);    % Where the wings are clamped
 Node4=en_free([-100 0 0]);   % Where the conical section of the tail begins
-Node5=en_free([-120 0 0.5]); % Where the rudder is clamped
-Node6=en_free([-140 0 1]);   % Where the aircraft ends
+Node5=en_free([-120 0 1]); % Where the rudder is clamped
+Node6=en_free([-140 0 4]);   % Where the aircraft ends
 
 %% Initialize model
 
@@ -69,7 +69,7 @@ options.plot_deformed          = 1;
 options.plotColor              = 'green';
 options.saveSTL                = 0;
 options.point_section          = 4;
-[fig] = model_plot3d(aircraft,options)
+[fig] = m_plot3d(aircraft,options)
 
 
 

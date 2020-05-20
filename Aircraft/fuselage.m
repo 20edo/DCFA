@@ -56,7 +56,7 @@ rear_fuselage.name='rear_fuselage';
 %% Front tail
 
 L=norm(aircraft.en(4).x-aircraft.en(5).x,2);
-R= @(x) R_fus+0.*x;
+R= @(x) R_fus-(R_fus-R_mid_tail)/L*x;
 t= @(x) t_fus+0.*x;
 front_tail=b_constant_p_tube(L,R,t,E,G,rho,nel_front_tail);
 front_tail.o=aircraft.en(4).x;
@@ -68,9 +68,9 @@ front_tail.name='front_tail';
 %% Rear tail
 
 L=norm(aircraft.en(5).x-aircraft.en(6).x,2);
-R= @(x) R_fus+0.*x;
+R= @(x)  R_mid_tail-(R_mid_tail-2*t_fus)/L*x+0.00001;
 t= @(x) t_fus+0.*x;
-rear_tail=b_constant_p_tube(L,R,t,E,G,rho,nel_front_tail);
+rear_tail=b_constant_p_tube(L,R,t,E,G,rho,nel_rear_tail);
 rear_tail.o=aircraft.en(5).x;
 rear_tail.vx=aircraft.en(5).x-aircraft.en(6).x;
 rear_tail.vx=rear_tail.vx/norm(rear_tail.vx,2);
