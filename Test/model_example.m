@@ -73,12 +73,13 @@ T_shaped_structure=m_compute_matrices(T_shaped_structure);
 
 %% prova
 cd Playground
-n = size(L_shaped_structure.M,1); 
+model = T_shaped_structure; 
+n = size(model.M,1); 
 y0 = zeros(2*n,1); 
 % f vorrei che avesse dimenzioni iniziali 
-f = @(t) [zeros(3,1); 1e8*(t>0); zeros(n-4,1)]; 
-L_shaped_structure = m_solution_dynamic_problem(...
-    L_shaped_structure,[-1,1000],y0,f,15);
+f = @(t) [1e10*(t>0); zeros(n-1,1)]; 
+model = m_solution_dynamic_problem(...
+    model,[-1,1000],y0,f,10);
 cd ..
 cd .. 
 cd Model
@@ -87,7 +88,7 @@ options.plot_deformed          = 1;
 options.plotColor              = 'green';
 options.saveSTL                = 0;
 options.point_section          = 2;
-[fig] = m_plot3d(L_shaped_structure,options)
+[fig] = m_plot3d(model,options)
 hold on 
 quiver3(0,0,0,5,0,0)
 quiver3(0,0,0,0,5,0)
