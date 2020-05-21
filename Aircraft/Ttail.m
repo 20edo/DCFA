@@ -26,9 +26,9 @@ rho=2700;   % Density
 
 %% Parameters of the tail
 
-x1=[-0.5 0 1]';      % Position of the stabilizer wrt node 5
-x2=[-1 1 0]';        % Position of the tip of the stabilizer wrt the center
-l=0.3;               % Latus of the square
+x1=[-2 0 8]';      % Position of the stabilizer wrt node 5
+x2=[-4 4 0]';      % Position of the tip of the stabilizer wrt the center
+l=1;               % Latus of the square
 
 Node13=en_free(aircraft.en(5).x+x1);
 Node14=en_free(aircraft.en(5).x+x1+x2);
@@ -58,7 +58,7 @@ r_stabilizer=b_constant_p_square(L,l,E,G,rho,nel_3);
 r_stabilizer.o=aircraft.en(13).x;
 r_stabilizer.vx=aircraft.en(14).x-aircraft.en(13).x;
 r_stabilizer.vx=r_stabilizer.vx/norm(r_stabilizer.vx,2);
-r_stabilizer.vy=[0 1 0]';
+r_stabilizer.vy=[0 0 1]';
 r_stabilizer.name='r_stabilizer';
 
 % Left
@@ -68,7 +68,7 @@ l_stabilizer=b_constant_p_square(L,l,E,G,rho,nel_3);
 l_stabilizer.o=aircraft.en(13).x;
 l_stabilizer.vx=aircraft.en(15).x-aircraft.en(13).x;
 l_stabilizer.vx=l_stabilizer.vx/norm(l_stabilizer.vx,2);
-l_stabilizer.vy=[0 1 0]';
+l_stabilizer.vy=[0 0 1]';
 l_stabilizer.name='l_stabilizer';
 
 %% Add beams to the model

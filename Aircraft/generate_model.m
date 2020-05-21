@@ -40,7 +40,7 @@ fuselage
 
 wings
 
-% Ttail
+Ttail
 
 %% Compute properties
 
