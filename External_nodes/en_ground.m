@@ -18,7 +18,7 @@ function en=en_ground(position)
 
 if isequal(size(position),[1,3])
     position=position';
-elseif ~isequal(size(position),[1,3])
+elseif ~isequal(size(position),[3,1])
     error('position is not defined properly');
 end
 

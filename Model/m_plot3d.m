@@ -75,8 +75,8 @@ y_end_up=[-0.5 0.5]*(ymax_end-ymin_end);
 %         end
         x_0_up=zeros(size(y_up,1),1);
         x_0_bot=zeros(size(y_bot,1),1);
-        x_end_up=ones(size(y_up,1),1).*L;
-        x_end_bot=ones(size(y_bot,1),1).*L;
+        x_end_up=ones(size(y_end_up,1),1).*L;
+        x_end_bot=ones(size(y_end_bot,1),1).*L;
         z_up=beam.Zmax;
         z_bot=beam.Zmin;
         V=[x_0_up y_up z_up(x_0_up,y_end_up);
@@ -222,7 +222,7 @@ y_end_up=[-0.5 0.5]*(ymax_end-ymin_end);
     % In any case the mesh is not used to compute the solution
     % The element size is the same for which the displacements have been computed.
     OrigMesh = generateMesh(modello, ...
-        'Hmax', L/nel, ...   % CHECK 'Hmin',L/(nel), 
+        'Hmin',L/nel,'Hmax', L/nel, ...   % CHECK 'Hmin',L/(nel), 
         'GeometricOrder', 'linear');
     %% Now we take into account the displacements
     clear i
@@ -271,7 +271,7 @@ y_end_up=[-0.5 0.5]*(ymax_end-ymin_end);
     modello = createpde(1);
     geometryFromMesh(modello,V.',F.');
     OrigMesh_global = generateMesh(modello, ...
-        'Hmax', L/nel, ...   % CHECK 'Hmin',L/(nel), 
+        'Hmin',L/nel, 'Hmax', L/nel, ...   % CHECK 'Hmin',L/(nel), 
         'GeometricOrder', 'linear');
     Support(r).Undeformed_Mesh= OrigMesh_global;
     Support(r).Mesh_elements= tmp;
