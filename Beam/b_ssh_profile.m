@@ -1,4 +1,4 @@
-function b=b_constant_p_tube(L,R,t,E,G,rho,nel)
+function b=b_ssh_profile(L,c,h,t,E,G,rho,nel)
 % Creates a beam with constant properties and tube section of side external radius R(x) and thickness t(x). 
 % The length of the beam is L. nin is the number of internal nodes.
 %%
@@ -14,16 +14,10 @@ function b=b_constant_p_tube(L,R,t,E,G,rho,nel)
 % Beam
 b=b_init();
 % (Geometry)
-b.cart=false;              % True if the section is defined as z=@(y)              [bool]
-b.Zmin=@(x,y) nan;         % Coordinate of the 'lower' boundary
-b.Zmax=@(x,y) nan;       % Coordinate uf the 'upper boundary
-b.Ymin=@(x) nan;    % Coordinate of the 'lower' x boundary
-b.Ymax=@(x) nan;   % Coordinate of the 'upper' x boundary
-b.pol=true;               % True if the section is defined in polar coordinates
-b.Rhomin=@(x,th) R(x)-t(x)+th.*0;      % Coordinate of the 'lower' rho boundary
-b.Rhomax=@(x,th) R(x)+th.*0;      % Coordinate of the 'upper' rho boundary
-b.Thmin=@(x) 0;          % Coordinate of the 'lower' th boundary
-b.Thmax=@(x) 2*pi;          % Coordinate of the 'upper' th boundary
+b.ssh=true;              % True if the section is defined as a profile (semishield)
+b.c=@(x) c(x);              % Chord of the profile as a function of x
+b.h=@(x) h(x);              % Heigth percentage of the profile as a function of x
+b.t=@(x) t(x);              % Thickness of the profile as a funcion of x 
 % All functions must be defined in the same reference of the geometry (pol
 % or cart)
 b.E=@(x,y,z) E+0.*x+0.*y+0.*z;        % Young modulus of the point in the beam
@@ -34,6 +28,6 @@ b.L=L;                   % Length of the beam     [m]
 b.nel=nel;               % Number of elements
 
 %% Speed up since the section is constant
-b=b_build_elements_constant_p_tube(b);
+b=b_build_elements_ssh_profile(b);
 b=b_build_matrices(b);
 end

@@ -1,4 +1,4 @@
-function b=b_build_elements_constant_p_tube(b)
+function b=b_build_elements_ssh_profile(b)
 % This function builds the elements of the beam b.
 % Required fields are:
 % The geometry properly defined
@@ -38,6 +38,6 @@ end
 %% Build elements
 b.el=[];
 for i=1:length(b.in)-1
-    b.el=[b.el el_build_constant_p_tube(b,b.in(i),b.in(i+1))];
+    b.el=[b.el el_build_ssh_profile(b,b.in(i),b.in(i+1))];
 end
 end

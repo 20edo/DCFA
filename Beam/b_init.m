@@ -1,6 +1,11 @@
 function b=b_init()
 % This function initializes a beam
 % (Geometry)
+% b.ssh                       % True if the section is defined as a profile
+% (semishield)
+% b.c                         % Chord of the profile as a function of x
+% b.h                         % Heigth percentage of the profile as a function of x
+% b.t                         % Thickness of the profile as a function of x
 % b.cart                      % True if the section is defined as z=@(y)              [bool]
 % b.Zmin                      % Coordinate of the 'lower' boundary as a function of x and y
 % b.Zmax                      % Coordinate uf the 'upper boundary as a function of x and y
@@ -43,9 +48,7 @@ function b=b_init()
 % DCFA swept wing assignement
 %
 % Teamwork
-% Team members: Pasturenzi Lorenzo    944610
-%               Tacchi Alberto        944579
-%               Venti Edoardo         944421
+% Team members: Venti Edoardo         944421
 %               Zemello Matteo        942003
 %               Zucchelli Umberto     952952
 %               
@@ -56,6 +59,10 @@ function b=b_init()
 
 % Beam
 % (Geometry)
+b.ssh=false;               % True if the section is defined as a profile (semishield)
+b.c=@(x) nan;              % Chord of the profile as a function of x
+b.h=@(x) nan;              % Heigth percentage of the profile as a function of x
+b.t=@(x) nan;              % Thickness of the profile as a funcion of x 
 b.cart=false;              % True if the section is defined as z=@(y)              [bool]
 b.Zmin=@(x,y) nan;         % Coordinate of the 'lower' boundary
 b.Zmax=@(x,y) nan;         % Coordinate uf the 'upper boundary

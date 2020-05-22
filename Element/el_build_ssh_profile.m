@@ -1,12 +1,10 @@
-function el=el_build_constant_p_tube(b,insx,indx)
+function el=el_build_ssh_profile(b,insx,indx)
 % Builds the element between two nodes, given the beam property.
 %%
 % DCFA swept wing assignement
 %
 % Teamwork
-% Team members: Pasturenzi Lorenzo    944610
-%               Tacchi Alberto        944579
-%               Venti Edoardo         944421
+% Team members: Venti Edoardo         944421
 %               Zemello Matteo        942003
 %               Zucchelli Umberto     952952
 %               
@@ -16,13 +14,15 @@ function el=el_build_constant_p_tube(b,insx,indx)
 x=(insx.x+indx.x)/2;
 
 %% Define constant section variables
-R=b.Rhomax(x,0);
-t=R-b.Rhomin(x,0);
+c=b.c(x);
+t=b.t(x);
+h=b.h(x);
+A=c^2*h*t*10;
 E=b.E(x,0,0);
 G=b.G(x,0,0);
 rho=b.rho(x,0,0);
 %% Compute section properties
-sc=sc_constant_p_tube(R,t,E,G,rho);
+sc=sc_ssh_profile(c,h,A,t,E,G,rho);
 %% Set element properties
 el.sc=sc;
 el.L=abs(indx.x-insx.x);

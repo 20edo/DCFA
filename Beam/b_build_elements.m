@@ -42,7 +42,7 @@ b.el=[];
 for i=1:length(b.in)-1
     tic
     b.el=[b.el el_build(b,b.in(i),b.in(i+1))];
-    disp('Colpleted build of element:')
+    disp('Completed build of element:')
     i
     t=toc;
     disp('Time spent')
