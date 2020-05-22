@@ -5,6 +5,7 @@ Clamped_eigenshapes
 C = 0.2*K; 
 
 f = @(t) [zeros(size(M,1)-6,1); 1e6*(t>0); zeros(5,1)];
+y0 = zeros(2*n,1);
 M_red = diag(diag(V'*M*V)); 
 K_red = diag(diag(V'*K*V));
 C_red = diag(diag(V'*C*V));
@@ -15,7 +16,7 @@ cd Playground
 tspan = [-1,1000]; 
 % initial conditions
 n = size(M_red,1); 
-y0 = zeros(2*n,1);
+
 
 
 [t,y] = ode45(@(t,y) lin_sys(t,y,M_red,C_red,K_red,f_red), tspan, y0);
@@ -34,7 +35,14 @@ for i=1:length(t)
 %    U_direct(i,:) = (V*y(i,1:n)')';
 end
 
-
+for i = 1:length(model.b)
+    u_beam = transpose(model.b(i).A)*U_modes; 
+    for k = 1:model.b(i).nel+1
+       model.b(i).in(k).d = u_beam(1+6*(k-1):6*(k),end);
+%        if we would like to reconstruct the solution over time
+%        model.b(i).in(k).d = u_beam(1+6*(k-1):6*(k),:);
+    end    
+end
 
 
 

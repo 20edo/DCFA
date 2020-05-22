@@ -12,7 +12,7 @@
 %               
 %           
 %
-function model = m_solution_dynamic_problem(model,tspan,initialcond,f,N)
+function model = m_solution_dynamic_clamped(model,tspan,initialcond,f,N)
 M = model.M; 
 K = model.K; 
 C = K;
@@ -56,9 +56,9 @@ end
 for i = 1:length(model.b)
     u_beam = transpose(model.b(i).A)*U_modes; 
     for k = 1:model.b(i).nel+1
-       model.b(i).in(k).d = u_beam(1+6*(k-1):6*(k),end);
+%        model.b(i).in(k).d = u_beam(1+6*(k-1):6*(k),end);
 %        if we would like to reconstruct the solution over time
-%        model.b(i).in(k).d = u_beam(1+6*(k-1):6*(k),:);
+       model.b(i).in(k).d = u_beam(1+6*(k-1):6*(k),:);
     end    
 end
 

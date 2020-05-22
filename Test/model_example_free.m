@@ -11,6 +11,7 @@
 %
 
 % Add to path the necessary folders 
+
 cd ..
 init
 cd Test\
@@ -21,16 +22,15 @@ L_shaped_structure=m_init();
 %% Set the external node and add it to the model
 node_1=en_ground([0,0,0]);
 L_shaped_structure.en=node_1;
-
+L_shaped_structure.en.c = false(6,1);
 %% Build and add the first beam to the model
 beam_1=b_constant_p_square(100,10,70*1e6,27*1e6,2700,10);  % Build beam
 beam_1.name='beam_1';       % Give a name to the beam (optional)
 beam_1.o=[0,0,0]';          % Set the origin of the first beam
 beam_1.vx=[1,0,0]';         % Set the versor of the first beam 
                             % (aligned with the global x axis)
-beam_1.vy=[0,1,0]';         % Set the versor of the y local axis of the beam
-                            
-beam_1.oc=true(6,1);        % The first beam is clamped at the origin (with node_1==ground)
+beam_1.vy=[0,1,0]';         % Set the versor of the y local axis of the beam                            
+beam_1.oc=false(6,1);        % The first beam is clamped at the origin (with node_1==ground)
 beam_1.ec=true(6,1);        % The first beam is clamped at the end (with beam_2)
 L_shaped_structure=m_add_beam(L_shaped_structure,beam_1);   % Add beam to the model
 
@@ -67,33 +67,51 @@ T_shaped_structure.en=[T_shaped_structure.en lumped_mass];
 
 T_shaped_structure=m_add_beam(L_shaped_structure,beam_3);
 
+
 %% Compute matrices
 
 T_shaped_structure=m_compute_matrices(T_shaped_structure);
 
+model = T_shaped_structure;
+
+
 %% prova
-cd Playground
-model = T_shaped_structure; 
-n = size(model.M,1); 
-y0 = zeros(2*n,1); 
-% f vorrei che avesse dimenzioni iniziali 
-f = @(t) [1e10*(t>0); zeros(n-1,1)]; 
-model = m_solution_dynamic_problem(...
-    model,[-1,1000],y0,f,10);
-cd ..
 cd .. 
 cd Model
-options.plot_original          = 1;
-options.plot_deformed          = 1;
-options.plotColor              = 'green';
-options.saveSTL                = 0;
-options.point_section          = 2;
-[fig] = m_plot3d(model,options)
-hold on 
-quiver3(0,0,0,5,0,0)
-quiver3(0,0,0,0,5,0)
-quiver3(0,0,0,0,0,5)
+
+n = size(model.M,1); 
+y0 = zeros(2*n,1); 
+deg = 1;
+f = @(t) [zeros(deg-1,1); 1e8*(t>0) ; zeros(size(model.M,1)-deg,1)]; 
+model = m_solution_dynamic_free(...
+    model,[-1,5000],y0,f,30,0.2);
 
 
 
 
+m_plot_easy(model)
+
+
+
+
+
+
+
+
+
+
+
+
+% cd ..
+% cd .. 
+% cd Model
+% options.plot_original          = 1;
+% options.plot_deformed          = 1;
+% options.plotColor              = 'green';
+% options.saveSTL                = 0;
+% options.point_section          = 2;
+% [fig] = m_plot3d(model,options)
+% hold on 
+% quiver3(0,0,0,5,0,0)
+% quiver3(0,0,0,0,5,0)
+% quiver3(0,0,0,0,0,5)

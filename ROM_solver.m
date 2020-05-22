@@ -1,4 +1,4 @@
-function [w, V, k] = ROM_solver(N, M, K, nel, L, plot_cond, alpha, dof)
+function [w, V, k] = ROM_solver(N, M, K, alpha)
 
 % This function gives the eigenshapes relative to the firsts N eigenvalues    
 % given:
@@ -24,20 +24,22 @@ function [w, V, k] = ROM_solver(N, M, K, nel, L, plot_cond, alpha, dof)
 %           
 %
 %% Check default
- if (~exist('dof', 'var'))
-     % "dof" parameter does not exist
-      dof = 6;
- end
+
+
+%  if (~exist('dof', 'var'))
+%      % "dof" parameter does not exist
+%       dof = 6;
+%  end
+%  if (~exist('plot_cond', 'var'))
+%      % "plot" parameter does not exist
+%       plot_cond = 0;
+%  end
  
  if (~exist('alpha', 'var'))
      % "dof" parameter does not exist
       alpha = 0;
  end
  
- if (~exist('plot_cond', 'var'))
-     % "plot" parameter does not exist
-      plot_cond = 0;
- end
 N_req = N; 
 N = max([2*N,N+20]); 
  
@@ -57,7 +59,7 @@ for k = 1:1000
     % Uk = K \ M * Uk
     % Uk = (L * L') \ M * Uk
     Vk = (transpose(Lower)\(Lower\(M * Vk)));
-    
+    Vk_old = Vk; 
     % reduced matrices
     kk = Vk'*K*Vk;
     mm = Vk'*M*Vk;
@@ -80,7 +82,7 @@ for k = 1:1000
         
     elseif (norm(lambda_k - lk_prev) < tolerance && ...
             max(max(abs(kk-diag(diag(kk)))))/max(diag(kk))< tolerance*1e-5)
-        disp(sprintf('converged in %d iterations', k));
+        disp(sprintf('ROM solver converged in %d iterations', k));
         break;
     end
 end
@@ -88,13 +90,15 @@ end
 w = sqrt(lambda_k); 
 V = Vk; %eigenvector matrix
 
-if isreal(w(7:end))
+if max(abs(imag(w(7:end))))/max(abs(real(w(7:end))))<1e-5
 w = real(w(1:N_req)); 
 V = V(:,1:N_req); 
 else 
-    error('We have more than 6 degrees of freedom')
+    error('Check the eingenvalues')
 end
-
+if (k==1000)
+     disp(sprintf('ROM solver did not converge'));
+end
 
 % %% plot of the dof
 % % CHECK: to implement for a 3-D structure
