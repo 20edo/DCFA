@@ -47,13 +47,13 @@ h=c*h;
 xcg=5/16*c;
 L=sqrt((1/4)^2+(h/2)^2);
 
-EQUATIONS= [    2*L+h/3     -h/3    0
-                -h/3    c/2+2*L+h/3 0
-                4           19      1/h ];
+EQUATIONS= [    2*L+h/3     -h/3    0           % th1=0
+                -h/3    c+2*L+h/3   0           % th2=0
+                1           5      4/c/h ];     % Torque equilibrium CG
     
 b=[ 0
-    c/3/h+2*L/h
-    11/h];
+    2*c/3/h+2*L/h
+    49/12/h];
 
 % x=[qast1 quast2 d]' Unknown vector
 x=EQUATIONS\b;
@@ -63,16 +63,16 @@ xct= xcg+d;
 
 % Shear stifness 
 
-EQUATIONS=[ 2*L+2/5*h       -2/5*h-c/10-2/5*L       0
-            4                   19                  0
-            2*L+h/3             -h/3                G*c*h*t/4];
+EQUATIONS=[ 10*L+2*h            -c-2*h-2*L          0            % th1=th2
+            xct*h/2+c*h/8       9/8*c*h-h/2*xct     0            % Torque equilibrium CG
+            2*L+h/3             -h/3                -G*c*h*t/4]; % th calculation
 
-b=[ -1/15/h-2/5*L/h
-    -1/h*(d+1)+11/h
+b=[ 0
+    1/2
     0];
 
 % x= [quast1 quast2 th] unknown vector
-x=b\EQUATIONS;
+x=EQUATIONS\b;
 th=x(3);
 
 sc.GJ=1/th;
