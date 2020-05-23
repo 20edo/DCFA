@@ -23,9 +23,9 @@ nel_3=50;
 %% Parameters of the wing
 
 M=eye(6);                                       % Mass matrix of the engine
-x1=[-5 15 0]';                                   % Relative position of the engine 1 (right) wrt node 3
-x2=[-10 30 0]';                                   % Relative position of the engine 2 (right) wrt node 3
-x3=[-15 45 0]';                                   % Relative position of the tip of the wing (right) wrt node 3
+x1=[-4.6 10 0]';                                   % Relative position of the engine 1 (right) wrt node 3
+x2=[-7  15 0]';                                   % Relative position of the engine 2 (right) wrt node 3
+x3=[-13 27 0]';                                   % Relative position of the tip of the wing (right) wrt node 3
 
 sq=[2.4 2 1.6];                                 % latus of the squares of the different sections of the wing
 Node7=en_mass(aircraft.en(3).x+x1,M);           % Position of the right engine closer to the root

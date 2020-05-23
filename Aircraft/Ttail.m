@@ -26,8 +26,8 @@ rho=2700;   % Density
 
 %% Parameters of the tail
 
-x1=[-2 0 8]';      % Position of the stabilizer wrt node 5
-x2=[-4 4 0]';      % Position of the tip of the stabilizer wrt the center
+x1=[-6 0 10]';     % Position of the stabilizer wrt node 5
+x2=[-4 10 0]';     % Position of the tip of the stabilizer wrt the center
 l=1;               % Latus of the square
 
 Node13=en_free(aircraft.en(5).x+x1);

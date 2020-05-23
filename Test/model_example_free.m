@@ -20,7 +20,7 @@ close all, clear all, clc
 L_shaped_structure=m_init();
 
 %% Set the external node and add it to the model
-node_1=en_ground([0,0,0]);
+node_1=en_free([0,0,0]);
 L_shaped_structure.en=node_1;
 L_shaped_structure.en.c = false(6,1);
 %% Build and add the first beam to the model
@@ -81,7 +81,7 @@ cd Model
 
 n = size(model.M,1); 
 y0 = zeros(2*n,1); 
-deg = 1;
+deg = n;
 f = @(t) [zeros(deg-1,1); 1e8*(t>0) ; zeros(size(model.M,1)-deg,1)]; 
 model = m_solution_dynamic_free(...
     model,[-1,5000],y0,f,30,0.2);

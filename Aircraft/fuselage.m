@@ -4,11 +4,11 @@
 
 %% Define the nodes of the beam
 Node1=en_free([0,0,0]);      % Where the node begins
-Node2=en_free([-15 0 0]);    % Where the section from conical becomes cylindrical
-Node3=en_free([-50 0 0]);    % Where the wings are clamped
-Node4=en_free([-100 0 0]);   % Where the conical section of the tail begins
-Node5=en_free([-120 0 3]);   % Where the rudder is clamped
-Node6=en_free([-140 0 6.5]); % Where the aircraft ends
+Node2=en_free([-6 0 0]);     % Where the section from conical becomes cylindrical
+Node3=en_free([-18 0 0]);    % Where the wings are clamped
+Node4=en_free([-40 0 0]);    % Where the conical section of the tail begins
+Node5=en_free([-48 0 2.5]);    % Where the rudder is clamped
+Node6=en_free([-52 0 2.5]);  % Where the aircraft ends
 
 aircraft.en=[Node1, Node2, Node3, Node4, Node5, Node6];
 
@@ -29,9 +29,9 @@ nel_front_tail=30;
 nel_rear_tail=30;
 
 %% Parameters of the fuselage
-R_fus= 10;       % Radius of the fuselage
-t_fus=0.10;      % Thickness of the fuselage
-R_mid_tail=4;    % Radius of the tail fuselage at the clamp with the rudder
+R_fus= 4;       % Radius of the fuselage
+t_fus=0.25;     % Thickness of the fuselage
+R_mid_tail=1;   % Radius of the tail fuselage at the clamp with the rudder
 
 %% Material properties (Aluminium)
 
@@ -42,8 +42,8 @@ rho=2700;   % Density
 %% Nose
 
 L=norm(aircraft.en(1).x-aircraft.en(2).x,2);
-R= @(x) R_fus*x/L;
-t= @(x) t_fus+0.*x;
+R= @(x) R_fus*sqrt(1-((x-L)/L).^2);
+t= @(x) R(x)/10;
 nose=b_constant_p_tube(L,R,t,E,G,rho,nel_nose);
 nose.o=aircraft.en(1).x;
 nose.vx=[-1 0 0]';

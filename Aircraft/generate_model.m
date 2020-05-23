@@ -48,14 +48,11 @@ aircraft=m_compute_matrices(aircraft);
 
 %% Plot
 
-
 options.plot_original          = 1;
 options.plot_deformed          = 1;
 options.plotColor              = 'green';
 options.saveSTL                = 0;
 options.point_section          = 8;
 [fig] = m_plot3d(aircraft,options)
-
-
 
 
