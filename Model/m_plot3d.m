@@ -213,11 +213,18 @@ y_end_up=[-0.5 0.5]*(ymax_end-ymin_end);
     T(3,1) = dot(vz_g, vx_l);
     T(3,2) = dot(vz_g, vy_l);
     T(3,3) = dot(vz_g, vz_l);
-    V = V*T';
+    V = T*V';
+    V = V';
+    % assembly of the big rotation matrix
+    N = size(beam.M,1)/3;
+    Ar = repmat(T, 1, N);
+    Ac = mat2cell(Ar, size(T,1), repmat(size(T,2),1,N));
+    R = sparse(blkdiag(Ac{:})); 
+    clear N
     %% Mesh the beam in 3D
     % we use tetraheda with only 4 vertexes (linear)
     modello = createpde(1);
-    geometryFromMesh(modello,V.',F.');
+    geometryFromMesh(modello,V',F');
     % Mesh the beam with 'linear' tetrahedra, to save memory and complexity.
     % In any case the mesh is not used to compute the solution
     % The element size is the same for which the displacements have been computed.
@@ -231,32 +238,30 @@ y_end_up=[-0.5 0.5]*(ymax_end-ymin_end);
     PerturbNodes = OrigMesh.Nodes;
     tmp = OrigMesh.Elements.';
     
-    LocalNodes = T'*PerturbNodes;
-    LocalNodes = LocalNodes';
-    Nel = [];
-    for i = 1:l % i find in which element each node (in the global reference) is
-        k = (floor(LocalNodes(i,1)/dL)+1);
-        if k > nel %for points on the last section
-            k = k-1;
-        elseif k == 0 % this is because there are elements with x=-2.2138e-16
-            k = k+1;
-        end
-        Nel = [Nel k];
-    end
-    
     for j = 1:l
         Node                = OrigMesh.Nodes(:,j);
         perturbNode         = Node;
-        x                   = Node(1);
-        el                  = Nel(j);
+        % Nodes in local frame
+        LocalNode = T'*perturbNode;       
+        x                   = LocalNode(1);
+        el                  = (floor(x/dL)+1);
+        if el > nel %for points on the last section
+            el = el-1;
+        elseif el == 0 % this is because there are elements with x=-2.2138e-16
+            el = el+1;
+        end
         xa                  = beam.in(el).x;
         xb                  = beam.in(el+1).x;
         eps                 = (2*x- (xb+xa))/(xb-xa);
         N                   = [(1 - eps)/2,                   0,                   0,         0,                             0,                            0, (1+eps)/2,                   0,                   0,         0,                              0,                             0;
-            0, 1/4*(2-3*eps+eps^3),                   0,         0,                             0, 1/4*(1-eps-eps^2+eps^3)*dL/2,         0, 1/4*(2+3*eps-eps^3),                   0,         0,                              0, 1/4*(-1-eps+eps^2+eps^3)*dL/2;
-            0,                   0, 1/4*(2-3*eps+eps^3),         0, -1/4*(1-eps-eps^2+eps^3)*dL/2,                            0,         0,                   0, 1/4*(2+3*eps-eps^3),         0, -1/4*(-1-eps+eps^2+eps^3)*dL/2,                             0;
-            0,                   0,                   0, (1-eps)/2,                             0,                            0,         0,                   0,                   0, (1+eps)/2,                              0,                            0];
-        displ               = N * [beam.in(el).d; beam.in(el+1).d];
+            0, 1/4*(2-3*eps+eps^3),                   0,                   0,                             0, 1/4*(1-eps-eps^2+eps^3)*dL/2,         0, 1/4*(2+3*eps-eps^3),                   0,         0,                              0, 1/4*(-1-eps+eps^2+eps^3)*dL/2;
+            0,                   0, 1/4*(2-3*eps+eps^3),                   0, -1/4*(1-eps-eps^2+eps^3)*dL/2,                            0,         0,                   0, 1/4*(2+3*eps-eps^3),         0, -1/4*(-1-eps+eps^2+eps^3)*dL/2,                             0;
+            0,                   0,                   0,           (1-eps)/2,                             0,                            0,         0,                   0,                   0, (1+eps)/2,                              0,                             0;
+            0,                   0, -1/4*(-3+3*eps^2)*2/dL,                   0,            1/4*(-1-2*eps+3*eps^2),                            0,         0,                   0, -1/4*(+3-3*eps^2)*2/dL,         0,             1/4*(-1+2*eps+3*eps^2),                             0;
+            0,  1/4*(-3+3*eps^2)*2/dL,                   0,                   0,                             0,           1/4*(-1-2*eps+3*eps^2),         0,  1/4*(+3-3*eps^2)*2/dL,                   0,         0,                              0,           1/4*(-1+2*eps+3*eps^2)];
+        d = R(1:12,1:12)'*[beam.in(el).d; beam.in(el+1).d];% displacements in local frame
+        displ               = N * d; 
+        displ               = R(1:6,1:6)*displ; %back to the global reference
         perturbNode(2)      = Node(2)*cos(displ(4))-Node(3)*sin(displ(4));
         perturbNode(3)      = Node(3)*cos(displ(4))+Node(2)*sin(displ(4));
         perturbNode(1)      = perturbNode(1)+displ(1);
@@ -266,7 +271,6 @@ y_end_up=[-0.5 0.5]*(ymax_end-ymin_end);
     end
     
     PerturbNodes = PerturbNodes + beam.o;
-    
     V = V + beam.o';
     modello = createpde(1);
     geometryFromMesh(modello,V.',F.');
@@ -288,6 +292,7 @@ if options.plot_original
         %pdeplot3D(model)
         axis('equal');
         title('Original beam without deformation');
+        axis equal
         hold on
     end
 end
