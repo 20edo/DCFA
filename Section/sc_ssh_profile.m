@@ -21,6 +21,7 @@ function sc=sc_ssh_profile(c,h,A,t,E,G,rho)
 
 % section 
 sc=sc_init();
+
 sc.pol=true;               % True if the section is defined in polar coordinates
 sc.Rhomin=@(th) (R-t)+0.*th;        % Coordinate of the 'lower' rho boundary
 sc.Rhomax=@(th) R+0.*th;        % Coordinate of the 'upper' rho boundary

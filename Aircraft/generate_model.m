@@ -1,6 +1,6 @@
 % This script builds the model of the aircraft
-% The origin is set at the nose of the aircraft, the x axis is align with
-% the fuselage ond points to the front
+% The origin is set at the nose of the aircraft, the x axis is aligned with
+% the fuselage and points to the front
 
 %%
 % DCFA swept wing assignement
@@ -38,9 +38,15 @@ aircraft=m_init();
 
 fuselage 
 
+payload
+
 wings
 
+fuel
+
 Ttail
+
+engines
 
 %% Compute properties
 
@@ -48,14 +54,13 @@ aircraft=m_compute_matrices(aircraft);
 
 %% Plot
 
-
-options.plot_original          = 1;
-options.plot_deformed          = 1;
-options.plotColor              = 'green';
-options.saveSTL                = 0;
-options.point_section          = 8;
-[fig] = m_plot3d(aircraft,options)
-
-
+if 0
+    options.plot_original          = 1;
+    options.plot_deformed          = 1;
+    options.plotColor              = 'green';
+    options.saveSTL                = 0;
+    options.point_section          = 8;
+    [fig] = m_plot3d(aircraft,options)
+end
 
 

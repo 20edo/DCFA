@@ -1,14 +1,14 @@
 % This script builds the beam that represent the fuselage of the aircraft
-% The origin is set at the nose of the aircraft, the x axis is align with
-% the fuselage ond points to the front
+% The origin is set at the nose of the aircraft, the x axis is aligned with
+% the fuselage and points to the front
 
 %% Define the nodes of the beam
 Node1=en_free([0,0,0]);      % Where the node begins
-Node2=en_free([-15 0 0]);    % Where the section from conical becomes cylindrical
-Node3=en_free([-50 0 0]);    % Where the wings are clamped
-Node4=en_free([-100 0 0]);   % Where the conical section of the tail begins
-Node5=en_free([-120 0 3]);   % Where the rudder is clamped
-Node6=en_free([-140 0 6.5]); % Where the aircraft ends
+Node2=en_free([-6 0 0]);     % Where the section from conical becomes cylindrical
+Node3=en_free([-18 0 0]);    % Where the wings are clamped
+Node4=en_free([-40 0 0]);    % Where the conical section of the tail begins
+Node5=en_free([-48 0 2.5]);    % Where the rudder is clamped
+Node6=en_free([-52 0 2.5]);  % Where the aircraft ends
 
 aircraft.en=[Node1, Node2, Node3, Node4, Node5, Node6];
 
@@ -29,9 +29,9 @@ nel_front_tail=30;
 nel_rear_tail=30;
 
 %% Parameters of the fuselage
-R_fus= 10;       % Radius of the fuselage
-t_fus=0.10;      % Thickness of the fuselage
-R_mid_tail=4;    % Radius of the tail fuselage at the clamp with the rudder
+R_fus= 4;       % Radius of the fuselage
+t_fus=0.04;      % Thickness of the fuselage
+R_mid_tail=1;   % Radius of the tail fuselage at the clamp with the rudder
 
 %% Material properties (Aluminium)
 
@@ -42,8 +42,8 @@ rho=2700;   % Density
 %% Nose
 
 L=norm(aircraft.en(1).x-aircraft.en(2).x,2);
-R= @(x) R_fus*x/L;
-t= @(x) t_fus+0.*x;
+R= @(x) R_fus*sqrt(1-((x-L)/L).^2);
+t= @(x) R(x)/10;
 nose=b_constant_p_tube(L,R,t,E,G,rho,nel_nose);
 nose.o=aircraft.en(1).x;
 nose.vx=[-1 0 0]';
@@ -101,6 +101,12 @@ fuselage_beams=[nose, front_fuselage, rear_fuselage, front_tail, rear_tail];
 %% Add beams to aircraft
 for i=1:length(fuselage_beams)
     aircraft=m_add_beam(aircraft,fuselage_beams(i));
+%     disp(fuselage_beams(i).name)
+%     M=sum(sum(fuselage_beams(i).M(1:6:end,1:6:end)+fuselage_beams(i).M(2:6:end,2:6:end)+...
+%         fuselage_beams(i).M(3:6:end,3:6:end)));
+%     disp('M=')
+%     disp(M)
+%     
 end
 
 
@@ -135,3 +141,4 @@ clear rear_fuselage
 clear nose
 clear front_tail
 clear rear_tail
+clear fuselage_beams
