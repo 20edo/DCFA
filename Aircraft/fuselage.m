@@ -1,6 +1,6 @@
 % This script builds the beam that represent the fuselage of the aircraft
-% The origin is set at the nose of the aircraft, the x axis is align with
-% the fuselage ond points to the front
+% The origin is set at the nose of the aircraft, the x axis is aligned with
+% the fuselage and points to the front
 
 %% Define the nodes of the beam
 Node1=en_free([0,0,0]);      % Where the node begins
@@ -30,7 +30,7 @@ nel_rear_tail=30;
 
 %% Parameters of the fuselage
 R_fus= 4;       % Radius of the fuselage
-t_fus=0.25;     % Thickness of the fuselage
+t_fus=0.04;      % Thickness of the fuselage
 R_mid_tail=1;   % Radius of the tail fuselage at the clamp with the rudder
 
 %% Material properties (Aluminium)
@@ -101,6 +101,12 @@ fuselage_beams=[nose, front_fuselage, rear_fuselage, front_tail, rear_tail];
 %% Add beams to aircraft
 for i=1:length(fuselage_beams)
     aircraft=m_add_beam(aircraft,fuselage_beams(i));
+%     disp(fuselage_beams(i).name)
+%     M=sum(sum(fuselage_beams(i).M(1:6:end,1:6:end)+fuselage_beams(i).M(2:6:end,2:6:end)+...
+%         fuselage_beams(i).M(3:6:end,3:6:end)));
+%     disp('M=')
+%     disp(M)
+%     
 end
 
 
@@ -135,3 +141,4 @@ clear rear_fuselage
 clear nose
 clear front_tail
 clear rear_tail
+clear fuselage_beams

@@ -26,22 +26,24 @@ rho=2700;   % Density
 
 %% Parameters of the tail
 
-x1=[-6 0 10]';     % Position of the stabilizer wrt node 5
-x2=[-4 10 0]';     % Position of the tip of the stabilizer wrt the center
-l=1;               % Latus of the square
+x1=[-6 0 9.6]';     % Position of the stabilizer wrt node 5
+x2=[-4 8.7 0]';     % Position of the tip of the stabilizer wrt the center
 
-Node13=en_free(aircraft.en(5).x+x1);
-Node14=en_free(aircraft.en(5).x+x1+x2);
-Node15=en_free(aircraft.en(5).x+x1+x2-[0 2*x2(2) 0]');
+Node14=en_free(aircraft.en(5).x+x1);
+Node15=en_free(aircraft.en(5).x+x1+x2);
+Node16=en_free(aircraft.en(5).x+x1+x2-[0 2*x2(2) 0]');
 
-aircraft.en=[aircraft.en Node13 Node14 Node15];
+aircraft.en=[aircraft.en Node14 Node15 Node16];
 
 %% Rudder
 
-L=norm(aircraft.en(13).x-aircraft.en(5).x,2);
-rudder=b_constant_p_square(L,l,E,G,rho,nel_3);
+L=norm(aircraft.en(14).x-aircraft.en(5).x,2);
+c=@(x) 2.4+0.*x;  
+h=@(x) 0.12+0.*x; 
+t=@(x) 0.020+0.*x;
+rudder=b_ssh_profile(L,c,h,t,E,G,rho,nel_1);
 rudder.o=aircraft.en(5).x;
-rudder.vx=aircraft.en(13).x-aircraft.en(5).x;
+rudder.vx=aircraft.en(14).x-aircraft.en(5).x;
 rudder.vx=rudder.vx/norm(rudder.vx,2);
 rudder.vy=[0 1 0]';
 rudder.name='rudder';
@@ -53,20 +55,26 @@ rudder.name='rudder';
 % Right 
 
 
-L=norm(aircraft.en(14).x-aircraft.en(13).x,2);
-r_stabilizer=b_constant_p_square(L,l,E,G,rho,nel_3);
-r_stabilizer.o=aircraft.en(13).x;
-r_stabilizer.vx=aircraft.en(14).x-aircraft.en(13).x;
+L=norm(aircraft.en(15).x-aircraft.en(14).x,2);
+c=@(x) 1.6-0.2.*x/L;  
+h=@(x) 0.12+0.*x; 
+t=@(x) 0.010+0.*x;
+r_stabilizer=b_ssh_profile(L,c,h,t,E,G,rho,nel_2);
+r_stabilizer.o=aircraft.en(14).x;
+r_stabilizer.vx=aircraft.en(15).x-aircraft.en(14).x;
 r_stabilizer.vx=r_stabilizer.vx/norm(r_stabilizer.vx,2);
 r_stabilizer.vy=[0 0 1]';
 r_stabilizer.name='r_stabilizer';
 
 % Left
 
-L=norm(aircraft.en(15).x-aircraft.en(13).x,2);
-l_stabilizer=b_constant_p_square(L,l,E,G,rho,nel_3);
-l_stabilizer.o=aircraft.en(13).x;
-l_stabilizer.vx=aircraft.en(15).x-aircraft.en(13).x;
+L=norm(aircraft.en(16).x-aircraft.en(15).x,2);
+c=@(x) 1.6-0.2.*x/L; 
+h=@(x) 0.12+0.*x; 
+t=@(x) 0.010+0.*x;
+l_stabilizer=b_ssh_profile(L,c,h,t,E,G,rho,nel_3);
+l_stabilizer.o=aircraft.en(14).x;
+l_stabilizer.vx=aircraft.en(16).x-aircraft.en(14).x;
 l_stabilizer.vx=l_stabilizer.vx/norm(l_stabilizer.vx,2);
 l_stabilizer.vy=[0 0 1]';
 l_stabilizer.name='l_stabilizer';
@@ -88,7 +96,7 @@ clear l_stabilizer
 clear nel_1
 clear nel_2
 clear nel_3
-clear Node13
+clear Node16
 clear Node14
 clear Node15
 clear r_stabilizer
@@ -96,3 +104,8 @@ clear rho
 clear rudder
 clear x1
 clear x2
+clear Ttail_beams
+clear c 
+clear h
+clear t
+
