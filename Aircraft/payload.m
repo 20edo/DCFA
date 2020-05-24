@@ -22,7 +22,7 @@ vehicles=false;
 
 E=0;            % Young modulus
 G=0;            % Shear modulus
-rho=1000/100;    % Density
+rho=1000/100;   % Density
 
 %% Payload
 

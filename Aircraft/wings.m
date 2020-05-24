@@ -24,21 +24,24 @@ nel_3=50;
 
 x0=[0 0 2]';                                    % Higth of the wings
 x1=[-4.6 10 0]';                                % Relative position of the engine 1 (right) wrt node 3
+x1(3)=-norm(x1)*tand(3);                         % Added anhedral angle
 x2=[-7  15 0]';                                 % Relative position of the engine 2 (right) wrt node 3
+x2(3)=-norm(x2)*tand(3);                         % Added anhedral angle
 x3=[-13 27 0]';                                 % Relative position of the tip of the wing (right) wrt node 3
+x3(3)=-norm(x3)*tand(3);                         % Added anhedral angle
 
 chord=@(x) 7.72+1.25-x/norm(x3)*2.5;            % Chord of the wing
 heigth=@(x) 0.12+0.*x;                          % Relative heigth of the wing section
-thickness=@(x) 0.020+0.01-x/norm(x3)*0.02;       % Thickness of the panels (see ssh_profile) 
+thickness=@(x) 0.020+0.01-x/norm(x3)*0.02;      % Thickness of the panels (see ssh_profile) 
 
 Node7=en_free(aircraft.en(3).x+x0);
-Node8=en_free(Node7.x+x1);           % Position of the right engine closer to the root
-Node9=en_free(Node7.x+x2);           % Position of the right engine farther from the root
-Node10=en_free(Node7.x+x3);             % Position of the tip of the right wing
+Node8=en_free(Node7.x+x1);                      % Position of the right engine closer to the root
+Node9=en_free(Node7.x+x2);                      % Position of the right engine farther from the root
+Node10=en_free(Node7.x+x3);                     % Position of the tip of the right wing
 
-Node11=en_free(Node7.x+x1-[0 2*x1(2) 0]');           % Position of the left engine closer to the root
-Node12=en_free(Node7.x+x2-[0 2*x2(2) 0]');           % Position of the left engine farther from the root
-Node13=en_free(Node7.x+x3-[0 2*x3(2) 0]');             % Position of the tip of the left wing
+Node11=en_free(Node7.x+x1-[0 2*x1(2) 0]');      % Position of the left engine closer to the root
+Node12=en_free(Node7.x+x2-[0 2*x2(2) 0]');      % Position of the left engine farther from the root
+Node13=en_free(Node7.x+x3-[0 2*x3(2) 0]');      % Position of the tip of the left wing
 
 aircraft.en=[aircraft.en Node7 Node8 Node9 Node10 Node11 Node12 Node13];
 
