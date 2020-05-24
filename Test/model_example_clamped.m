@@ -89,8 +89,6 @@ model = m_solution_dynamic_clamped(...
     model,[-1,5000],y0,f,50);
 
 
-
-
 m_plot_easy(model)
 
 

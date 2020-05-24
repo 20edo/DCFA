@@ -11,7 +11,6 @@
 %
 
 % Add to path the necessary folders 
-
 cd ..
 init
 cd Test\
@@ -20,9 +19,9 @@ close all, clear all, clc
 L_shaped_structure=m_init();
 
 %% Set the external node and add it to the model
-node_1=en_ground([0,0,0]);
+node_1=en_free([0,0,0]);
 L_shaped_structure.en=node_1;
-L_shaped_structure.en.c = false(6,1);
+% L_shaped_structure.en.c = false(6,1);
 %% Build and add the first beam to the model
 beam_1=b_constant_p_square(100,10,70*1e6,27*1e6,2700,10);  % Build beam
 beam_1.name='beam_1';       % Give a name to the beam (optional)
@@ -30,7 +29,7 @@ beam_1.o=[0,0,0]';          % Set the origin of the first beam
 beam_1.vx=[1,0,0]';         % Set the versor of the first beam 
                             % (aligned with the global x axis)
 beam_1.vy=[0,1,0]';         % Set the versor of the y local axis of the beam                            
-beam_1.oc=false(6,1);        % The first beam is clamped at the origin (with node_1==ground)
+beam_1.oc=true(6,1);        % The first beam is clamped at the origin (with node_1==ground)
 beam_1.ec=true(6,1);        % The first beam is clamped at the end (with beam_2)
 L_shaped_structure=m_add_beam(L_shaped_structure,beam_1);   % Add beam to the model
 

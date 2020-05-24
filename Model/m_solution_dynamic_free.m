@@ -47,7 +47,7 @@ U_r = U(:,1:number_rigid_modes);
 U_d = U(:,number_rigid_modes+1:end); 
 
 % prepare Projector matrix and K-tilda
-K_tilda = K + 1e9*U_r*eye(number_rigid_modes)*U_r'; 
+K_tilda = K + sum(diag(K))/length(diag(K))*U_r*eye(number_rigid_modes)*U_r'; 
 P = eye(dof) - M*U_r*(U_r'*M*U_r)^-1*U_r'; 
 
 % solve the deformative problem 
@@ -61,9 +61,9 @@ y0_def(end/2+1:end) = U_d'*y0(end/2+1:end);
 
 [t,y] = ode45(@(t,y) lin_sys(t,y,M_def,C_def,K_def,f_def), tspan, y0_def);
 
-
-A = P'*(K_tilda^-1)*P;
-B = P'*(K_tilda^-1)*M*U_d;
+temp = K_tilda^-1;
+A = P'*(temp)*P;
+B = P'*(temp)*M*U_d;
 for i=1:length(t)
    q_d_dot_dot(:,i) = 1./diag(M_def).*(-diag(C_def).*y(i,N_def+1:end)'-diag(K_def).*y(i,1:N_def)'+f_def(i));
    u(:,i) = A*f(i) - B*q_d_dot_dot(:,i); 
