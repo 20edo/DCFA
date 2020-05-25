@@ -55,7 +55,7 @@ L_shaped_structure=m_compute_matrices(L_shaped_structure);
 
 beam_3=b_constant_p_square(200,30,70*1e6,27*1e6,2700,30);
 beam_3.name='beam_3';
-beam_3.o=beam_1.o+beam_1.L*beam_1.vx;    % Beam 3 origin is coincident with the end of beam 1
+beam_3.o=beam_1.o+beam_1.L*beam_1.vx;   % Beam 3 origin is coincident with the end of beam 1
 beam_3.vx=[0,-1,0]';                    % Beam 3 is aligned with the global -y axis
 beam_3.vy=[0,0,1]';                     % Set the versor of the y local axis of the beam
 beam_3.oc=true(6,1);                    % Beam 3 is clamped at the origin
@@ -77,19 +77,19 @@ model = T_shaped_structure;
 
 
 %% prova
-cd .. 
-cd Model
-
-n = size(model.M,1); 
-y0 = zeros(2*n,1); 
-% f vorrei che avesse dimenzioni iniziali 
-deg = 6;
-f = @(t) [zeros(deg-1,1); 5*1e7*(t>0) ; zeros(size(model.M,1)-deg,1)]; 
-model = m_solution_dynamic_clamped(...
-    model,[-1,5000],y0,f,50);
-
-
-m_plot_easy(model)
+% cd .. 
+% cd Model
+% 
+% n = size(model.M,1); 
+% y0 = zeros(2*n,1); 
+% % f vorrei che avesse dimenzioni iniziali 
+% deg = 6;
+% f = @(t) [zeros(deg-1,1); 5*1e7*(t>0) ; zeros(size(model.M,1)-deg,1)]; 
+% model = m_solution_dynamic_clamped(...
+%     model,[-1,5000],y0,f,50);
+% 
+% 
+% m_plot_easy(model)
 
 
 

@@ -30,3 +30,5 @@ en.c=true(6,1);              % Constraint
 en.M=zeros(6);                % Mass matrix
 en.K=zeros(6);                % Stiffness matrix
 en.C=zeros(6);                % Dissipation matrix
+en.f=zeros(6,1);            % External load                     [N]
+

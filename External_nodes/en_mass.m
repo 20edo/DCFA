@@ -33,7 +33,7 @@ end
 en.x=position;              % Position in the 3d space [3*1]    [mm]
 en.d=zeros(6,1);            % Displacement vector [6*1] vector  [mm]
 en.c=false(6,1);              % Constraint 
-
+en.f=zeros(6,1);            % External load                     [N]
 en.K=zeros(6);                % Stiffness matrix
 en.C=zeros(6);                % Dissipation matrix
 

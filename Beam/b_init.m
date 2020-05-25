@@ -30,6 +30,7 @@ function b=b_init()
 % b.M                         % Mass matrix of the bar
 % b.C                         % Dissipation matrix ( default value 0)
 % b.K                         % Stiffness matrix of the bar
+% b.f                         % Vector of external loads
 % % Geometry of the beam in 3d space
 % b.o                         % Coordinates of the origin of the beam              [3*1]
 % b.vx                        % Coordinates of the versor along the beam develops  [3*1]
@@ -87,6 +88,7 @@ b.A=nan;                   % Incidence matrix of the beam
 b.M=nan;                   % Mass matrix of the bar
 b.C=0;                     % Disspation matrix
 b.K=nan;                   % Stiffness matrix of the bar
+b.f=nan;                   % Vector of external loads
 % Geometry of the beam in 3d space
 b.o=nan(3,1);              % Coordinates of the origin of the beam              [3*1]
 b.vx=nan(3,1);             % Coordinates of the versor along the beam develops  [3*1]
