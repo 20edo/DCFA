@@ -46,43 +46,53 @@ for r = 1:size(model.b,2)
     F=[];
     
     if beam.cart == 1 %cartesian coordinates
-%         if options.point_section > 2
-%             n=options.point_section*2-2; % the 2 external points are the same for upper
-%             % section & bottom section
-%         end
-%         n=options.point_section*2;
+        if beam.ssh
+            n=options.point_section*2-2; % the 2 external points are the same for upper
+            % section & bottom section
+        else
         n = 4;
-        % Given the complex geometry of the wing we use the Chebyschev-Gaus_Lobatto
-        % points to draw the section of the airfoil
+        end
         
         
-%         angle_cgl=linspace(pi,pi/2,options.point_section);
-         ymax = beam.Ymax(0);
-         ymin = beam.Ymin(0);
-%         y_up=(cos(angle_cgl)+0.5)*(ymax-ymin);
-y_up=[-0.5 0.5]*(ymax-ymin);
-        y_up=y_up';
-        y_bot=flip(y_up);
+        ymax = beam.Ymax(0);
+        ymin = beam.Ymin(0);
         ymax_end = beam.Ymax(L);
         ymin_end = beam.Ymin(L);
-%         y_end_up=(cos(angle_cgl)+0.5)*(ymax_end-ymin_end);
-y_end_up=[-0.5 0.5]*(ymax_end-ymin_end);
+        if beam.ssh
+            angle_cgl=linspace(pi,pi/2,options.point_section);
+            % Given the complex geometry of the wing we use the Chebyschev-Gaus_Lobatto
+            % points to draw the section of the airfoil
+            y_up=(cos(angle_cgl)+1)*(ymax-ymin);
+            y_end_up=(cos(angle_cgl)+1)*(ymax_end-ymin_end);
+        else
+            y_up=[-0.5 0.5]*(ymax-ymin);
+            y_end_up=[-0.5 0.5]*(ymax_end-ymin_end);
+        end
+        y_up=y_up';
+        y_bot=flip(y_up);
         y_end_up=y_end_up';
         y_end_bot=flip(y_end_up);
-%         if options.point_section > 2
-%             y_bot=y_bot(2:end-1);
-%             y_end_bot=y_end_bot(2:end-1);
-%         end
+        if beam.ssh
+            y_bot=y_bot(2:end-1);
+            y_end_bot=y_end_bot(2:end-1);
+        end
         x_0_up=zeros(size(y_up,1),1);
         x_0_bot=zeros(size(y_bot,1),1);
         x_end_up=ones(size(y_end_up,1),1).*L;
         x_end_bot=ones(size(y_end_bot,1),1).*L;
         z_up=beam.Zmax;
         z_bot=beam.Zmin;
-        V=[x_0_up y_up z_up(x_0_up,y_end_up);
-            x_0_bot y_bot z_bot(x_0_bot,y_end_bot);
-            x_end_up y_end_up z_up(x_end_up,y_end_up);
-            x_end_bot y_end_bot z_bot(x_end_bot,y_end_bot)];
+        V=[x_0_up y_up-0.5*(ymax-ymin) z_up(x_0_up,y_end_up);
+            x_0_bot y_bot-0.5*(ymax-ymin) z_bot(x_0_bot,y_end_bot);
+            x_end_up y_end_up-0.5*(ymax_end-ymin_end) z_up(x_end_up,y_end_up);
+            x_end_bot y_end_bot-0.5*(ymax_end-ymin_end) z_bot(x_end_bot,y_end_bot)];
+        if beam.ssh
+            o = [zeros(size(y_up,1),1) beam.el(1).sc.yo*ones(size(y_up,1),1) zeros(size(y_up,1),1);
+                zeros(size(y_bot,1),1) beam.el(1).sc.yo*ones(size(y_bot,1),1) zeros(size(y_bot,1),1);
+                zeros(size(y_end_up,1),1) beam.el(end).sc.yo*ones(size(y_end_up,1),1) zeros(size(y_end_up,1),1);
+                zeros(size(y_end_bot,1),1) beam.el(end).sc.yo*ones(size(y_end_bot,1),1) zeros(size(y_end_bot,1),1)];
+            V= V + o;
+        end
         F = [1 2 n];
         for h=2:n/2 % faces on the section for x=0
             if h<n/2
@@ -246,9 +256,10 @@ y_end_up=[-0.5 0.5]*(ymax_end-ymin_end);
         x                   = LocalNode(1);
         el                  = (floor(x/dL)+1);
         if el > nel %for points on the last section
-            el = el-1;
-        elseif el == 0 % this is because there are elements with x=-2.2138e-16
-            el = el+1;
+            el = nel;
+        end
+        if el <= 0 % this is because there are elements with x=-2.2138e-16
+            el = 1;
         end
         xa                  = beam.in(el).x;
         xb                  = beam.in(el+1).x;
@@ -294,6 +305,9 @@ if options.plot_original
         title('Original beam without deformation');
         axis equal
         hold on
+        xlabel('x')
+        ylabel('y')
+        zlabel('z')
     end
 end
 
@@ -307,6 +321,9 @@ if options.plot_deformed
     axis('equal');
     title('Deformed beam');
     hold on
+    xlabel('x')
+    ylabel('y')
+    zlabel('z')
     end
 end
 

@@ -13,11 +13,18 @@ function b=b_ssh_profile(L,c,h,t,E,G,rho,nel)
 %
 % Beam
 b=b_init();
-% (Geometry)
 b.ssh=true;              % True if the section is defined as a profile (semishield)
 b.c=@(x) c(x);              % Chord of the profile as a function of x
 b.h=@(x) h(x);              % Heigth percentage of the profile as a function of x
 b.t=@(x) t(x);              % Thickness of the profile as a funcion of x 
+
+b.cart=true;
+NACA = [0 0 1 2];
+XX = str2num([num2str(NACA(3)),num2str(NACA(4))])/100;
+b.Zmax=@(x,y) 5*XX.*c(x).*(0.2969*sqrt(y./c(x))-0.126*(y./c(x))-0.3516.*(y./c(x)).^2+0.2843.*(y./c(x)).^3-0.1015.*(y./c(x)).^4); 
+b.Zmin=@(x,y) -5*XX.*c(x).*(0.2969*sqrt(y./c(x))-0.126*(y./c(x))-0.3516.*(y./c(x)).^2+0.2843.*(y./c(x)).^3-0.1015.*(y./c(x)).^4);
+b.Ymax=@(x) c(x).*(1/2);
+b.Ymin=@(x) -c(x).*(1/2);
 % All functions must be defined in the same reference of the geometry (pol
 % or cart)
 b.E=@(x,y,z) E+0.*x+0.*y+0.*z;        % Young modulus of the point in the beam

@@ -15,7 +15,7 @@
 
 
 %% Discretisation parameters
-nel_1=50;
+nel_1=30;
 nel_2=50;
 nel_3=50;
 

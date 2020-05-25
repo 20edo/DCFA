@@ -68,7 +68,7 @@ r_stabilizer.name='r_stabilizer';
 
 % Left
 
-L=norm(aircraft.en(16).x-aircraft.en(15).x,2);
+L=norm(aircraft.en(16).x-aircraft.en(14).x,2);
 c=@(x) 1.6-0.2.*x/L; 
 h=@(x) 0.12+0.*x; 
 t=@(x) 0.010+0.*x;

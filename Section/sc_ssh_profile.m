@@ -19,18 +19,29 @@ function sc=sc_ssh_profile(c,h,A,t,E,G,rho)
 %
 %% Data structures definition:
 
+NACA = [0 0 1 2];
+
 % section 
 sc=sc_init();
 
-sc.pol=true;               % True if the section is defined in polar coordinates
+sc.pol=false;               % True if the section is defined in polar coordinates
 sc.Rhomin=@(th) (R-t)+0.*th;        % Coordinate of the 'lower' rho boundary
 sc.Rhomax=@(th) R+0.*th;        % Coordinate of the 'upper' rho boundary
 sc.Thmin=0;               % Coordinate of the 'lower' th boundary
 sc.Thmax=2*pi;               % Coordinate of the 'upper' th boundary
-sc.cart=false;
 sc.E=@(Rho,th) E+0.*Rho+0.*th;
 sc.G=@(Rho,th) G+0.*Rho+0.*th;
 sc.rho=@(Rho,th) rho+0.*Rho+0.*th;
+
+sc.cart=true;
+XX = str2num([num2str(NACA(3)),num2str(NACA(4))])/100;
+sc.Zmax=@(y) 5*XX*c*(0.2969*sqrt(y/c)-0.126*(y/c)-0.3516*(y/c).^2+0.2843*(y/c).^3-0.1015*(y/c).^4); 
+sc.Zmin=@(y) -5*XX*c*(0.2969*sqrt(y/c)-0.126*(y/c)-0.3516*(y/c).^2+0.2843*(y/c).^3-0.1015*(y/c).^4);
+sc.Ymax= c/2;
+sc.Ymin= -c/2;
+sc.E=@(y,z) E+0.*y+0.*z;
+sc.G=@(y,z) G+0.*y+0.*z;
+sc.rho=@(y,z) rho+0.*y+0.*z;
 % sc=sc_compute_property(sc);
 
 
@@ -98,5 +109,6 @@ sc.za=0;
 sc.EJy=E*sc.Iy;
 sc.EJz=E*sc.Iz;
 sc.EJyz=0;
-
+%% Keep track of the origin of the geometry
+sc.yo=-xct;
 end

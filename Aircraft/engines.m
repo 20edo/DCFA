@@ -32,6 +32,31 @@ t4=1;           % Percentage of thrust engine 4 wrt maximum at sea level
 
 %% Engine properties and positions
 
+T0 = 179.9; %KN % Nominal thrust
+Me = 3220; %Kg  % Mass engine
+De = 2.15; %m % External diameter
+Re = 2.15/2; %m % External radius
+Le = 3.73; %m
+xp = Re/2; %m
+yp = Re/2; %m
+zp = Le/2; %m
+Ix = (Me*Re^2)/2 + Me*(yp^2 + zp^2); %m^4
+Iy = Me/12*(3*Re^2 + Le^2) + Me*(xp^2 + zp^2); %m^4
+Iz = Me/12*(3*Re^2 + Le^2) + Me*(xp^2 + yp^2); %m^4
+
+M = [Me 0 0 0 0 0;
+    0 Me 0 0 0 0;
+    0 0 Me 0 0 0;
+    0 0 0 Ix 0 0;
+    0 0 0 0 Iy 0;
+    0 0 0 0 0 Iz];
+K = T0*[0 0 0 0 0 0;
+    0 0 0 0 0 0;
+    0 0 0 1 0 0; % dw*T0*theta
+    0 0 0 0 0 0;
+    0 0 0 0 0 0;
+    0 0 0 0 0 0];
+
 x=[5.5 0 -2]';                      % Relative position of the engine wrt nodes in the wings
 
 Node18=en_free(aircraft.en(8).x+x);
