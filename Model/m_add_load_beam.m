@@ -33,8 +33,8 @@ mforce=integral(@(x) [0 -f3(f,x) f2(f,x)]'.*(beam.o+beam.vx*x),...
     beam.in(1).x,beam.in(1).x+l/2,'ArrayValued',true);                                         % Moment due to the force distribuition
 mtot=mforce+ftot(4:6);                                                      % Total moment on a node
 
-m.b(i).in(1).f=m.b(i).in(1).f+[ftot(1:3);mtot];
-m.b(i).f(6*(1-1)+1:6*1)=m.b(i).f(6*(1-1)+1:6*1)+[ftot(1:3);mtot];
+m.b(i).in(1).f=m.b(i).in(1).f+[ftot(1:3);mtot];                             % Add loads to the internal nodes
+m.b(i).f(6*(1-1)+1:6*1)=m.b(i).f(6*(1-1)+1:6*1)+[ftot(1:3);mtot];           % Add loads to the beams
 
 
 % General node
@@ -43,8 +43,8 @@ for j=2:(length(beam.in)-1)
     mforce=integral(@(x) [0 -f3(f,x) f2(f,x)]'.*(beam.o+beam.vx*x),...
         beam.in(j).x-l/2,beam.in(j).x+l/2,'ArrayValued',true);                                 % Moment due to the force distribuition
     mtot=mforce+ftot(4:6);                                                  % Total moment on a node
-    m.b(i).in(j).f=m.b(i).in(j).f+[ftot(1:3);mtot];
-    m.b(i).f(6*(j-1)+1:6*j)=m.b(i).f(6*(j-1)+1:6*j)+[ftot(1:3);mtot];
+    m.b(i).in(j).f=m.b(i).in(j).f+[ftot(1:3);mtot];                         % Add loads to the internal nodes
+    m.b(i).f(6*(j-1)+1:6*j)=m.b(i).f(6*(j-1)+1:6*j)+[ftot(1:3);mtot];       % Add loads to the beams
 end
 
 
@@ -53,8 +53,8 @@ ftot=integral(@(x) f(x),beam.in(end).x-l/2,beam.in(end).x,'ArrayValued',true);  
 mforce=integral(@(x) [0 -f3(f,x) f2(f,x)]'.*(beam.o+beam.vx*x),...
     beam.in(end).x-l/2,beam.in(end).x,'ArrayValued',true);                                     % Moment due to the force distribuition
 mtot=mforce+ftot(4:6);                                                      % Total moment on a node
-m.b(i).in(end).f=m.b(i).in(end).f+[ftot(1:3);mtot];
-m.b(i).f(end-5:end)=m.b(i).f(end-5:end)+[ftot(1:3);mtot];
-
+m.b(i).in(end).f=m.b(i).in(end).f+[ftot(1:3);mtot];                         % Add loads to the internal node
+m.b(i).f(end-5:end)=m.b(i).f(end-5:end)+[ftot(1:3);mtot];                   % Add loads to the beam
+    
 
 end
