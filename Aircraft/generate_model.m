@@ -54,7 +54,7 @@ aircraft=m_compute_matrices(aircraft);
 
 %% Plot
 
-if 1
+if 0
     options.plot_original          = 1;
     options.plot_deformed          = 1;
     options.plotColor              = 'green';

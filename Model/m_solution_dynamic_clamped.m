@@ -46,7 +46,7 @@ end
 %% Put the displacement in the in.d field 
 for j=1:length(model.en)
     for k=1:6
-        if model.en(j).c(k) % remove row and column 6(i-1)+k
+        if model.en(j).c(k) 
             index = 6*(j-1)+k;
             U_modes = [U_modes(1:index-1,:);zeros(1,size(U_modes,2));U_modes(index:end,:)]; 
         end
