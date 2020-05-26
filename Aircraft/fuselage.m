@@ -7,7 +7,7 @@ Node1=en_free([0,0,0]);      % Where the node begins
 Node2=en_free([-6 0 0]);     % Where the section from conical becomes cylindrical
 Node3=en_free([-18 0 0]);    % Where the wings are clamped
 Node4=en_free([-40 0 0]);    % Where the conical section of the tail begins
-Node5=en_free([-48 0 2.5]);    % Where the rudder is clamped
+Node5=en_free([-48 0 2.5]);  % Where the rudder is clamped
 Node6=en_free([-52 0 2.5]);  % Where the aircraft ends
 
 aircraft.en=[Node1, Node2, Node3, Node4, Node5, Node6];
@@ -35,8 +35,8 @@ R_mid_tail=1;   % Radius of the tail fuselage at the clamp with the rudder
 
 %% Material properties (Aluminium)
 
-E=70*1e3;   % Young modulus
-G=27*1e3;   % Shear modulus
+E=70*1e9;   % Young modulus
+G=27*1e9;   % Shear modulus
 rho=2700;   % Density
 
 %% Nose

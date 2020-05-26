@@ -38,15 +38,15 @@ aircraft=m_init();
 
 fuselage 
 
-%payload
+% payload
 
 wings
 
-%fuel
+% fuel
 
 Ttail
 
-%engines
+engines
 
 %% Compute properties
 
@@ -60,7 +60,7 @@ if 1
     options.plotColor              = 'green';
     options.saveSTL                = 0;
     options.point_section          = 8;
-    [fig] = m_plot3d(aircraft,options)
+    [fig] = m_plot3d(aircraft,options);
 end
 
 

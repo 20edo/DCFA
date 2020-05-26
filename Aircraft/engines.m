@@ -19,8 +19,8 @@ nel=10;         % Number of elements
 
 %% Material properties (Alluminium)
 
-E=70*1e3;        % Young modulus
-G=27*1e3;        % Shear modulus
+E=70*1e9;        % Young modulus
+G=27*1e9;        % Shear modulus
 rho=2700;    % Density
 
 %% Throttle
@@ -59,12 +59,12 @@ K = T0*[0 0 0 0 0 0;
 
 x=[5.5 0 -2]';                      % Relative position of the engine wrt nodes in the wings
 
-Node18=en_free(aircraft.en(8).x+x);
-Node19=en_free(aircraft.en(9).x+x);
-Node20=en_free(aircraft.en(11).x+x);
-Node21=en_free(aircraft.en(12).x+x);
+Node17=en_free(aircraft.en(8).x+x);
+Node18=en_free(aircraft.en(9).x+x);
+Node19=en_free(aircraft.en(11).x+x);
+Node20=en_free(aircraft.en(12).x+x);
 
-Engines=[Node18 Node19 Node20 Node21];
+Engines=[Node17 Node18 Node19 Node20];
 
 for i=1:length(Engines)
     Engines(i).K=zeros(6);          % K matrix of the engine
@@ -82,40 +82,97 @@ t=@(x) 0.020+0.*x;
 
 % support 1
 
-L=norm(aircraft.en(14).x-aircraft.en(5).x,2);
+L=norm(aircraft.en(17).x-aircraft.en(8).x,2);
 support_1=b_ssh_profile(L,c,h,t,E,G,rho,nel);
-support_1.o=aircraft.en(5).x;
-support_1.vx=aircraft.en(18).x-aircraft.en(8).x;
+support_1.o=aircraft.en(8).x;
+support_1.vx=aircraft.en(17).x-aircraft.en(8).x;
 support_1.vx=support_1.vx/norm(support_1.vx,2);
 support_1.vy=[0 0 1]';
+support_1.vy=support_1.vy-dot(support_1.vy,support_1.vx)*support_1.vx;
+support_1.vy=support_1.vy/norm(support_1.vy);
 support_1.name='support_1';
 
 % support 2
 
-L=norm(aircraft.en(19).x-aircraft.en(9).x,2);
+L=norm(aircraft.en(18).x-aircraft.en(9).x,2);
 support_2=b_ssh_profile(L,c,h,t,E,G,rho,nel);
 support_2.o=aircraft.en(9).x;
-support_2.vx=aircraft.en(19).x-aircraft.en(9).x;
+support_2.vx=aircraft.en(18).x-aircraft.en(9).x;
 support_2.vx=support_2.vx/norm(support_2.vx,2);
 support_2.vy=[0 0 1]';
+support_2.vy=support_2.vy-dot(support_2.vy,support_2.vx)*support_2.vx;
+support_2.vy=support_2.vy/norm(support_2.vy);
 support_2.name='support_2';
 
 % support 3
 
-L=norm(aircraft.en(20).x-aircraft.en(11).x,2);
+L=norm(aircraft.en(19).x-aircraft.en(11).x,2);
 support_3=b_ssh_profile(L,c,h,t,E,G,rho,nel);
 support_3.o=aircraft.en(11).x;
-support_3.vx=aircraft.en(20).x-aircraft.en(11).x;
+support_3.vx=aircraft.en(19).x-aircraft.en(11).x;
 support_3.vx=support_3.vx/norm(support_3.vx,2);
 support_3.vy=[0 0 1]';
+support_3.vy=support_3.vy-dot(support_3.vy,support_3.vx)*support_3.vx;
+support_3.vy=support_3.vy/norm(support_3.vy);
 support_3.name='support_3';
 
 % support 4
 
-L=norm(aircraft.en(21).x-aircraft.en(12).x,2);
+L=norm(aircraft.en(20).x-aircraft.en(12).x,2);
 support_4=b_ssh_profile(L,c,h,t,E,G,rho,nel);
 support_4.o=aircraft.en(12).x;
-support_4.vx=aircraft.en(21).x-aircraft.en(12).x;
+support_4.vx=aircraft.en(20).x-aircraft.en(12).x;
 support_4.vx=support_4.vx/norm(support_4.vx,2);
 support_4.vy=[0 0 1]';
+support_4.vy=support_4.vy-dot(support_4.vy,support_4.vx)*support_4.vx;
+support_4.vy=support_4.vy/norm(support_4.vy);
 support_4.name='support_4';
+
+
+%% Add supports to the model
+
+support=[ support_1 support_2 support_3 support_4];
+
+for i=1:length(support)
+    aircraft=m_add_beam(aircraft,support(i));
+end
+
+%% Clear unuseful variables
+clear c
+clear De
+clear Dx
+clear E
+clear Engines
+clear G
+clear i
+clear h
+clear Ix
+clear Iy
+clear Iz 
+clear K
+clear L
+clear Le
+clear M
+clear Me
+clear nel
+clear Node17
+clear Node18
+clear Node19
+clear Node20
+clear Re
+clear rho
+clear support_1
+clear support_2
+clear support_3
+clear support_4
+clear t
+clear T0
+clear t1
+clear t2
+clear t3
+clear t4
+clear x
+clear xp
+clear yp
+clear zp
+clear support
