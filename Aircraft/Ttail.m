@@ -58,40 +58,40 @@ rudder.name='rudder';
 
 %% Stabilizer
 
-% Right 
+% Left
 
 
 L=norm(aircraft.en(15).x-aircraft.en(14).x,2);
 c=@(x) 4-2.*x/L;  
 h=@(x) 0.12+0.*x; 
 t=@(x) 0.010+0.*x;
-r_stabilizer=b_ssh_profile(L,c,h,t,E,G,rho,nel_2);
-r_stabilizer.o=aircraft.en(14).x;
-r_stabilizer.vx=aircraft.en(15).x-aircraft.en(14).x;
-r_stabilizer.vx=r_stabilizer.vx/norm(r_stabilizer.vx,2);
-r_stabilizer.vy=[-cosd(i_ang) 0 -sind(i_ang)]';
-r_stabilizer.vy=r_stabilizer.vy-dot(r_stabilizer.vy,r_stabilizer.vx)*r_stabilizer.vx;
-r_stabilizer.vy=r_stabilizer.vy/norm(r_stabilizer.vy);
-r_stabilizer.name='r_stabilizer';
-
-% Left
-
-L=norm(aircraft.en(16).x-aircraft.en(14).x,2);
-c=@(x) 4-2*x/L; 
-h=@(x) 0.12+0.*x; 
-t=@(x) 0.010+0.*x;
-l_stabilizer=b_ssh_profile(L,c,h,t,E,G,rho,nel_3);
+l_stabilizer=b_ssh_profile(L,c,h,t,E,G,rho,nel_2);
 l_stabilizer.o=aircraft.en(14).x;
-l_stabilizer.vx=aircraft.en(16).x-aircraft.en(14).x;
+l_stabilizer.vx=aircraft.en(15).x-aircraft.en(14).x;
 l_stabilizer.vx=l_stabilizer.vx/norm(l_stabilizer.vx,2);
 l_stabilizer.vy=[-cosd(i_ang) 0 -sind(i_ang)]';
 l_stabilizer.vy=l_stabilizer.vy-dot(l_stabilizer.vy,l_stabilizer.vx)*l_stabilizer.vx;
 l_stabilizer.vy=l_stabilizer.vy/norm(l_stabilizer.vy);
 l_stabilizer.name='l_stabilizer';
 
+% Right
+
+L=norm(aircraft.en(16).x-aircraft.en(14).x,2);
+c=@(x) 4-2*x/L; 
+h=@(x) 0.12+0.*x; 
+t=@(x) 0.010+0.*x;
+r_stabilizer=b_ssh_profile(L,c,h,t,E,G,rho,nel_3);
+r_stabilizer.o=aircraft.en(14).x;
+r_stabilizer.vx=aircraft.en(16).x-aircraft.en(14).x;
+r_stabilizer.vx=r_stabilizer.vx/norm(r_stabilizer.vx,2);
+r_stabilizer.vy=[-cosd(i_ang) 0 -sind(i_ang)]';
+r_stabilizer.vy=r_stabilizer.vy-dot(r_stabilizer.vy,r_stabilizer.vx)*r_stabilizer.vx;
+r_stabilizer.vy=r_stabilizer.vy/norm(r_stabilizer.vy);
+r_stabilizer.name='r_stabilizer';
+
 %% Add beams to the model
 
-Ttail_beams=[rudder r_stabilizer l_stabilizer];
+Ttail_beams=[rudder l_stabilizer r_stabilizer];
 
 for i=1:length(Ttail_beams)
     aircraft=m_add_beam(aircraft,Ttail_beams(i));

@@ -156,15 +156,15 @@ h=@(x) heigth(x+norm(x2));
 r_wing3=b_ssh_profile(L,c,h,t,E,G,rho,nel_3);
 r_wing3.o=aircraft.en(12).x;
 r_wing3.vx=aircraft.en(13).x-aircraft.en(12).x;
-r_wing3.vx=r_wing3.vx/norm(r_wing3.vx,2);
+r_wing3.vx=l_wing3.vx/norm(l_wing3.vx,2);
 r_wing3.vy=[-cosd(i_ang) 0 -sind(i_ang)]';
-r_wing3.vy=r_wing3.vy-dot(r_wing3.vy,r_wing3.vx)*r_wing3.vx;
-r_wing3.vy=r_wing3.vy/norm(r_wing3.vy);
-r_wing3.name='r_wing3';
+r_wing3.vy=l_wing3.vy-dot(l_wing3.vy,l_wing3.vx)*l_wing3.vx;
+r_wing3.vy=l_wing3.vy/norm(l_wing3.vy);
+r_wing3.name='l_wing3';
 
 %% Add beams to the aircraft
 
-wings_beams=[ wing_support l_wing1 l_wing2 l_wing3 r_wing1 r_wing2 r_wing3];
+wings_beams=[ wing_support l_wing1 l_wing2 l_wing3 l_wing1 l_wing2 l_wing3];
 
 for i=1:length(wings_beams)
     aircraft=m_add_beam(aircraft,wings_beams(i));
