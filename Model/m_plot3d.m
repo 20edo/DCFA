@@ -82,16 +82,22 @@ for r = 1:size(model.b,2)
         x_end_bot=ones(size(y_end_bot,1),1).*L;
         z_up=beam.Zmax;
         z_bot=beam.Zmin;
-        V=[x_0_up y_up-0.5*(ymax-ymin) z_up(x_0_up,y_end_up);
+        if beam.ssh
+            V=[x_0_up y_up-0.5*(ymax-ymin) z_up(x_0_up,y_end_up);
             x_0_bot y_bot-0.5*(ymax-ymin) z_bot(x_0_bot,y_end_bot);
             x_end_up y_end_up-0.5*(ymax_end-ymin_end) z_up(x_end_up,y_end_up);
             x_end_bot y_end_bot-0.5*(ymax_end-ymin_end) z_bot(x_end_bot,y_end_bot)];
-        if beam.ssh
+        
             o = [zeros(size(y_up,1),1) beam.el(1).sc.yo*ones(size(y_up,1),1) zeros(size(y_up,1),1);
                 zeros(size(y_bot,1),1) beam.el(1).sc.yo*ones(size(y_bot,1),1) zeros(size(y_bot,1),1);
                 zeros(size(y_end_up,1),1) beam.el(end).sc.yo*ones(size(y_end_up,1),1) zeros(size(y_end_up,1),1);
                 zeros(size(y_end_bot,1),1) beam.el(end).sc.yo*ones(size(y_end_bot,1),1) zeros(size(y_end_bot,1),1)];
             V= V + o;
+        else
+            V=[x_0_up y_up z_up(x_0_up,y_end_up);
+                x_0_bot y_bot z_bot(x_0_bot,y_end_bot);
+                x_end_up y_end_up z_up(x_end_up,y_end_up);
+                x_end_bot y_end_bot z_bot(x_end_bot,y_end_bot)];
         end
         F = [1 2 n];
         for h=2:n/2 % faces on the section for x=0
