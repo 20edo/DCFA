@@ -83,10 +83,10 @@ for r = 1:size(model.b,2)
         z_up=beam.Zmax;
         z_bot=beam.Zmin;
         if beam.ssh
-            V=[x_0_up y_up-0.5*(ymax-ymin) z_up(x_0_up,y_end_up);
-            x_0_bot y_bot-0.5*(ymax-ymin) z_bot(x_0_bot,y_end_bot);
-            x_end_up y_end_up-0.5*(ymax_end-ymin_end) z_up(x_end_up,y_end_up);
-            x_end_bot y_end_bot-0.5*(ymax_end-ymin_end) z_bot(x_end_bot,y_end_bot)];
+            V=[x_0_up y_up z_up(x_0_up,y_end_up);
+                x_0_bot y_bot z_bot(x_0_bot,y_end_bot);
+                x_end_up y_end_up z_up(x_end_up,y_end_up);
+                x_end_bot y_end_bot z_bot(x_end_bot,y_end_bot)];
         
             o = [zeros(size(y_up,1),1) beam.el(1).sc.yo*ones(size(y_up,1),1) zeros(size(y_up,1),1);
                 zeros(size(y_bot,1),1) beam.el(1).sc.yo*ones(size(y_bot,1),1) zeros(size(y_bot,1),1);
