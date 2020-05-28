@@ -38,11 +38,11 @@ aircraft=m_init();
 
 fuselage 
 
-% payload
+payload
 
 wings
 
-% fuel
+fuel
 
 Ttail
 

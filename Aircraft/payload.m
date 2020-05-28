@@ -18,11 +18,11 @@
 human=true;
 vehicles=false;
 
-%% Material properties (Human beings)
+%% Material properties (Instruments)
 
 E=0;            % Young modulus
 G=0;            % Shear modulus
-rho=1000/100;   % Density
+rho=2700/20;    % Density
 
 %% Payload
 
@@ -35,7 +35,8 @@ Payload=b_constant_p_square(L,l,E,G,rho,nel);
 Payload.o=aircraft.b(1).o;
 Payload.vx=aircraft.b(1).vx;
 Payload.vy=aircraft.b(1).vy;
-
+% disp('Cockpit')
+% disp(sum(sum(Payload.M(1:6:end,1:6:end))))
 aircraft.b(1).M=aircraft.b(1).M+Payload.M;
 
 % Nose instuments
@@ -47,11 +48,19 @@ Payload=b_constant_p_square(L,l,E,G,rho,nel);
 Payload.o=aircraft.b(2).o;
 Payload.vx=aircraft.b(2).vx;
 Payload.vy=aircraft.b(2).vy;
-
+% disp('Nose ')
+% disp(sum(sum(Payload.M(1:6:end,1:6:end))))
 aircraft.b(2).M=aircraft.b(2).M+Payload.M;
 
 if human
     
+    % Material properties (Soldiers)
+
+    E=0;            % Young modulus
+    G=0;            % Shear modulus
+    rho=1000/10;    % Density
+
+
     % Soldiers    
     L=norm(aircraft.b(3).L);
     l=2;
@@ -60,7 +69,8 @@ if human
     Payload.o=aircraft.b(3).o;
     Payload.vx=aircraft.b(3).vx;
     Payload.vy=aircraft.b(3).vy;
-
+%     disp('Soldiers_1')
+%     disp(sum(sum(Payload.M(1:6:end,1:6:end))))
     aircraft.b(3).M=aircraft.b(3).M+Payload.M;
     
     
@@ -72,7 +82,8 @@ if human
     Payload.o=aircraft.b(4).o;
     Payload.vx=aircraft.b(4).vx;
     Payload.vy=aircraft.b(4).vy;
-
+%     disp('Soldiers_2')
+%     disp(sum(sum(Payload.M(1:6:end,1:6:end))))
     aircraft.b(4).M=aircraft.b(4).M+Payload.M;
     
     
@@ -82,7 +93,7 @@ elseif vehicles
 
     E=0;            % Young modulus
     G=0;            % Shear modulus
-    rho=2700/100;    % Density
+    rho=8000/20;    % Density
     
     % Vehicles
     
@@ -93,7 +104,8 @@ elseif vehicles
     Payload.o=aircraft.b(3).o;
     Payload.vx=aircraft.b(3).vx;
     Payload.vy=aircraft.b(3).vy;
-
+%     disp('Vehicles_1')
+%     disp(sum(sum(Payload.M(1:6:end,1:6:end))))
     aircraft.b(3).M=aircraft.b(3).M+Payload.M;
     
     % Vehicles   
@@ -103,8 +115,9 @@ elseif vehicles
     Payload=b_constant_p_square(L,l,E,G,rho,nel);
     Payload.o=aircraft.b(4).o;
     Payload.vx=aircraft.b(4).vx;
-    Payload.vy=aircraft.b(4).vy;
-
+%     Payload.vy=aircraft.b(4).vy;
+%     disp('Vehicles_2')
+    disp(sum(sum(Payload.M(1:6:end,1:6:end))))
     aircraft.b(4).M=aircraft.b(4).M+Payload.M;
 end
 
@@ -112,7 +125,7 @@ end
 
 E=0;            % Young modulus
 G=0;            % Shear modulus
-rho=1000/100;    % Density
+rho=2700/20;    % Density
 
 L=norm(aircraft.b(2).L);
 l=1;
@@ -121,7 +134,8 @@ Payload=b_constant_p_square(L,l,E,G,rho,nel);
 Payload.o=aircraft.b(2).o;
 Payload.vx=aircraft.b(2).vx;
 Payload.vy=aircraft.b(2).vy;
-
+% disp('APU')
+% disp(sum(sum(Payload.M(1:6:end,1:6:end))))
 aircraft.b(2).M=aircraft.b(2).M+Payload.M;
 
 % Clear unuseful variables

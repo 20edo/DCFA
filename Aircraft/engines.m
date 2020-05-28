@@ -57,7 +57,7 @@ K = T0*[0 0 0 0 0 0;
     0 0 0 0 0 0;
     0 0 0 0 0 0];
 
-x=[5.5 0 -2]';                      % Relative position of the engine wrt nodes in the wings
+x=[-5.5 0 -2]';                      % Relative position of the engine wrt nodes in the wings
 
 Node17=en_free(aircraft.en(8).x+x);
 Node18=en_free(aircraft.en(9).x+x);
