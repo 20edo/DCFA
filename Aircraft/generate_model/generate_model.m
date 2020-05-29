@@ -17,9 +17,11 @@
 close all, clear all, clc
 
 %% Add to path what needed
-
 cd ..
-
+cd ..
+cd ..
+addpath('DCFA')
+cd DCFA
 addpath('Section')
 addpath('Element')
 addpath('Beam')
@@ -27,7 +29,7 @@ addpath('internal_nodes')
 addpath('External_nodes')
 addpath('Model')
 
-cd Aircraft\
+cd Aircraft\generate_model
 
 
 %% Initialize model
@@ -62,5 +64,7 @@ if 0
     options.point_section          = 8;
     [fig] = m_plot3d(aircraft,options);
 end
+
+cd ..
 
 

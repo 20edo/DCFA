@@ -15,7 +15,7 @@
 %
 
 %% Discretisation parameters
-nel=10;         % Number of elements
+nel_support=5;         % Number of elements
 
 %% Material properties (Alluminium)
 
@@ -32,16 +32,16 @@ t4=1;           % Percentage of thrust engine 4 wrt maximum at sea level
 
 %% Engine properties and positions
 
-T0 = 179.9; %KN % Nominal thrust
-Me = 3220; %Kg  % Mass engine
-De = 2.15; %m % External diameter
-Re = 2.15/2; %m % External radius
-Le = 3.73; %m
-Ix = Me*Re^2/2; %m^4
-Iy = Me/12*(3*Re^2 + Le^2); %m^4
-Iz = Me/12*(3*Re^2 + Le^2); %m^4
-omega = 13000/60*2*pi;%RPM
-J1 = 0.8*Me*(Re/1.5)^2/2*;%inertia of the rotor
+T0 = 179.9;                     %KN % Nominal thrust
+Me = 3220;                      %Kg  % Mass engine
+De = 2.15;                      %m % External diameter
+Re = 2.15/2;                    %m % External radius
+Le = 3.73;                      %m
+Ix = Me*Re^2/2;                 %m^4
+Iy = Me/12*(3*Re^2 + Le^2);     %m^4
+Iz = Me/12*(3*Re^2 + Le^2);     %m^4
+omega = 13000/60*2*pi;          %RPM
+J1 = 0.8*Me*(Re/1.5)^2/2;       %inertia of the rotor
 
 M = [Me 0 0 0 0 0;
     0 Me 0 0 0 0;
@@ -89,7 +89,7 @@ t=@(x) 0.020+0.*x;
 % support 1
 
 L=norm(aircraft.en(17).x-aircraft.en(8).x,2);
-support_1=b_ssh_profile(L,c,h,t,E,G,rho,nel);
+support_1=b_ssh_profile(L,c,h,t,E,G,rho,nel_support);
 support_1.o=aircraft.en(8).x;
 support_1.vx=aircraft.en(17).x-aircraft.en(8).x;
 support_1.vx=support_1.vx/norm(support_1.vx,2);
@@ -101,7 +101,7 @@ support_1.name='support_1';
 % support 2
 
 L=norm(aircraft.en(18).x-aircraft.en(9).x,2);
-support_2=b_ssh_profile(L,c,h,t,E,G,rho,nel);
+support_2=b_ssh_profile(L,c,h,t,E,G,rho,nel_support);
 support_2.o=aircraft.en(9).x;
 support_2.vx=aircraft.en(18).x-aircraft.en(9).x;
 support_2.vx=support_2.vx/norm(support_2.vx,2);
@@ -113,7 +113,7 @@ support_2.name='support_2';
 % support 3
 
 L=norm(aircraft.en(19).x-aircraft.en(11).x,2);
-support_3=b_ssh_profile(L,c,h,t,E,G,rho,nel);
+support_3=b_ssh_profile(L,c,h,t,E,G,rho,nel_support);
 support_3.o=aircraft.en(11).x;
 support_3.vx=aircraft.en(19).x-aircraft.en(11).x;
 support_3.vx=support_3.vx/norm(support_3.vx,2);
@@ -125,7 +125,7 @@ support_3.name='support_3';
 % support 4
 
 L=norm(aircraft.en(20).x-aircraft.en(12).x,2);
-support_4=b_ssh_profile(L,c,h,t,E,G,rho,nel);
+support_4=b_ssh_profile(L,c,h,t,E,G,rho,nel_support);
 support_4.o=aircraft.en(12).x;
 support_4.vx=aircraft.en(20).x-aircraft.en(12).x;
 support_4.vx=support_4.vx/norm(support_4.vx,2);
@@ -182,3 +182,6 @@ clear xp
 clear yp
 clear zp
 clear support
+clear C
+clear J1
+clear omega

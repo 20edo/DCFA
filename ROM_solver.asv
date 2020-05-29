@@ -45,14 +45,14 @@ N = max([2*N,N+20]);
  
 %% subspace iter
 n = size(K, 1);
-V0 = rand(n, N); 
+V0 = randn(n, N); 
 V0 = V0*diag(1./(diag(V0'*V0).^0.5));
 
 Vk = V0;
 lambda_k = zeros(N, 1);
 Lambda_k = [];
 
-tolerance = 2e-4; 
+tolerance = 1e-6; 
 
 Lower = chol(K + alpha*M, 'lower');
 for k = 1:1000
@@ -81,7 +81,7 @@ for k = 1:1000
         continue;
         
     elseif (norm(lambda_k - lk_prev) < tolerance && ...
-            max(max(abs(kk-diag(diag(kk)))))/max(diag(kk))< tolerance)
+            max(max(abs(kk-diag(diag(kk)))))/max(diag(kk))< tolerance*1e-5)
         disp(sprintf('ROM solver converged in %d iterations', k));
         break;
     end
@@ -94,16 +94,11 @@ if max(abs(imag(w(7:end))))/max(abs(real(w(7:end))))<1e-5
 w = real(w(1:N_req)); 
 V = V(:,1:N_req); 
 else 
-    warning('Check the eingenvalues')
-    w = real(w(1:N_req)); 
-    V = V(:,1:N_req); 
+    error('Check the eingenvalues')
 end
 if (k==1000)
      disp(sprintf('ROM solver did not converge'));
-     disp('Convergence index 1:')
-     disp(norm(lambda_k - lk_prev));
-     disp('Convergence index 2:')
-     disp(max(max(abs(kk-diag(diag(kk)))))/max(diag(kk)));
+     disp('C
 end
 
 % %% plot of the dof
