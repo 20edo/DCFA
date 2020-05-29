@@ -34,6 +34,11 @@ function [w, V, k] = ROM_solver(N, M, K, alpha)
 %      % "plot" parameter does not exist
 %       plot_cond = 0;
 %  end
+
+%% Set numerical parameters
+ maxit=1e3;
+ tolerance = 2e-4; % Tolerance wrt lambdas
+ matrixtol = 1e-3; % Tolerance wrt maximum off-diagonal term
  
  if (~exist('alpha', 'var'))
      % "dof" parameter does not exist
@@ -41,7 +46,7 @@ function [w, V, k] = ROM_solver(N, M, K, alpha)
  end
  
 N_req = N; 
-N = max([2*N,N+20]); 
+N = max(N+20,2*N); 
  
 %% subspace iter
 n = size(K, 1);
@@ -52,13 +57,16 @@ Vk = V0;
 lambda_k = zeros(N, 1);
 Lambda_k = [];
 
-tolerance = 2e-4; 
 
-Lower = chol(K + alpha*M, 'lower');
-for k = 1:1000
+
+[Lower,flag] = chol(K + alpha*M, 'lower');
+for k = 1:maxit
     % Uk = K \ M * Uk
     % Uk = (L * L') \ M * Uk
-    Vk = (transpose(Lower)\(Lower\(M * Vk)));
+    Vk = ((transpose(Lower)\(Lower\(M * Vk))));
+    if any(k/200-1:100==0)
+        Vk=real(Vk);
+    end
     Vk_old = Vk; 
     % reduced matrices
     kk = Vk'*K*Vk;
@@ -80,8 +88,8 @@ for k = 1:1000
         % skip first iteration
         continue;
         
-    elseif (norm(lambda_k - lk_prev) < tolerance && ...
-            max(max(abs(kk-diag(diag(kk)))))/max(diag(kk))< tolerance)
+    elseif (norm(lambda_k - lk_prev)/norm(lambda_k) < tolerance && ...
+            max(max(abs(kk-diag(diag(kk)))))/max(diag(kk))< matrixtol)
         disp(sprintf('ROM solver converged in %d iterations', k));
         break;
     end
@@ -98,7 +106,7 @@ else
     w = real(w(1:N_req)); 
     V = V(:,1:N_req); 
 end
-if (k==1000)
+if (k==maxit)
      disp(sprintf('ROM solver did not converge'));
      disp('Convergence index 1:')
      disp(norm(lambda_k - lk_prev));

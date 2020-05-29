@@ -44,7 +44,6 @@ r_wing1.vx=aircraft.b(7).vx;
 r_wing1.vy=aircraft.b(7).vy;
 r_wing1.name='r_wing1';
 
-model=m_add_beam(model,r_wing1);
 
 %% Second beam
 

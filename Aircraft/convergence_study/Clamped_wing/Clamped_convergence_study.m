@@ -20,10 +20,10 @@ cd convergence_study\Clamped_wing\
 
 %%
 
-nel_tot=30:10:200;
+nel_tot=50:15:200;
 t=zeros(size(nel_tot));
 load w_esatta
-number=20;      % Number of eigenvalues considered
+number=30;      % Number of eigenvalues considered
 w_esatta(number+1:end)=[];
 
 for i =1:length(nel_tot)
@@ -70,6 +70,6 @@ subplot(2,2,4)
     grid on
     title('Number of iterations')
     xlabel('Number of elements')
-    ylabel('ROM_iterations')
+    ylabel('ROM iterations')
    
 saveas(fig,'Convergence_clamped_wing_eig','svg')
