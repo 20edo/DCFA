@@ -93,8 +93,8 @@ sc.GJ=1/th;
 
 sc.ycg=-d;
 sc.zcg=0;       % Simmetry
-sc.EA=8*A*rho;
-sc.GA=8*A*rho;
+sc.EA=8*A*E;
+sc.GA=8*A*G;
 sc.Iy=3/2*A*h^2*rho;
 sc.Iz=xct^2*A+(c/4-xct)^2*4*A+(3/4*c-xct)^2*2*A+(c-xct)^2*A; 
 sc.Iyz=0;       % Simmetry
