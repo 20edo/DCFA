@@ -14,7 +14,7 @@ for i = 1:length(model.b)
     end
 end
 clear i k
-for j = N
+for j = 1:N
     figure
     for i=1:length(model.b)
         n = length(model.b(i).in);
@@ -32,4 +32,5 @@ for j = N
     ylabel('y')
     zlabel('z')
     axis equal
+    title({['Deformed model for mode:',num2str(j)];['Frequency:',num2str(w(j)),'Hz']});
 end

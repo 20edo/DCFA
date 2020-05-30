@@ -269,8 +269,7 @@ for j=1:length(model.en)
 end
 
 for i = 1:length(model.b)
-    u_beam = transpose(model.b(i).A)*U; 
-    u_beam=u_beam/norm(u_beam,'Inf')*10;
+    u_beam = transpose(model.b(i).A)*U*100; 
     for k = 1:model.b(i).nel+1
        model.b(i).in(k).d = u_beam(1+6*(k-1):6*(k),:);
     end    
@@ -336,12 +335,17 @@ for r = 1:size(model.b,2)
                 0,  1/4*(-3+3*eps^2)*2/dL,                   0,                   0,                             0,           1/4*(-1-2*eps+3*eps^2),         0,  1/4*(+3-3*eps^2)*2/dL,                   0,         0,                              0,           1/4*(-1+2*eps+3*eps^2)];
             d = R(1:12,1:12)'*[beam.in(el).d(:,n); beam.in(el+1).d(:,n)];% displacements in local frame
             displ               = N * d;
-            displ               = R(1:6,1:6)*displ; %back to the global reference
-            perturbNode(2)      = Node(2)*cos(displ(4))-Node(3)*sin(displ(4));
-            perturbNode(3)      = Node(3)*cos(displ(4))+Node(2)*sin(displ(4));
-            perturbNode(1)      = perturbNode(1)+displ(1);
-            perturbNode(2)      = perturbNode(2)+displ(2);
-            perturbNode(3)      = perturbNode(3)+displ(3);
+            % Initialize local perturbation variable
+            LocalPerturbNode=LocalNode;
+            % Rotating the section in the local frame
+            LocalPerturbNode(2)      = LocalNode(2)*cos(displ(4))-LocalNode(3)*sin(displ(4));
+            LocalPerturbNode(3)      = LocalNode(3)*cos(displ(4))+LocalNode(2)*sin(displ(4));
+            % Applying the displacements in the local frame
+            LocalPerturbNode(1)      = LocalPerturbNode(1)+displ(1);
+            LocalPerturbNode(2)      = LocalPerturbNode(2)+displ(2);
+            LocalPerturbNode(3)      = LocalPerturbNode(3)+displ(3);
+            % Back to the global reference
+            perturbNode = T*LocalPerturbNode;
             PerturbNodes(:,j)   = perturbNode;
             
         end

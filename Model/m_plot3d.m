@@ -229,6 +229,7 @@ for r = 1:size(model.b,2)
     T(3,1) = dot(vz_g, vx_l);
     T(3,2) = dot(vz_g, vy_l);
     T(3,3) = dot(vz_g, vz_l);
+    V_temp = V;
     V = T*V';
     V = V';
     % assembly of the big rotation matrix
@@ -279,12 +280,17 @@ for r = 1:size(model.b,2)
             0,  1/4*(-3+3*eps^2)*2/dL,                   0,                   0,                             0,           1/4*(-1-2*eps+3*eps^2),         0,  1/4*(+3-3*eps^2)*2/dL,                   0,         0,                              0,           1/4*(-1+2*eps+3*eps^2)];
         d = R(1:12,1:12)'*[beam.in(el).d; beam.in(el+1).d];% displacements in local frame
         displ               = N * d; 
-        displ               = R(1:6,1:6)*displ; %back to the global reference
-        perturbNode(2)      = Node(2)*cos(displ(4))-Node(3)*sin(displ(4));
-        perturbNode(3)      = Node(3)*cos(displ(4))+Node(2)*sin(displ(4));
-        perturbNode(1)      = perturbNode(1)+displ(1);
-        perturbNode(2)      = perturbNode(2)+displ(2);
-        perturbNode(3)      = perturbNode(3)+displ(3);
+        % Initialize local perturbation variable
+        LocalPerturbNode=LocalNode;
+        % Rotating the section in the local frame
+        LocalPerturbNode(2)      = LocalNode(2)*cos(displ(4))-LocalNode(3)*sin(displ(4));
+        LocalPerturbNode(3)      = LocalNode(3)*cos(displ(4))+LocalNode(2)*sin(displ(4));
+        % Applying the displacements in the local frame
+        LocalPerturbNode(1)      = LocalPerturbNode(1)+displ(1);
+        LocalPerturbNode(2)      = LocalPerturbNode(2)+displ(2);
+        LocalPerturbNode(3)      = LocalPerturbNode(3)+displ(3);
+        % Back to the global reference
+        perturbNode = T*LocalPerturbNode;
         PerturbNodes(:,j)   = perturbNode;
     end
     
