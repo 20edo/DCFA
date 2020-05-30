@@ -96,9 +96,9 @@ sc.zcg=0;       % Simmetry
 sc.EA=8*A*E;
 sc.GA=8*A*G;
 sc.Iy=3/2*A*h^2*rho;
-sc.Iz=xct^2*A+(c/4-xct)^2*4*A+(3/4*c-xct)^2*2*A+(c-xct)^2*A; 
+sc.Iz=(xct^2*A+(c/4-xct)^2*4*A+(3/4*c-xct)^2*2*A+(c-xct)^2*A)*rho; 
 sc.Iyz=0;       % Simmetry
-sc.Jp=xct^2*A+((c/4-xct)^2+(h/2)^2)*4*A+((c*3/4-xct)^2+(h/2)^2)*2*A+(c-xct)^2*A;
+sc.Jp=(xct^2*A+((c/4-xct)^2+(h/2)^2)*4*A+((c*3/4-xct)^2+(h/2)^2)*2*A+(c-xct)^2*A)*rho;
 sc.m=8*A*rho;
 
 
@@ -106,8 +106,8 @@ sc.m=8*A*rho;
 
 sc.ya=-d;
 sc.za=0;
-sc.EJy=E*sc.Iy;
-sc.EJz=E*sc.Iz;
+sc.EJy=E*sc.Iy/rho;
+sc.EJz=E*sc.Iz/rho;
 sc.EJyz=0;
 %% Keep track of the origin of the geometry
 sc.yo=-xct;

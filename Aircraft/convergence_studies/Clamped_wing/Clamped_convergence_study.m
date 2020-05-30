@@ -20,7 +20,7 @@ cd convergence_studies\Clamped_wing\
 
 %%
 
-nel_tot=400;
+nel_tot=50:15:200;
 t=zeros(size(nel_tot));
 load w_esatta.mat
 load V_esatti.mat
@@ -43,38 +43,43 @@ for i =1:length(nel_tot)
     error1=norm(w-w_esatta,1)/norm(w_esatta,1);
     error2=norm(w-w_esatta,2)/norm(w_esatta,2);
     errorinf=norm(w-w_esatta,'Inf')/norm(w_esatta,'Inf');
+    V=V/norm(V);
+    V_esatti=V_esatti/norm(V_esatti);
     e1(i)=error1;
     e2(i)=error2;
     einf(i)=errorinf;
-    e_vect(i)=norm(V(24:30,:)-V_esatti(24:30,:));
 end
 
 %% Plot
-fig=figure
+fig=figure;
 
-subplot(2,2,1)
+subplot(1,3,1)
     loglog(nel_tot,einf)
     grid on
     xlabel('Number of elements')
     ylabel('Error')
     title('Norm INF error')
-subplot(2,2,2)
+subplot(1,3,2)
     loglog(nel_tot,e2)
     grid on
     xlabel('Number of elements')
     ylabel('Error')
     title('Norm 2 error')
-subplot(2,2,3)
+subplot(1,3,3)
     loglog(nel_tot,t)
     grid on
     xlabel('Number of elements')
     ylabel('Time')
     title('Time spent')
-subplot(2,2,4)
-    plot(nel_tot,e_vect)
-    grid on
-    title('Norm 2 tip displacements error')
-    xlabel('Number of elements')
-    ylabel('Norm 2 error')
    
 saveas(fig,'Convergence_clamped_wing_eig','svg')
+%% plot Modes
+if 0
+    options.plot_original = 1;
+    options.plot_deformed = 1;
+    options.plotColor = 'green';
+    options.saveSTL = 0;
+    options.point_section = 8;
+    options.N = 30;
+    m_Modes3d(model,options);
+end

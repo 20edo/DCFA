@@ -209,7 +209,7 @@ elseif vehicles
     Payload.vx=aircraft.b(4).vx;
 %     Payload.vy=aircraft.b(4).vy;
 %     disp('Vehicles_2')
-    disp(sum(sum(Payload.M(1:6:end,1:6:end))))
+%     disp(sum(sum(Payload.M(1:6:end,1:6:end))))
     aircraft.b(4).M=aircraft.b(4).M+Payload.M;
 end
 

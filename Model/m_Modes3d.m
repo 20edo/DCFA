@@ -256,8 +256,21 @@ clear r h i j
 % [w, U, k] = ROM_solver(options.N, model.M, model.K, options.alpha);
 [U, lambda] = eigs(model.K+options.alpha*model.M,model.M,options.N,'smallestabs');
 w = sqrt(diag(lambda)-options.alpha); 
+
+
+%% Add the zeros for the constrained displacements
+for j=1:length(model.en)
+    for k=1:6
+        if model.en(j).c(k) 
+            index = 6*(j-1)+k;
+            U = [U(1:index-1,:);zeros(1,size(U,2));U(index:end,:)]; 
+        end
+    end            
+end
+
 for i = 1:length(model.b)
-    u_beam = transpose(model.b(i).A)*U*100; 
+    u_beam = transpose(model.b(i).A)*U; 
+    u_beam=u_beam/norm(u_beam,'Inf')*10;
     for k = 1:model.b(i).nel+1
        model.b(i).in(k).d = u_beam(1+6*(k-1):6*(k),:);
     end    

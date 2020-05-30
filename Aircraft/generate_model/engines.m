@@ -15,12 +15,12 @@
 %
 
 %% Discretisation parameters
-nel_support=5;         % Number of elements
+nel_support=1;         % Number of elements
 
 %% Material properties (Alluminium)
 
-E=70*1e9;        % Young modulus
-G=27*1e9;        % Shear modulus
+E=70*1e10;        % Young modulus
+G=27*1e10;        % Shear modulus
 rho=2700;    % Density
 
 %% Throttle
@@ -32,7 +32,7 @@ t4=1;           % Percentage of thrust engine 4 wrt maximum at sea level
 
 %% Engine properties and positions
 
-T0 = 179.9;                     %KN % Nominal thrust
+T0 = 179.9*1e3;                 %N % Nominal thrust
 Me = 3220;                      %Kg  % Mass engine
 De = 2.15;                      %m % External diameter
 Re = 2.15/2;                    %m % External radius
@@ -83,8 +83,8 @@ end
 % Support properties
 
 c=@(x) 1+0.*x;  
-h=@(x) 0.12+0.*x; 
-t=@(x) 0.020+0.*x;
+h=@(x) 0.22+0.*x; 
+t=@(x) 0.20+0.*x;
 
 % support 1
 
