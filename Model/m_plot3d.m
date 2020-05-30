@@ -251,6 +251,7 @@ for r = 1:size(model.b,2)
     clear i
     clear j
     l = length(OrigMesh.Nodes);
+    InitialNodes = OrigMesh.Nodes;
     PerturbNodes = OrigMesh.Nodes;
     tmp = OrigMesh.Elements.';
     
@@ -288,13 +289,9 @@ for r = 1:size(model.b,2)
     end
     
     PerturbNodes = PerturbNodes + beam.o;
-    V = V + beam.o';
-    modello = createpde(1);
-    geometryFromMesh(modello,V.',F.');
-    OrigMesh_global = generateMesh(modello, ...
-        'Hmin',L/nel, 'Hmax', L/nel, ...   % CHECK 'Hmin',L/(nel), 
-        'GeometricOrder', 'linear');
-    Support(r).Undeformed_Mesh= OrigMesh_global;
+    InitialNodes = InitialNodes + beam.o;
+
+    Support(r).Undeformed_nodes= InitialNodes;
     Support(r).Mesh_elements= tmp;
     Support(r).Deformed_nodes= PerturbNodes;
 end
@@ -302,7 +299,7 @@ end
 figure
 if options.plot_original
     for r = 1:size(model.b,2)
-        TR = triangulation(Support(r).Undeformed_Mesh.Elements.',Support(r).Undeformed_Mesh.Nodes.');
+        TR = triangulation(Support(r).Mesh_elements,Support(r).Undeformed_nodes.');
         [f,p] = freeBoundary(TR);
         trisurf(f,p(:,1),p(:,2),p(:,3), ...
             'FaceColor',options.plotColor,'FaceAlpha',0.8);

@@ -95,7 +95,7 @@ for k = 1:maxit
     end
 end
 
-w = sqrt(lambda_k); 
+w = sqrt(lambda_k-alpha); 
 V = Vk; %eigenvector matrix
 
 if max(abs(imag(w(7:end))))/max(abs(real(w(7:end))))<1e-5

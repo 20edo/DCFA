@@ -77,4 +77,3 @@ for i = 1:length(model.b)
        model.b(i).in(k).d = u_beam(1+6*(k-1):6*(k),:);
     end    
 end
-
