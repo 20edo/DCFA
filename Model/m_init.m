@@ -25,5 +25,9 @@ m.b=[];
 m.M=nan;                    % Mass matrix of the model
 m.C=0;                      % Dissipation matrix (defult value = 0)
 m.f=[];                     % External loads vector
-
 m.K=nan;                    % Stiffness matrix of the model
+
+
+m.fa_th = NaN; 
+m.fa_w = NaN; 
+m.Ka = NaN; 

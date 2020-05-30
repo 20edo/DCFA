@@ -34,7 +34,7 @@ beam_1.vy=[0,1,0]';         % Set the versor of the y local axis of the beam
 beam_1.oc=true(6,1);        % The first beam is clamped at the origin (wit\h node_1==ground)
 beam_1.ec=true(6,1);        % The first beam is clamped at the end (with beam_2)
 L_shaped_structure=m_add_beam(L_shaped_structure,beam_1);   % Add beam to the model
-
+Straigth_structure = L_shaped_structure; 
 
 
 %% Build and add the second beam to the model
@@ -47,6 +47,15 @@ beam_2.oc=true(6,1);                    % Beam 2 is clamped at the origin
 beam_2.ec=false(6,1);                   % Beam 2 is free at the end
 L_shaped_structure=m_add_beam(L_shaped_structure,beam_2);
 
+%% Build a straight element 
+beam_4=b_constant_p_square(2,1,70*1e9,27*1e9,2700,30);
+beam_4.name='beam_2';
+beam_4.o=beam_1.o+beam_1.L*beam_1.vx;   % Beam 2 origin is coincident with the end of beam 1
+beam_4.vx=[1,0,0]';                     % Beam 2 is aligned with the global y axis
+beam_4.vy=[0,1,0]';                     % Set the versor of the y local axis of the beam
+beam_4.oc=true(6,1);                    % Beam 2 is clamped at the origin
+beam_4.ec=false(6,1);                   % Beam 2 is free at the end
+Straigth_structure=m_add_beam(Straigth_structure,beam_4);
 %% Add loads
 
 L_shaped_structure=m_add_mass_forces(L_shaped_structure);
@@ -117,7 +126,7 @@ options.plot_deformed          = 1;
 options.plotColor              = 'green';
 options.saveSTL                = 0;
 options.point_section          = 2;
-[fig] = m_plot3d(L_shaped_structure,options)
+[fig] = m_plot3d(Straigth_structure,options)
 % hold on 
 % quiver3(0,0,0,5,0,0)
 % quiver3(0,0,0,0,5,0)

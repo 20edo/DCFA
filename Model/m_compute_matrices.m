@@ -32,6 +32,7 @@ dof = 6*dof;
 model.M = sparse(zeros(dof));
 model.K = sparse(zeros(dof));
 model.C = sparse(zeros(dof));
+model.Ka = sparse(zeros(dof));
 model.f=  sparse(zeros(dof,1));
 
 
@@ -74,6 +75,7 @@ for i=1:size(model.b,2)
     model.M = model.M + (model.b(i).A)*(beam.M)*(model.b(i).A)';
     model.K = model.K + (model.b(i).A)*(beam.K)*(model.b(i).A)';
     model.C = model.C + (model.b(i).A)*(beam.C)*(model.b(i).A)';
+    model.Ka = model.Ka + (model.b(i).A)*(beam.Ka)*(model.b(i).A)';
     model.f = model.f + (model.b(i).A)*(beam.f);
 end
 
@@ -87,6 +89,7 @@ for i=1:length(model.en)
             model.M = model.M([1:index-1,index+1:end],[1:index-1,index+1:end]);
             model.K = model.K([1:index-1,index+1:end],[1:index-1,index+1:end]);
             model.C = model.C([1:index-1,index+1:end],[1:index-1,index+1:end]);
+            model.Ka = model.Ka([1:index-1,index+1:end],[1:index-1,index+1:end]);
             model.f = model.f([1:index-1,index+1:end]);
             n_dv = n_dv + 1; 
         end

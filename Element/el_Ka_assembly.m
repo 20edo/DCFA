@@ -1,0 +1,35 @@
+function el = el_Ka_assembly(b,el,lambda,alpha)
+
+L=el.L;
+c = el.sc.Ymax - el.sc.Ymin ;  % CORDA
+e = -el.sc.yo - 1/4*c; % TROVARE UN MODO PER ESPRIMERE e 
+
+
+CL0 = alpha*2*pi; % CL at zero incidence  
+CLa = 2*pi; % CL derived alpha  
+CLb = 6.2366; % CM derived alpha 
+CMb = -0.8437; % CM derived beta  
+CMac = -pi/2*(-alpha); 
+
+
+Ka = [[ 0, 0,                                                                           0,                                                                               0,                                                                              0, 0, 0, 0,                                                                             0,                                                                             0,                                                                              0, 0];
+[ 0, 0,                                                                           0,                                                                               0,                                                                              0, 0, 0, 0,                                                                             0,                                                                             0,                                                                              0, 0];
+[ 0, 0, (CLa*c*sin(2*lambda))/4 - (6*CLa*c*e*cos(lambda)*(cos(lambda)^2 - 1))/(5*L),      (7*CLa*L*c*cos(lambda)^2)/20 - (CLa*c*e*sin(lambda)*(sin(lambda)^2 - 1))/2,      (CLa*L*c*sin(2*lambda))/20 + (CLa*c*e*cos(lambda)*(cos(lambda)^2 - 1))/10, 0, 0, 0,   (6*CLa*c*e*cos(lambda)*(cos(lambda)^2 - 1))/(5*L) - (CLa*c*sin(2*lambda))/4,    (3*CLa*L*c*cos(lambda)^2)/20 - (CLa*c*e*sin(lambda)*(sin(lambda)^2 - 1))/2,      (CLa*c*e*cos(lambda)*(cos(lambda)^2 - 1))/10 - (CLa*L*c*sin(2*lambda))/20, 0];
+[ 0, 0,                                -(CLa*c*e*sin(lambda)*(sin(lambda)^2 - 1))/2,                                                     (CLa*L*c*e*cos(lambda)^3)/3,                                -(CLa*L*c*e*sin(lambda)*(sin(lambda)^2 - 1))/12, 0, 0, 0,                                   (CLa*c*e*sin(lambda)*(sin(lambda)^2 - 1))/2,                                                   (CLa*L*c*e*cos(lambda)^3)/6,                                 (CLa*L*c*e*sin(lambda)*(sin(lambda)^2 - 1))/12, 0];
+[ 0, 0,   (CLa*c*e*cos(lambda)*(cos(lambda)^2 - 1))/10 - (CLa*L*c*sin(2*lambda))/20, - (CLa*L^2*c*cos(lambda)^2)/20 - (CLa*L*c*e*sin(lambda)*(sin(lambda)^2 - 1))/12,                              -(2*CLa*L*c*e*cos(lambda)*(cos(lambda)^2 - 1))/15, 0, 0, 0,     (CLa*L*c*sin(2*lambda))/20 - (CLa*c*e*cos(lambda)*(cos(lambda)^2 - 1))/10, (CLa*L*c*e*sin(lambda)*(sin(lambda)^2 - 1))/12 - (CLa*L^2*c*cos(lambda)^2)/30, (CLa*c*sin(2*lambda)*L^2)/120 + (CLa*c*e*cos(lambda)*(cos(lambda)^2 - 1)*L)/30, 0];
+[ 0, 0,                                                                           0,                                                                               0,                                                                              0, 0, 0, 0,                                                                             0,                                                                             0,                                                                              0, 0];
+[ 0, 0,                                                                           0,                                                                               0,                                                                              0, 0, 0, 0,                                                                             0,                                                                             0,                                                                              0, 0];
+[ 0, 0,                                                                           0,                                                                               0,                                                                              0, 0, 0, 0,                                                                             0,                                                                             0,                                                                              0, 0];
+[ 0, 0, (CLa*c*sin(2*lambda))/4 + (6*CLa*c*e*cos(lambda)*(cos(lambda)^2 - 1))/(5*L),      (3*CLa*L*c*cos(lambda)^2)/20 + (CLa*c*e*sin(lambda)*(sin(lambda)^2 - 1))/2,    - (CLa*L*c*sin(2*lambda))/20 - (CLa*c*e*cos(lambda)*(cos(lambda)^2 - 1))/10, 0, 0, 0, - (CLa*c*sin(2*lambda))/4 - (6*CLa*c*e*cos(lambda)*(cos(lambda)^2 - 1))/(5*L),    (7*CLa*L*c*cos(lambda)^2)/20 + (CLa*c*e*sin(lambda)*(sin(lambda)^2 - 1))/2,      (CLa*L*c*sin(2*lambda))/20 - (CLa*c*e*cos(lambda)*(cos(lambda)^2 - 1))/10, 0];
+[ 0, 0,                                -(CLa*c*e*sin(lambda)*(sin(lambda)^2 - 1))/2,                                                     (CLa*L*c*e*cos(lambda)^3)/6,                                 (CLa*L*c*e*sin(lambda)*(sin(lambda)^2 - 1))/12, 0, 0, 0,                                   (CLa*c*e*sin(lambda)*(sin(lambda)^2 - 1))/2,                                                   (CLa*L*c*e*cos(lambda)^3)/3,                                -(CLa*L*c*e*sin(lambda)*(sin(lambda)^2 - 1))/12, 0];
+[ 0, 0,   (CLa*L*c*sin(2*lambda))/20 + (CLa*c*e*cos(lambda)*(cos(lambda)^2 - 1))/10,   (CLa*L^2*c*cos(lambda)^2)/30 + (CLa*L*c*e*sin(lambda)*(sin(lambda)^2 - 1))/12, (CLa*L*c*e*cos(lambda)*(cos(lambda)^2 - 1))/30 - (CLa*L^2*c*sin(2*lambda))/120, 0, 0, 0,   - (CLa*L*c*sin(2*lambda))/20 - (CLa*c*e*cos(lambda)*(cos(lambda)^2 - 1))/10, (CLa*L^2*c*cos(lambda)^2)/20 - (CLa*L*c*e*sin(lambda)*(sin(lambda)^2 - 1))/12,                              -(2*CLa*L*c*e*cos(lambda)*(cos(lambda)^2 - 1))/15, 0];
+[ 0, 0,                                                                           0,                                                                               0,                                                                              0, 0, 0, 0,                                                                             0,                                                                             0,                                                                              0, 0]];
+
+
+el.Ka=sparse(Ka);
+
+el.Ka=Ka;
+
+end
+
+

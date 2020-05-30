@@ -16,7 +16,7 @@ cd ..
 cd ..
 cd generate_model\
 generate_model
-cd convergence_studies\Clamped_wing\
+
 
 %%
 
@@ -24,7 +24,7 @@ nel_tot=50:15:200;
 t=zeros(size(nel_tot));
 load w_esatta.mat
 load V_esatti.mat
-number=100;      % Number of eigenvalues considered
+number=30;      % Number of eigenvalues considered
 w_esatta(number+1:end)=[];
 V_esatti(:,number+1:end)=[];
 
@@ -51,6 +51,9 @@ for i =1:length(nel_tot)
 end
 
 %% Plot
+
+cd convergence_studies\Clamped_wing\ % Move to the right folder 
+
 fig=figure;
 
 subplot(1,3,1)
@@ -72,6 +75,7 @@ subplot(1,3,3)
     ylabel('Time')
     title('Time spent')
    
+ 
 saveas(fig,'Convergence_clamped_wing_eig','svg')
 %% plot Modes
 if 0

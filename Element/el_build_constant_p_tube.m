@@ -24,6 +24,7 @@ rho=b.rho(x,0,0);
 %% Compute section properties
 sc=sc_constant_p_tube(R,t,E,G,rho);
 %% Set element properties
+el = el_init(); 
 el.sc=sc;
 el.L=abs(indx.x-insx.x);
 el=el_mass_assembly(el);

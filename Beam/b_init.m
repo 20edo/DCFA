@@ -103,3 +103,6 @@ b.en=nan;                  % Number associated to the node at the end
 b.name=nan;                % Optional name of the beam (string)
 % functions defined on b:
 % b_build_elemnts
+b.fa_th = NaN; 
+b.fa_w = NaN; 
+b.Ka = NaN; 

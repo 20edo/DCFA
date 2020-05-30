@@ -24,6 +24,7 @@ rho=b.rho(x,0,0);
 %% Compute section properties
 sc=sc_ssh_profile(c,h,A,t,E,G,rho);
 %% Set element properties
+el = el_init();
 el.sc=sc;
 el.L=abs(indx.x-insx.x);
 el=el_mass_assembly(el);

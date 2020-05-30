@@ -41,6 +41,7 @@ rho=sc.rho(0,0);
 %% Compute section properties
 sc=sc_constant_p_rect(a,b,E,G,rho);
 %% Set element properties
+el = el_init();
 el.sc=sc;
 el.L=abs(indx.x-insx.x);
 % el.sc.Iy = 0; 
