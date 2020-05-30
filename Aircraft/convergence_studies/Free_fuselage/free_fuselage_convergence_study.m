@@ -2,13 +2,18 @@
 % free-free fuselage
 
 %%
+clear all, close all, clc
 
-nel_tot=300;
+nel_tot=50:15:300;
 t=zeros(size(nel_tot));
-% load w_esatta
-w_esatta=zeros(50,1);
-number=50;      % Number of eigenvalues considered
+load w_esatta.mat
+load V_esatti.mat
+number=30;      % Number of eigenvalues considered
 w_esatta(number+1:end)=[];
+% Suppress rigid body egienvalues
+w_esatta(1:6)=[];
+V_esatti(:,number+1:end)=[];
+model=m_init();
 
 for i =1:length(nel_tot)
     tic
@@ -19,8 +24,10 @@ for i =1:length(nel_tot)
     alpha=1;
     % Solve
     [V,D,flag] = eigs(model.K+alpha*model.M,model.M,number,'smallestabs');
-    w=diag(D-alpha).^0.5;
+    w=real(diag(D-alpha).^0.5);
     t(i)=toc;
+    % Suppress rigid body egienvalues
+    w(1:6)=[];
     % Calculate errors
     error1=norm(w-w_esatta,1)/norm(w_esatta,1);
     error2=norm(w-w_esatta,2)/norm(w_esatta,2);
@@ -28,35 +35,38 @@ for i =1:length(nel_tot)
     e1(i)=error1;
     e2(i)=error2;
     einf(i)=errorinf;
-    it(i)=k;
 end
 
 %% Plot
 fig=figure;
 
-subplot(2,2,1)
+subplot(1,3,1)
     loglog(nel_tot,einf)
     grid on
     xlabel('Number of elements')
     ylabel('Error')
     title('Norm INF error')
-subplot(2,2,2)
+subplot(1,3,2)
     loglog(nel_tot,e2)
     grid on
     xlabel('Number of elements')
     ylabel('Error')
     title('Norm 2 error')
-subplot(2,2,3)
+subplot(1,3,3)
     loglog(nel_tot,t)
     grid on
     xlabel('Number of elements')
     ylabel('Time')
     title('Time spent')
-subplot(2,2,4)
-    plot(nel_tot,it)
-    grid on
-    title('Number of iterations')
-    xlabel('Number of elements')
-    ylabel('ROM iterations')
    
 saveas(fig,'Convergence_free_fuselage_eig','svg')
+%% plot Modes
+if 0
+    options.plot_original = 1;
+    options.plot_deformed = 1;
+    options.plotColor = 'green';
+    options.saveSTL = 0;
+    options.point_section = 8;
+    options.N = 30;
+    m_Modes3d(model,options);
+end

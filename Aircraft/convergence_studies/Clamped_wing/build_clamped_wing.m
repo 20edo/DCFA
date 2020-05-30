@@ -14,6 +14,8 @@ function model=build_clamped_wing(aircraft,nel)
 %           
 %
 
+engine=true;
+
 %% Discretization parameter
 Ltot=aircraft.b(7).L+aircraft.b(8).L+aircraft.b(9).L;
 nel_1=ceil(nel*aircraft.b(7).L/Ltot);
@@ -30,9 +32,12 @@ rho=2700;   % Density
 %% Init model and add ground node
 
 model=m_init();
-model.en=[en_ground(aircraft.en(7).x) ...
-    en_mass(aircraft.en(17).x,aircraft.en(17).M) en_mass(aircraft.en(18).x,aircraft.en(18).M)];
-
+if engine
+    model.en=[en_ground(aircraft.en(7).x) ...
+        en_mass(aircraft.en(17).x,aircraft.en(17).M) en_mass(aircraft.en(18).x,aircraft.en(18).M)];
+else
+    model.en=[en_ground(aircraft.en(7).x)];
+end
 %% First beam
 
 L=aircraft.b(7).L;
@@ -134,9 +139,13 @@ r_wing3.M=r_wing3.M+fuel_t3*tank.M;
 
 %% Add beams to model
 
-% The last two are the engine support
-wing=[r_wing1 r_wing2 r_wing3 aircraft.b(16) aircraft.b(17)];
-
+if engine
+    % The last two are the engine support
+    wing=[r_wing1 r_wing2 r_wing3 aircraft.b(16) aircraft.b(17)];
+else
+    wing=[r_wing1 r_wing2 r_wing3];
+end
+    
 for i=1:length(wing)
     model=m_add_beam(model,wing(i));
 end
