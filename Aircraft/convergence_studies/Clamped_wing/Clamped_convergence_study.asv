@@ -16,23 +16,28 @@ cd ..
 cd ..
 cd generate_model\
 generate_model
-cd convergence_study\Clamped_wing\
+cd convergence_studies\Clamped_wing\
 
 %%
 
-nel_tot=50:15:200;
+nel_tot=400;
 t=zeros(size(nel_tot));
-load w_esatta
-number=30;      % Number of eigenvalues considered
+load w_esatta.mat
+load V_esatti.mat
+number=100;      % Number of eigenvalues considered
 w_esatta(number+1:end)=[];
+V_esatti(:,number+1:end)=[];
 
 for i =1:length(nel_tot)
     tic
     % Build model
     model=build_clamped_wing(aircraft,nel_tot(i));
     model=m_compute_matrices(model);
+    % Shift
+    alpha=0;
     % Solve
-    [w, V, k] = ROM_solver(number, model.M, model.K);
+    [V,D,flag] = eigs(model.K+alpha*model.M,model.M,number,'smallestabs');
+    w=diag(D-alpha).^0.5;
     t(i)=toc;
     % Calculate errors
     error1=norm(w-w_esatta,1)/norm(w_esatta,1);
@@ -41,7 +46,7 @@ for i =1:length(nel_tot)
     e1(i)=error1;
     e2(i)=error2;
     einf(i)=errorinf;
-    it(i)=k;
+    e_vect(i)=norm(V(24:30,:)-V_esatti(24:30,:));
 end
 
 %% Plot
@@ -66,10 +71,10 @@ subplot(2,2,3)
     ylabel('Time')
     title('Time spent')
 subplot(2,2,4)
-    plot(nel_tot,it)
+    plot(nel_tot,e_vect)
     grid on
-    title('Number of iterations')
+    title('Norm 2 tip displacements error')
     xlabel('Number of elements')
-    ylabel('ROM iterations')
+    ylabel('Norm 2 error')
    
 saveas(fig,'Convergence_clamped_wing_eig','svg')

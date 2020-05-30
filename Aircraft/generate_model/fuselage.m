@@ -107,37 +107,3 @@ for i=1:length(fuselage_beams)
 %     disp(M)
     
 end
-
-
-% %% Plot rear tail 
-% model=m_init;
-% model.en=aircraft.en(5);
-% model=m_add_beam(model,rear_tail);
-% options.plot_original          = 1;
-% options.plot_deformed          = 1;
-% options.plotColor              = 'green';
-% options.saveSTL                = 0;
-% options.ovs                    = 4;
-% options.point_section          = 4;
-% m_plot3d(model, options)
-%% Clear non usefull variables
-clear E
-clear G
-clear L
-clear rho
-clear nel_front_fuselage
-clear nel_front_tail
-clear nel_nose
-clear nel_rear_fuselage
-clear nel_rear_tail
-clear R
-clear R_fus
-clear t
-clear t_fus
-clear R_mid_tail
-clear front_fuselage
-clear rear_fuselage
-clear nose
-clear front_tail
-clear rear_tail
-clear fuselage_beams
