@@ -115,8 +115,8 @@ end
 
 
 %% Add payload
-human=false;
-vehicles=true;
+human=true;
+vehicles=false;
 
 % Cockpit and instruments
 

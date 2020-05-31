@@ -23,6 +23,7 @@ cd generate_model
 
 %% Perform analysis
 
+% nel_tot=400;          % Exact (reference) eigenvalues
 nel_tot=50:15:300;
 t=zeros(size(nel_tot));
 number=30;      % Number of eigenvalues considered
@@ -80,7 +81,7 @@ subplot(1,3,3)
     ylabel('Time')
     title('Time spent')
 
-if 0
+if 1
     saveas(fig,'Convergence_free_fuselage_eig','svg')
 end
 %% plot Modes
