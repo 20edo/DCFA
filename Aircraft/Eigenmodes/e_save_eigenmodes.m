@@ -19,7 +19,9 @@ if 1
     options.plotColor              = 'green';
     options.saveSTL                = 0;
     options.point_section          = 8;
-    options.N                      = 20;
+    options.N                      = 30;
     options.saveImages             = 1;
     m_Modes3d(aircraft,options);
 end
+
+beep
