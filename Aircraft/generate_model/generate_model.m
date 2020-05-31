@@ -56,7 +56,7 @@ aircraft=m_compute_matrices(aircraft);
 
 %% Plot
 
-if 1
+if 0
     options.plot_original          = 1;
     options.plot_deformed          = 1;
     options.plotColor              = 'green';
@@ -66,11 +66,9 @@ if 1
     m_Modes3d(aircraft,options);
 end
 if 0
-N = 30;
-m_modes_easy(aircraft,N)
+    N = 30;
+    m_modes_easy(aircraft,N)
 end
 
-
 cd ..
-
 

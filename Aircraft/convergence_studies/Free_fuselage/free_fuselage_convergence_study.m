@@ -4,10 +4,27 @@
 %%
 clear all, close all, clc
 
-nel_tot=50:15:300;
-t=zeros(size(nel_tot));
+%% Generate the aircraft model
+cd ..
+cd ..
+cd generate_model\
+generate_model
+
+%% Load the exact solution
+
+cd convergence_studies\Free_fuselage\ % Move to the right folder 
+
 load w_esatta.mat
 load V_esatti.mat
+
+cd ..
+cd ..
+cd generate_model
+
+%% Perform analysis
+
+nel_tot=50:15:300;
+t=zeros(size(nel_tot));
 number=30;      % Number of eigenvalues considered
 w_esatta(number+1:end)=[];
 % Suppress rigid body egienvalues
@@ -38,8 +55,12 @@ for i =1:length(nel_tot)
 end
 
 %% Plot
-fig=figure;
 
+cd ..
+cd convergence_studies\Free_fuselage\ % Move to the right folder 
+
+fig=figure;
+set(gcf, 'Position',  [100, 100, 5000, 4000])
 subplot(1,3,1)
     loglog(nel_tot,einf)
     grid on
@@ -58,8 +79,10 @@ subplot(1,3,3)
     xlabel('Number of elements')
     ylabel('Time')
     title('Time spent')
-   
-saveas(fig,'Convergence_free_fuselage_eig','svg')
+
+if 0
+    saveas(fig,'Convergence_free_fuselage_eig','svg')
+end
 %% plot Modes
 if 0
     options.plot_original = 1;

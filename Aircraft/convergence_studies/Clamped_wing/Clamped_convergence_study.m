@@ -11,19 +11,28 @@
 %           
 %
 
+clear all, close all, clc
+
 %% Generate the aircraft model
 cd ..
 cd ..
 cd generate_model\
 generate_model
 
+%% Load the exact solution
 
-%%
+cd convergence_studies\Clamped_wing\ % Move to the right folder 
 
-nel_tot=50:15:200;
-t=zeros(size(nel_tot));
 load w_esatta.mat
 load V_esatti.mat
+
+cd ..
+cd ..
+cd generate_model
+%% Perform analysis
+
+nel_tot=50:15:300;
+t=zeros(size(nel_tot));
 number=30;      % Number of eigenvalues considered
 w_esatta(number+1:end)=[];
 V_esatti(:,number+1:end)=[];
@@ -51,11 +60,11 @@ for i =1:length(nel_tot)
 end
 
 %% Plot
-
+cd ..
 cd convergence_studies\Clamped_wing\ % Move to the right folder 
 
 fig=figure;
-
+set(gcf, 'Position',  [100, 100, 5000, 4000])
 subplot(1,3,1)
     loglog(nel_tot,einf)
     grid on
@@ -75,8 +84,9 @@ subplot(1,3,3)
     ylabel('Time')
     title('Time spent')
    
- 
-saveas(fig,'Convergence_clamped_wing_eig','svg')
+if 0
+    saveas(fig,'Convergence_clamped_wing_eig','svg')
+end
 %% plot Modes
 if 0
     options.plot_original = 1;
