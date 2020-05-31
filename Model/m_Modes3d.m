@@ -32,10 +32,10 @@ if (~exist('options.alpha', 'var'))
     % "dof" parameter does not exist
      options.alpha = 0.3;
 end
-if (~exist('options.saveImages', 'var'))
-    % "dof" parameter does not exist
-     options.saveImages = 0;
-end
+% if (~exist('options.saveImages', 'var'))
+%     % "dof" parameter does not exist
+%      options.saveImages = 0;
+% end
 %% Parts of the model
 for r = 1:size(model.b,2)
     beam = model.b(r);
@@ -273,7 +273,7 @@ for j=1:length(model.en)
 end
 
 for i = 1:length(model.b)
-    u_beam = transpose(model.b(i).A)*U*100; 
+    u_beam = transpose(model.b(i).A)*U*30; 
     for k = 1:model.b(i).nel+1
        model.b(i).in(k).d = u_beam(1+6*(k-1):6*(k),:);
     end    
@@ -377,8 +377,9 @@ if options.plot_original
 end
 %% Plot deformed configuration
 if options.plot_deformed
+    close all
     for i = 1:options.N
-        figure
+        fig=figure('visible','off');
         for r = 1:size(model.b,2)
             TR = triangulation(Support(r).Mesh_elements,Support(r).Deformed_nodes(i).modes.');
             [f,p] = freeBoundary(TR);
@@ -392,20 +393,22 @@ if options.plot_deformed
             zlabel('z')
         end
         if options.saveImages
-            for h = 1:3
-                f = figure('visible','off');
-                if h == 1
+            for h = 1:4
+                if h==1
+                    fname = ['Mode_', num2str(i),'_view3D'];
+                    saveas(fig,fname,'svg')
+                elseif h == 2
                     view([1 0 0])
-                    fname = sprintf('Mode\t%d\tx', i);
-                    saveas(f,'fname','svg')
-                elseif h==2
-                    view([0 1 0])
-                    fname = sprintf('Mode\t%d\ty', i);
-                    saveas(f,'fname','svg')
+                    fname = ['Mode_', num2str(i),'_viewX'];
+                    saveas(fig,fname,'svg')
                 elseif h==3
+                    view([0 1 0])
+                    fname = ['Mode_', num2str(i),'_viewY'];
+                    saveas(fig,fname,'svg')
+                elseif h==4
                     view([0 0 1])
-                    fname = sprintf('Mode\t%d\tz', i);
-                    saveas(f,'fname','svg')
+                    fname = ['Mode_', num2str(i),'_viewZ'];
+                    saveas(fig,fname,'svg')
                 end
             end
         end
