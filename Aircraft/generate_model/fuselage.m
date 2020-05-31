@@ -22,11 +22,11 @@ clear Node6
 clear i
 
 %% Discretisation parameters
-nel_nose=30;
-nel_front_fuselage=30;
-nel_rear_fuselage=30;
-nel_front_tail=30;
-nel_rear_tail=30;
+nel_nose=18*2;
+nel_front_fuselage=35;
+nel_rear_fuselage=63;
+nel_front_tail=23*2;
+nel_rear_tail=11*2;
 
 %% Parameters of the fuselage
 R_fus= 3;       % Radius of the fuselage

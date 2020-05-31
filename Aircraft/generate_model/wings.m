@@ -15,9 +15,9 @@
 
 
 %% Discretisation parameters
-nel_1=30;
-nel_2=30;
-nel_3=30;
+nel_1=56;
+nel_2=28;
+nel_3=66;
 
 
 %% Parameters of the wing

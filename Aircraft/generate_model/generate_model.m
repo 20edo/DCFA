@@ -66,11 +66,9 @@ if 0
     m_Modes3d(aircraft,options);
 end
 if 0
-N = 30;
-m_modes_easy(aircraft,N)
+    N = 30;
+    m_modes_easy(aircraft,N)
 end
 
-
 cd ..
-
 
