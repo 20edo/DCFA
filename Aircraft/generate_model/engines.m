@@ -185,3 +185,4 @@ clear support
 clear C
 clear J1
 clear omega
+clear nel_support

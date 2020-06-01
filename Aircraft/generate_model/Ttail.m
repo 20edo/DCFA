@@ -87,7 +87,7 @@ l_stabilizer.vx=l_stabilizer.vx/norm(l_stabilizer.vx,2);
 l_stabilizer.vy=[cosd(i_ang) 0 -sind(i_ang)]';
 l_stabilizer.vy=l_stabilizer.vy-dot(l_stabilizer.vy,l_stabilizer.vx)*l_stabilizer.vx;
 l_stabilizer.vy=l_stabilizer.vy/norm(l_stabilizer.vy);
-l_stabilizer.name='r_stabilizer';
+l_stabilizer.name='l_stabilizer';
 
 %% Add beams to the model
 

@@ -107,3 +107,25 @@ for i=1:length(fuselage_beams)
 %     disp(M)
     
 end
+
+clear E
+clear front_fuselage
+clear front_tail
+clear fuselage_beams
+clear G
+clear i
+clear L
+clear nel_front_fuselage
+clear nel_front_tail
+clear nel_nose
+clear nel_rear_fuselage
+clear nel_rear_tail
+clear nose
+clear R
+clear R_fus
+clear R_mid_tail
+clear rear_fuselage
+clear rear_tail
+clear rho
+clear t
+clear t_fus

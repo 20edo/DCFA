@@ -130,4 +130,8 @@ clear l1
 clear l2
 clear nel
 clear tank
+clear E
+clear G
+clear L
+clear rho
 

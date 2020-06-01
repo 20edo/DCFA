@@ -142,3 +142,9 @@ aircraft.b(2).M=aircraft.b(2).M+Payload.M;
 clear human
 clear vehicles
 clear Payload
+clear E
+clear G
+clear l
+clear L
+clear nel
+clear rho
