@@ -4,13 +4,7 @@ L=el.L;
 c = el.sc.Ymax - el.sc.Ymin ;  % CORDA
 e = -el.sc.yo - 1/4*c; % TROVARE UN MODO PER ESPRIMERE e 
 
-
-CL0 = alpha*2*pi; % CL at zero incidence  
-CLa = 2*pi; % CL derived alpha  
-CLb = 6.2366; % CM derived alpha 
-CMb = -0.8437; % CM derived beta  
-CMac = -pi/2*(-alpha); 
-
+CLa = 2*pi; % CL derived alpha    
 
 Ka = [[ 0, 0,                                                                           0,                                                                               0,                                                                              0, 0, 0, 0,                                                                             0,                                                                             0,                                                                              0, 0];
 [ 0, 0,                                                                           0,                                                                               0,                                                                              0, 0, 0, 0,                                                                             0,                                                                             0,                                                                              0, 0];

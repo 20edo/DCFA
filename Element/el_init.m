@@ -29,3 +29,6 @@ el.K=NaN(6);    % Stiffness matrix              6*6 matrix
 el.C=NaN(6);    % Dissipation matrix            6*6 matrix
 el.fa = zeros(12,1);
 el.Ka = zeros(12);
+el.fb = zeros(12,1); 
+el.Lq = zeros(1,12); 
+el.Lb = 0; 

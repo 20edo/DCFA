@@ -30,3 +30,6 @@ m.K=nan;                    % Stiffness matrix of the model
 
 m.fa = NaN; 
 m.Ka = NaN; 
+m.fb = NaN; 
+m.Lq = NaN; 
+m.Lb = NaN; 

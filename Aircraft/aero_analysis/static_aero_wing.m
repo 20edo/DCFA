@@ -1,5 +1,6 @@
 % Static aero analysis of the clamped wing
-% - DIvergence
+% - Divergence
+% - Control reversal
 %%
 % DCFA swept wing assignement
 %
@@ -59,6 +60,20 @@ M = v./a;
 [T_straight, a_straight, P_straight, rho_straight] = atmosisa(0:100:11000);
 v_straight = sqrt(q_div_straight*2./rho_straight);
 M_straight = v_straight./a_straight;
+
+%% Find the control reversal dynamic pressure 
+K = [wing.K, zeros(size(wing.K,1),1); zeros(1,size(wing.K,2)),0]; 
+Ka = [wing.Ka, wing.fb; wing.Lq, wing.Lb]; 
+
+%% Find the control reversal (cr) dynamic pressure
+[V_cr,D_cr]= eig(full(K),full(Ka));
+q_cr = diag(D_cr);
+[q_cr,I] = sort(real(q_cr));
+V_cr = V_cr(:,I);                         % sort the eigenshapes
+V_cr(:,q_cr<0)=[];                    % select the eigenshapes with positive eig
+q_cr(q_cr<0)=[];
+q_cr = q_cr(2);                   % select the minimum positive q_inf
+V_cr = V_cr(:,2);                     % select its eigenshape
 
 
 %% Plot and save results

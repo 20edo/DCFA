@@ -6,7 +6,7 @@ e = -el.sc.yo - 1/4*c; % TROVARE UN MODO PER ESPRIMERE e
 
 
 CL0 = alpha*2*pi; % CL at zero incidence
-CMac = -pi/2*(-alpha);
+CMac = -pi/2*(-alpha); % CM wrt the aerodynamic center
 
 fa = [[0];
     [0];

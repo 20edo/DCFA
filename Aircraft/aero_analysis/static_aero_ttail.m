@@ -1,5 +1,6 @@
 % Static aero analysis of the T-Tail
 % - Divergence
+% - Control reversal 
 %%
 % DCFA swept wing assignement
 %
@@ -32,19 +33,33 @@ ttail = m_add_aero_loads(ttail,[1,0,0]');
 
 %% Find the divergence dynamic pressure
 
-[V,D]= eigs(ttail.K,ttail.Ka,30,'smallestabs');
-q_div = diag(D);
+[V_div,D_div]= eigs(ttail.K,ttail.Ka,30,'smallestabs');
+q_div = diag(D_div);
 [q_div,I] = sort(real(q_div));
-V = V(:,I);                         % sort the eigenshapes
-V(:,q_div<0)=[];                    % select the eigenshapes with positive eig
+V_div = V_div(:,I);                         % sort the eigenshapes
+V_div(:,q_div<0)=[];                    % select the eigenshapes with positive eig
 q_div(q_div<0)=[];
 q_div = q_div(1);                   % select the minimum positive q_inf
-V_div = V(:,1);                     % select its eigenshape
+V_div = V_div(:,1);                     % select its eigenshape
 
 %% Calculations for the plotting VTAS and MACH when altitude changes
 [T, a, P, rho] = atmosisa(0:100:11000);
-v = sqrt(q_div*2./rho);
-M = v./a;
+v_div = sqrt(q_div*2./rho);
+M_div = v_div./a;
+
+%% Find the control reversal dynamic pressure 
+K = [ttail.K, zeros(size(ttail.K,1),1); zeros(1,size(ttail.K,2)),0]; 
+Ka = [ttail.Ka, ttail.fb; ttail.Lq, ttail.Lb]; 
+
+%% Find the control reversal (cr) dynamic pressure
+[V_cr,D_cr]= eig(full(K),full(Ka));
+q_cr = diag(D_cr);
+[q_cr,I] = sort(real(q_cr));
+V_cr = V_cr(:,I);                         % sort the eigenshapes
+V_cr(:,q_cr<0)=[];                    % select the eigenshapes with positive eig
+q_cr(q_cr<0)=[];
+q_cr = q_cr(1);                   % select the minimum positive q_inf
+V_cr = V_cr(:,1);                     % select its eigenshape
 
 %% Plote and save results
 if 0
@@ -82,13 +97,13 @@ if 0
     figure(3)
     set(gcf, 'Position',  [40, 40, 700, 500])
     subplot(1,2,1)
-    plot(0:100:11000,v,'LineWidth',2)
+    plot(0:100:11000,v_div,'LineWidth',2)
     grid on
     xlabel('Altitude [m]')
     ylabel('Divergence VTAS [m/s]')
     title('Divergence VTAS T-Tail')
     subplot(1,2,2)
-    plot(0:100:11000,M,'LineWidth',2)
+    plot(0:100:11000,M_div,'LineWidth',2)
     grid on
     xlabel('Altitude [m]')
     ylabel('Divergence Mach [-]')
