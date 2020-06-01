@@ -21,11 +21,14 @@ for i = 1:length(m.b)
 %         lambda = 0; 
         % Check if the beam is a profile
         for j=1:m.b(i).nel
-            m.b(i).el(j) = el_Ka_assembly(m.b(i),m.b(i).el(j),lambda,alpha);
             % Calculate K_aero
+            m.b(i).el(j) = el_Ka_assembly(m.b(i),m.b(i).el(j),lambda,alpha);
+            % Calculate f_aero
+            m.b(i).el(j) = el_fa_assembly(m.b(i),m.b(i).el(j),lambda,alpha);
         end
         for k=1:m.b(i).nel % Create Ka matrix for the beam
             m.b(i).Ka(6*(k-1)+1:6*(k+1),6*(k-1)+1:6*(k+1))=m.b(i).Ka(6*(k-1)+1:6*(k+1),6*(k-1)+1:6*(k+1))+m.b(i).el(k).Ka;
+            m.b(i).fa(6*(k-1)+1:6*(k+1),1)=m.b(i).fa(6*(k-1)+1:6*(k+1),1)+m.b(i).el(k).fa;
         end
     end
 end

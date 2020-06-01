@@ -28,6 +28,5 @@ m.f=[];                     % External loads vector
 m.K=nan;                    % Stiffness matrix of the model
 
 
-m.fa_th = NaN; 
-m.fa_w = NaN; 
+m.fa = NaN; 
 m.Ka = NaN; 
