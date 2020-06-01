@@ -73,8 +73,9 @@ Node20=en_free(aircraft.en(12).x+x);
 Engines=[Node17 Node18 Node19 Node20];
 
 for i=1:length(Engines)
-    Engines(i).K=zeros(6);          % K matrix of the engine
-    Engines(i).M=zeros(6);          % Inertia matrix of the engine
+    Engines(i).K=K;          % K matrix of the engine
+    Engines(i).M=M;          % Inertia matrix of the engine
+    Engines(i).C=C;          % Dambing matrix due to gyroscopic effects
     aircraft.en=[aircraft.en Engines(i)];
 end
 

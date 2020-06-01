@@ -1,6 +1,5 @@
 % Static aero analysis of the T-Tail
 % - Divergence
-% - Control reversal 
 %%
 % DCFA swept wing assignement
 %
@@ -47,29 +46,15 @@ V_div = V_div(:,1);                     % select its eigenshape
 v_div = sqrt(q_div*2./rho);
 M_div = v_div./a;
 
-%% Find the control reversal dynamic pressure 
-K = [ttail.K, zeros(size(ttail.K,1),1); zeros(1,size(ttail.K,2)),0]; 
-Ka = [ttail.Ka, ttail.fb; ttail.Lq, ttail.Lb]; 
-
-%% Find the control reversal (cr) dynamic pressure
-[V_cr,D_cr]= eig(full(K),full(Ka));
-q_cr = diag(D_cr);
-[q_cr,I] = sort(real(q_cr));
-V_cr = V_cr(:,I);                         % sort the eigenshapes
-V_cr(:,q_cr<0)=[];                    % select the eigenshapes with positive eig
-q_cr(q_cr<0)=[];
-q_cr = q_cr(1);                   % select the minimum positive q_inf
-V_cr = V_cr(:,1);                     % select its eigenshape
-
 %% Plote and save results
-if 0
+if 1
     options.plot_original          = 1;
     options.plot_deformed          = 1;
     options.plotColor              = 'green';
     options.saveSTL                = 0;
     options.point_section          = 8;
     options.N                      = 1;         % we have only one eig
-    m_plot_eigenshape(ttail,options,1/4*V_div)
+    m_plot_eigenshape(ttail,options,1/4*V_div);
     
     figure(2)
     title('Static divergence T-Tail modeshape')

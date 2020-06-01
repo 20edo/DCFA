@@ -1,6 +1,5 @@
 % Static aero analysis of the clamped wing
 % - Divergence
-% - Control reversal
 %%
 % DCFA swept wing assignement
 %
@@ -19,12 +18,18 @@ generate_model
 % Move to the analysis folder
 cd aero_analysis\
 
+% switch off the aerodynamic properties of the engine support
+for i=16:19 
+    aircraft.b(i).ssh = false; 
+end
 
 %% Build the swept wing model
 wing=m_init();
 wing.en=[en_ground(aircraft.en(7).x) ...
-    aircraft.en(17) aircraft.en(18)];
-wing_list=[aircraft.b(7) aircraft.b(8) aircraft.b(9) aircraft.b(16) aircraft.b(17)];
+    aircraft.en(19) aircraft.en(20)];
+wing_list=[aircraft.b(10) aircraft.b(11) aircraft.b(12) aircraft.b(18) aircraft.b(19)];
+% wing.en=[en_ground(aircraft.en(7).x)];
+% wing_list=[aircraft.b(10) aircraft.b(11) aircraft.b(12)];
 for i=1:length(wing_list)
     wing=m_add_beam(wing,wing_list(i));
 end
@@ -35,7 +40,7 @@ wing = m_add_aero_loads(wing,[1,0,0]');
 wing_straight = m_add_aero_loads_straight(wing_straight,[1,0,0]');
 
 %% Find the divergence dynamic pressure - swept wing
-[V,D]= eigs(wing.K,wing.Ka,30,'smallestabs');
+[V,D]= eig(full(wing.K),full(wing.Ka));
 q_div = diag(D);
 [q_div,I] = sort(real(q_div));
 V = V(:,I);                             % sort the eigenshapes
@@ -61,30 +66,21 @@ M = v./a;
 v_straight = sqrt(q_div_straight*2./rho_straight);
 M_straight = v_straight./a_straight;
 
-%% Find the control reversal dynamic pressure 
-K = [wing.K, zeros(size(wing.K,1),1); zeros(1,size(wing.K,2)),0]; 
-Ka = [wing.Ka, wing.fb; wing.Lq, wing.Lb]; 
-
-%% Find the control reversal (cr) dynamic pressure
-[V_cr,D_cr]= eig(full(K),full(Ka));
-q_cr = diag(D_cr);
-[q_cr,I] = sort(real(q_cr));
-V_cr = V_cr(:,I);                         % sort the eigenshapes
-V_cr(:,q_cr<0)=[];                    % select the eigenshapes with positive eig
-q_cr(q_cr<0)=[];
-q_cr = q_cr(2);                   % select the minimum positive q_inf
-V_cr = V_cr(:,2);                     % select its eigenshape
-
-
 %% Plot and save results
-if 0
+if 1
+    
+    % switch on the aero properties for the plot 
+    for i=4:5
+        wing.b(i).ssh = true; 
+    end
+    
     options.plot_original          = 1;
     options.plot_deformed          = 1;
     options.plotColor              = 'green';
     options.saveSTL                = 0;
     options.point_section          = 8;
     options.N                      = 1;        % we have only one eig
-    m_plot_eigenshape(wing,options,V_div)
+    m_plot_eigenshape(wing,options,V_div/20)
     
     
     figure(2)
