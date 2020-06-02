@@ -27,7 +27,8 @@ clear temp
 angle_b = [deg2rad(2), deg2rad(4), deg2rad(6)];
 CM = [-0.0309, -0.0613, -0.0898];
 temp = polyfit(angle_b, CM, 1);
-CMb = temp(1);
+CMb = temp(1); 
+CMb = -2; 
 clear temp
 
 %%
@@ -67,7 +68,7 @@ elseif dx == -1
         (CLb*L^2*c*cos(lambda))/12
         0];
     
-    Lq = [ 0, 0, -(CLa*c*sin(2*lambda))/2, (CLa*L*c*cos(lambda)^2)/2, 0, 0, 0, 0, (CLa*c*sin(2*lambda))/2, (CLa*L*c*cos(lambda)^2)/2, 0, 0];
+    Lq = [ 0, 0, (CLa*c*sin(2*lambda))/2, -(CLa*L*c*cos(lambda)^2)/2, 0, 0, 0, 0, -(CLa*c*sin(2*lambda))/2, -(CLa*L*c*cos(lambda)^2)/2, 0, 0];
     
     Lb =CLb*L*c*cos(lambda);
     
