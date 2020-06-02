@@ -56,6 +56,20 @@ q_div_straight = sort(real(q_div_straight));
 q_div_straight(q_div_straight<0)=[];
 q_div_straight = q_div_straight(1);
 
+%% Assebly stiffness the K matrices for cntr_rev
+K_cr = [wing_straight.K, zeros(size(wing_straight.K,1),1); zeros(1,size(wing_straight.K,2)),0]; 
+Ka_cr = [wing_straight.Ka, wing_straight.fb; wing_straight.Lq, wing_straight.Lb]; 
+
+%% Find the control reversal (cr) dynamic pressure
+[V_cr,D_cr]= eig(full(K_cr),full(Ka_cr));
+q_cr = diag(D_cr);
+[q_cr,I] = sort(real(q_cr));
+V_cr = V_cr(:,I);                         % sort the eigenshapes
+V_cr(:,q_cr<1)=[];                    % select the eigenshapes with positive eig
+q_cr(q_cr<1)=[];
+q_cr = q_cr(1);                   % select the minimum positive q_inf
+V_cr = V_cr(:,1);                     % select its eigenshape
+
 
 %% Calculations for the plotting VTAS and MACH when altitude changes - swept wing
 [T, a, P, rho] = atmosisa(0:100:11000);
