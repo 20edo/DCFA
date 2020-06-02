@@ -268,7 +268,7 @@ for j=1:length(model.en)
 end
 
 for i = 1:length(model.b)
-    u_beam = transpose(model.b(i).A)*U*100; 
+    u_beam = transpose(model.b(i).A)*U; 
     for k = 1:model.b(i).nel+1
        model.b(i).in(k).d = u_beam(1+6*(k-1):6*(k),:);
     end    

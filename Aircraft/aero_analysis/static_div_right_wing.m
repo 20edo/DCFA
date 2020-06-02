@@ -50,6 +50,27 @@ q_div(q_div<0)=[];
 q_div = q_div(1);                       % select the minimum positive q_inf
 V_div = V(:,1);                         % select its eigenshape
 
+%% Direct problem
+q = 24500; 
+A = wing.K - q*wing.Ka;
+b = q*wing.fa; 
+q_stat = A\b; 
+    % switch on the aero properties for the plot 
+    for i=4:5
+        wing.b(i).ssh = true; 
+    end
+    options.plot_original          = 1;
+    options.plot_deformed          = 1;
+    options.plotColor              = 'green';
+    options.saveSTL                = 0;
+    options.point_section          = 8;
+    options.N                      = 1;        % we have only one eig
+    
+m_plot_eigenshape(wing,options,q_stat*10);
+    
+
+
+
 %% Find the divergence dynamic pressure - straight wing
 q_div_straight = eigs(wing_straight.K,wing_straight.Ka,30,'smallestabs');
 q_div_straight = sort(real(q_div_straight));
@@ -82,7 +103,7 @@ v_straight = sqrt(q_div_straight*2./rho_straight);
 M_straight = v_straight./a_straight;
 
 %% Plot and save results
-if 1
+if 0
     % switch on the aero properties for the plot 
     for i=4:5
         wing.b(i).ssh = true; 

@@ -54,6 +54,14 @@ wing_straight = m_add_aero_loads_straight(wing_straight,[1,0,0]');
 K_cr = [wing.K, zeros(size(wing.K,1),1); zeros(1,size(wing.K,2)),0]; 
 Ka_cr = [wing.Ka, wing.fb; wing.Lq, wing.Lb]; 
 
+%% Direct problem
+q = 24500; 
+A = [wing.K-q*wing.Ka, zeros(size(wing.K,1),1); -q*wing.Lq, 1]; 
+b = q*[wing.fb; wing.Lb]*deg2rad(20); 
+sol = A\b; 
+DL = sol(end);
+
+
 %% Find the control reversal (cr) dynamic pressure
 [V_cr,D_cr]= eig(full(K_cr),full(Ka_cr));
 q_cr = diag(D_cr);
