@@ -36,8 +36,8 @@ ttail = m_add_aero_loads(ttail,[1,0,0]');
 q_div = diag(D_div);
 [q_div,I] = sort(real(q_div));
 V_div = V_div(:,I);                         % sort the eigenshapes
-V_div(:,q_div<0)=[];                    % select the eigenshapes with positive eig
-q_div(q_div<0)=[];
+V_div(:,q_div<1)=[];                    % select the eigenshapes with positive eig
+q_div(q_div<1)=[];
 q_div = q_div(1);                   % select the minimum positive q_inf
 V_div = V_div(:,1);                     % select its eigenshape
 

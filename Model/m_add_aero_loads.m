@@ -38,6 +38,8 @@ for i = 1:length(m.b)
             m.b(i).el(j) = el_fa_assembly(m.b(i),m.b(i).el(j),lambda,alpha,dx);
             % Calculate matrices for control reversal 
             m.b(i).el(j) = el_ctrl_rev_assembly(m.b(i),m.b(i).el(j),lambda,alpha,dx);
+            % Calculate matrices for consistend roll problems 
+            m.b(i).el(j) = el_consistent_assembly(m.b(i),m.b(i).el(j),j,lambda);
         end
         for k=1:m.b(i).nel 
             % Create Ka matrix for the beam
@@ -49,7 +51,19 @@ for i = 1:length(m.b)
             % Create the Lq vector for the beam 
             m.b(i).Lq(1,6*(k-1)+1:6*(k+1))=m.b(i).Lq(1,6*(k-1)+1:6*(k+1))+m.b(i).el(k).Lq;
             % Create Lb for the beam 
-            m.b(i).Lb = m.b(i).Lb + m.b(i).el(k).Lb;           
+            m.b(i).Lb = m.b(i).Lb + m.b(i).el(k).Lb;    
+            % Jx
+            m.b(i).Jx = m.b(i).Jx + m.b(i).el(k).Jx; 
+            % lp 
+            m.b(i).lp = m.b(i).lp + m.b(i).el(k).lp; 
+            % lb
+            m.b(i).lb = m.b(i).lb + m.b(i).el(k).lb; 
+            % lq
+            m.b(i).lq(1,6*(k-1)+1:6*(k+1))=m.b(i).lq(1,6*(k-1)+1:6*(k+1))+m.b(i).el(k).lq;
+            % Sq
+            m.b(i).Sq(6*(k-1)+1:6*(k+1),1)=m.b(i).Sq(6*(k-1)+1:6*(k+1),1)+m.b(i).el(k).Sq;
+            % fp
+            m.b(i).fp(6*(k-1)+1:6*(k+1),1)=m.b(i).fp(6*(k-1)+1:6*(k+1),1)+m.b(i).el(k).fp;
         end
     end
 end

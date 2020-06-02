@@ -38,6 +38,12 @@ model.fa = sparse(zeros(dof,1));
 model.fb = sparse(zeros(dof,1));
 model.Lq = sparse(zeros(1,dof));
 model.Lb = 0; 
+model.Jx = 0; 
+model.lp = 0; 
+model.lb = 0; 
+model.lq = sparse(zeros(1,dof)); 
+model.Sq = sparse(zeros(dof,1));
+model.fp = sparse(zeros(dof,1));
 
 
 % organisation of dof: all external nodes and then all internal ones
@@ -85,6 +91,12 @@ for i=1:size(model.b,2)
     model.fb = model.fb + (model.b(i).A)*(beam.fb);
     model.Lq = model.Lq + (beam.Lq)*(model.b(i).A)';
     model.Lb = model.Lb + beam.Lb; 
+    model.Jx = model.Jx + beam.Jx; 
+    model.lp = model.lp + beam.lp;
+    model.lb = model.lb + beam.lb;
+    model.lq = model.lq + (beam.lq)*(model.b(i).A)';
+    model.Sq = model.Sq + (model.b(i).A)*(beam.Sq);
+    model.fp = model.fp + (model.b(i).A)*(beam.fp);
 end
 
 %% Constraint 
@@ -102,6 +114,9 @@ for i=1:length(model.en)
             model.fa = model.fa([1:index-1,index+1:end]);
             model.fb = model.fb([1:index-1,index+1:end]);
             model.Lq = model.Lq([1:index-1,index+1:end]);
+            model.lq = model.lq([1:index-1,index+1:end]);
+            model.Sq = model.Sq([1:index-1,index+1:end]);
+            model.fp = model.fp([1:index-1,index+1:end]);
             n_dv = n_dv + 1; 
         end
     end            

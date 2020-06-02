@@ -19,6 +19,13 @@ b.fa=sparse(zeros(6*(b.nel+1),1));
 b.fb=sparse(zeros(6*(b.nel+1),1));
 b.Lq=sparse(zeros(1,6*(b.nel+1)));
 b.Lb = 0; 
+b.Jx = 0; 
+b.lp = 0; 
+b.lb = 0;
+b.lq=sparse(zeros(1,6*(b.nel+1)));
+b.Sq=sparse(zeros(6*(b.nel+1),1));
+b.fp=sparse(zeros(6*(b.nel+1),1));
+
 
 for i=1:b.nel
     b.M(6*(i-1)+1:6*(i+1),6*(i-1)+1:6*(i+1))=b.M(6*(i-1)+1:6*(i+1),6*(i-1)+1:6*(i+1))+b.el(i).M;

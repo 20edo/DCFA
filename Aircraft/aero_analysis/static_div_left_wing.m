@@ -44,8 +44,8 @@ wing_straight = m_add_aero_loads_straight(wing_straight,[1,0,0]');
 q_div = diag(D);
 [q_div,I] = sort(real(q_div));
 V = V(:,I);                             % sort the eigenshapes
-V(:,q_div<0)=[];                        % select the eigenshapes with positive eig
-q_div(q_div<0)=[];
+V(:,q_div<1)=[];                        % select the eigenshapes with positive eig
+q_div(q_div<1)=[];
 q_div = q_div(1);                       % select the minimum positive q_inf
 V_div = V(:,1);                         % select its eigenshape
 
