@@ -55,6 +55,7 @@ q = 24500;
 A = wing.K - q*wing.Ka;
 b = q*wing.fa; 
 q_stat = A\b; 
+if 0
     % switch on the aero properties for the plot 
     for i=4:5
         wing.b(i).ssh = true; 
@@ -67,6 +68,7 @@ q_stat = A\b;
     options.N                      = 1;        % we have only one eig
     
 m_plot_eigenshape(wing,options,q_stat*10);
+end
     
 
 

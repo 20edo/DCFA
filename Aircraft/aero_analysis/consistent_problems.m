@@ -63,7 +63,7 @@ K = wing.K;
 Ka = wing.Ka;
 
 %% Number of problem to be solved
-problem=3;
+problem=1;
 %% #1
 % initial roll acceleration p_dot for prescribed aileron deflection beta
 %% #2
@@ -80,7 +80,7 @@ problem=3;
 q = 24500; % dynamic pressure
 switch problem
     case 1
-        beta = deg2rad(10);
+        beta = deg2rad(20);
         A = [K-q*Ka, Sq; -q*lq, Jx];
         b = q*[fb; lb]*beta;
         sol = A\b;
@@ -110,7 +110,7 @@ switch problem
         end
         
     case 3
-        beta = deg2rad(10);
+        beta = deg2rad(20);
         A = [K-q*Ka, -q*fp; -q*lq, -q*lp];
         b = q*[fb; lb]*beta;
         sol = A\b;
