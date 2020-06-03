@@ -40,19 +40,35 @@ wing.b(2).lb = zeros(size(wing.b(2).lb));
 
 wing = m_compute_matrices(wing);
 
-%% Compute J_x of the airframe
-% Beams of the fuselage
-Jx = 0;
-for i=1:5
-    Jx=sum(sum(aircraft.b(i).M(4:6:end,4:6:end)))+Jx;
-end
-% Engines
-for i=17:20
-    Jx=aircraft.en(i).M(4,4)+ ...
-        aircraft.en(i).M(1,1)*norm(aircraft.en(i).x([2,3]))^2+Jx;
+%% Compute J_x of the aircraft
+Jx = 0;         % Inizialize Jx
+% External nodes
+for i=1:length(aircraft.en)
+   Jx=Jx+aircraft.en(i).M(4,4)+aircraft.en(i).M(1,1)*norm(aircraft.en(1).x([2,3]))^2; 
 end
 
-Jx = Jx + wing.Jx;
+% Beams
+for i=1:length(aircraft.b)
+    beam=aircraft.b(i);
+    for j=0:length(beam.in)-1
+        x=beam.o+beam.vx*beam.in(j+1).x;
+        Jx=Jx+beam.M(4+6*j,4+6*j)+beam.M(1+6*j,1+6*j)*norm(x([2,3]))^2;
+    end
+end
+
+% % % % % % % Beams of the fuselage
+% % % % % % 
+% % % % % % for i=1:5
+% % % % % %     Jx=sum(sum(aircraft.b(i).M(4:6:end,4:6:end)))+Jx;
+% % % % % % end
+% % % % % % % Engines
+% % % % % % for i=17:20
+% % % % % %     Jx=aircraft.en(i).M(4,4)+ ...
+% % % % % %         aircraft.en(i).M(1,1)*norm(aircraft.en(i).x([2,3]))^2+Jx;
+% % % % % % end
+% % % % % % 
+% % % % % % Jx = Jx + wing.Jx;
+
 lp = wing.lp;
 lb = wing.lb;
 lq = wing.lq;
