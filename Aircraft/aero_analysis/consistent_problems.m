@@ -56,19 +56,6 @@ for i=1:length(aircraft.b)
     end
 end
 
-% % % % % % % Beams of the fuselage
-% % % % % % 
-% % % % % % for i=1:5
-% % % % % %     Jx=sum(sum(aircraft.b(i).M(4:6:end,4:6:end)))+Jx;
-% % % % % % end
-% % % % % % % Engines
-% % % % % % for i=17:20
-% % % % % %     Jx=aircraft.en(i).M(4,4)+ ...
-% % % % % %         aircraft.en(i).M(1,1)*norm(aircraft.en(i).x([2,3]))^2+Jx;
-% % % % % % end
-% % % % % % 
-% % % % % % Jx = Jx + wing.Jx;
-
 lp = wing.lp;
 lb = wing.lb;
 lq = wing.lq;
@@ -79,7 +66,7 @@ K = wing.K;
 Ka = wing.Ka;
 
 %% Number of problem to be solved
-problem=1;
+problem=6;
 %% #1
 % initial roll acceleration p_dot for prescribed aileron deflection beta
 %% #2
@@ -97,7 +84,8 @@ q = 24500; % dynamic pressure
 switch problem
     case 1
         beta = deg2rad(20);
-        A = [K-q*Ka, Sq; -q*lq, Jx];
+        A = [K-q*Ka, Sq
+            -q*lq, Jx];
         b = q*[fb; lb]*beta;
         sol = A\b;
         p_dot = sol(end);
@@ -168,9 +156,9 @@ switch problem
             warning('You are over the divergence dynamic pressure for the manouver')
         end
     case 6 
-        p_dot = 0.4; 
-        A = [K-q*Ka; -q*fp; -q*lq; -q*lp]; 
-        b = [-Sq; Jx]*p_dot; 
+        p_dot = 0.04; 
+        A = [K-q*Ka, -q*fp; -q*lq, -q*lp]; 
+        b = -[Sq; Jx]*p_dot; 
         sol = A\b; 
         p_fract_vinf = sol(end); 
         [V,D] = eig(full([K, zeros(size(K,1),1); zeros(1,size(K,1)), 0]),full([Ka, fp; lq, lp]));
@@ -194,7 +182,7 @@ if 1
     options.saveSTL                = 0;
     options.point_section          = 8;
     options.N                      = 1;        % we have only one eig
-    m_plot_eigenshape(wing,options,sol(1:end-1)*50)
+    m_plot_eigenshape(wing,options,sol(1:end-1)*100)
 end
 
 

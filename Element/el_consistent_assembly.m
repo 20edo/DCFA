@@ -2,8 +2,8 @@ function el = el_consistent_assembly(b,el,i,lambda)
 
 L=el.L;
 c = el.sc.Ymax - el.sc.Ymin ;  % CORDA
-e = -el.sc.yo - 1/4*c;
-d = -el.sc.ycg;
+e = -el.sc.yo - 1/4*c; 
+d = el.sc.ycg;
 m = el.sc.m; 
 
 pos1 = b.o + b.vx*b.in(i).x;
@@ -12,13 +12,14 @@ x1 = pos1(2);
 x2 = pos2(2);
 
 CLa = 2*pi; 
-CLa = 5; 
+ 
 %% Compute CM/b
 angle_b = [deg2rad(2), deg2rad(4), deg2rad(6)];
 CM = [-0.0309, -0.0613, -0.0898]; % 70% alpha zero
 %CM = [-0.0275, -0.0546, -0.0802]; % 85% alpha zero
 temp = polyfit(angle_b, CM, 1);
 CMb = temp(1); 
+CMb = -1.7; 
 % CMb = -0.75;
 clear temp
 %% Compute CL/b
@@ -27,7 +28,8 @@ angle_b = [deg2rad(2), deg2rad(4), deg2rad(6)];
 CL = [0.1544, 0.3073, 0.4534]; % 85% alpha zero
 temp = polyfit(angle_b, CL, 1);
 CLb = temp(1);
-CLb = 0.3; 
+CLb = 0.7;
+% CLb = 0.3;
 clear temp
 
 
