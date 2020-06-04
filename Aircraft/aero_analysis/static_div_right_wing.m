@@ -105,7 +105,7 @@ v_straight = sqrt(q_div_straight*2./rho_straight);
 M_straight = v_straight./a_straight;
 
 %% Plot and save results
-if 0
+if 1
     % switch on the aero properties for the plot 
     for i=4:5
         wing.b(i).ssh = true; 
@@ -117,7 +117,7 @@ if 0
     options.saveSTL                = 0;
     options.point_section          = 8;
     options.N                      = 1;        % we have only one eig
-    m_plot_eigenshape(wing,options,V_div/20);
+    m_plot_eigenshape(wing,options,V_div*10);
     
     
     figure(2)

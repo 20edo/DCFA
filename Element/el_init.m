@@ -29,6 +29,7 @@ el.K=NaN(6);    % Stiffness matrix              6*6 matrix
 el.C=NaN(6);    % Dissipation matrix            6*6 matrix
 el.fa = sparse(zeros(12,1));
 el.Ka = sparse(zeros(12));
+el.Ca = sparse(zeros(12));
 el.fb = sparse(zeros(12,1)); 
 el.Lq = sparse(zeros(1,12)); 
 el.Lb = 0; 

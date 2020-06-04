@@ -44,6 +44,8 @@ for i = 1:length(m.b)
         for k=1:m.b(i).nel 
             % Create Ka matrix for the beam
             m.b(i).Ka(6*(k-1)+1:6*(k+1),6*(k-1)+1:6*(k+1))=m.b(i).Ka(6*(k-1)+1:6*(k+1),6*(k-1)+1:6*(k+1))+m.b(i).el(k).Ka;
+            % Create Ca matrix for the beam
+            m.b(i).Ca(6*(k-1)+1:6*(k+1),6*(k-1)+1:6*(k+1))=m.b(i).Ca(6*(k-1)+1:6*(k+1),6*(k-1)+1:6*(k+1))+m.b(i).el(k).Ca;
             % Create the fa vector for the beam 
             m.b(i).fa(6*(k-1)+1:6*(k+1),1)=m.b(i).fa(6*(k-1)+1:6*(k+1),1)+m.b(i).el(k).fa;
             % Create the fb vector for the beam 

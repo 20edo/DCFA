@@ -105,6 +105,7 @@ b.name=nan;                % Optional name of the beam (string)
 % b_build_elemnts
 b.fa = NaN; 
 b.Ka = NaN; 
+b.Ca = NaN; 
 b.fb = NaN; 
 b.Lq = NaN; 
 b.Lb = NaN; 
