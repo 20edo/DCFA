@@ -20,7 +20,7 @@ e = -el.sc.yo - 1/4*c; % TROVARE UN MODO PER ESPRIMERE e
 
 CLa=el.sc.CLa;
 CL0 = alpha*CLa; % CL at zero incidence
-CMac = el.sc.CMac; % Moment coefficient wrt aerodynamic center
+CMac = el.sc.CMaca*(-alpha); % Moment coefficient wrt aerodynamic center
 
 if dx == 1
 fa = [                                                          0;

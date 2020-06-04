@@ -118,7 +118,7 @@ sc.yo=-xct;
 
 sc.CLa=2*pi;
 
-sc.CMac = -pi/2*(-alpha); % CM wrt the aerodynamic center
+sc.CMaca = -pi/2; % CM derivative wrt alpha, wrt the aerodynamic center
 
 
 % Flap coefficients
@@ -137,7 +137,8 @@ sc.CLb = 0.7;
 % temp = polyfit(angle_b, CM, 1);
 % CMb = temp(1);
 % clear temp
-sc.CMb = -1.7;
+% sc.CMb = -1.7; 
+sc.CMb = -0.843680353330137;
 
 
 end
