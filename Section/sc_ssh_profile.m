@@ -118,6 +118,9 @@ sc.yo=-xct;
 
 sc.CLa=2*pi;
 
+sc.CMac = -pi/2*(-alpha); % CM wrt the aerodynamic center
+
+
 % Flap coefficients
 
 % angle_b = [deg2rad(2), deg2rad(4), deg2rad(6)];

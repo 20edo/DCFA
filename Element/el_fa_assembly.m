@@ -18,9 +18,9 @@ L=el.L;
 c = el.sc.Ymax - el.sc.Ymin ;  % CORDA
 e = -el.sc.yo - 1/4*c; % TROVARE UN MODO PER ESPRIMERE e
 
-
-CL0 = alpha*2*pi; % CL at zero incidence
-CMac = -pi/2*(-alpha); % CM wrt the aerodynamic center
+CLa=el.sc.CLa;
+CL0 = alpha*CLa; % CL at zero incidence
+CMac = el.sc.CMac; % Moment coefficient wrt aerodynamic center
 
 if dx == 1
 fa = [                                                          0;

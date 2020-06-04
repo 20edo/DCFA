@@ -16,8 +16,7 @@ L=el.L;
 c = el.sc.Ymax - el.sc.Ymin ;  % chord
 e = -el.sc.yo - 1/4*c; % e -> distance between the shear center (elastic axis) and AC
 
-CLa = 2*pi; % CL derived alpha 
-% CLa = 5; 
+CLa = el.sc.CLa;
 
 
 if dx == 1
