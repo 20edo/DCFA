@@ -111,4 +111,30 @@ sc.EJz=E*sc.Iz/rho;
 sc.EJyz=0;
 %% Keep track of the origin of the geometry
 sc.yo=-xct;
+
+%% Aero coefficients
+
+% Provile coefficients
+
+sc.CLa=2*pi;
+
+% Flap coefficients
+
+% angle_b = [deg2rad(2), deg2rad(4), deg2rad(6)];
+% CL = [0.2232, 0.4440, 0.6586]; % 70% alpha zero
+% % CL = [0.1544, 0.3073, 0.4534]; % 85% alpha zero
+% temp = polyfit(angle_b, CL, 1);
+% CLb = temp(1);
+% clear temp
+sc.CLb = 0.7;
+
+% angle_b = [deg2rad(2), deg2rad(4), deg2rad(6)];
+% CM = [-0.0309, -0.0613, -0.0898]; % 70% alpha zero
+% %CM = [-0.0275, -0.0546, -0.0802]; % 85% alpha zero
+% temp = polyfit(angle_b, CM, 1);
+% CMb = temp(1);
+% clear temp
+sc.CMb = -1.7;
+
+
 end

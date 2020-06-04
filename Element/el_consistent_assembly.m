@@ -1,5 +1,6 @@
 function el = el_consistent_assembly(b,el,i,lambda)
 
+%% Define geometrical variables
 L=el.L;
 c = el.sc.Ymax - el.sc.Ymin ;  % CORDA
 e = -el.sc.yo - 1/4*c; 
@@ -11,27 +12,12 @@ pos2 = b.o + b.vx*b.in(i+1).x;
 x1 = pos1(2);
 x2 = pos2(2);
 
-CLa = 2*pi; 
  
-%% Compute CM/b
-angle_b = [deg2rad(2), deg2rad(4), deg2rad(6)];
-CM = [-0.0309, -0.0613, -0.0898]; % 70% alpha zero
-%CM = [-0.0275, -0.0546, -0.0802]; % 85% alpha zero
-temp = polyfit(angle_b, CM, 1);
-CMb = temp(1); 
-CMb = -1.7; 
-% CMb = -0.75;
-clear temp
-%% Compute CL/b
-angle_b = [deg2rad(2), deg2rad(4), deg2rad(6)];
-% CL = [0.2232, 0.4440, 0.6586]; % 70% alpha zero
-CL = [0.1544, 0.3073, 0.4534]; % 85% alpha zero
-temp = polyfit(angle_b, CL, 1);
-CLb = temp(1);
-CLb = 0.7;
-% CLb = 0.3;
-clear temp
+%% Recover aero coefficients
 
+CLb=el.sc.CLb;
+CMb=el.sc.CMb;
+CLa = el.sc.CLa;
 
 %%
 Jx = (2*L*m*cos(lambda)^3*(x1^2 + x1*x2 + x2^2))/3;
