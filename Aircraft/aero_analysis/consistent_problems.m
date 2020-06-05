@@ -249,7 +249,7 @@ if 1
     plot(q_ref,elastic_control)
     xlabel('Dynamic pressure')
     ylabel('$\frac{\dot{p}}{\dot{p_r}}$','Interpreter','latex')
-    title('Roll control aeroelastic correction')
+    title('Roll control aeroelastic correction (steady aerodynamics)')
     grid on
     ylim([-5 30])
 end
@@ -260,7 +260,7 @@ if 1
     plot(q_ref,elastic_damping)
     xlabel('Dynamic pressure')
     ylabel('$\frac{\dot{p}}{\dot{p_r}}$','Interpreter','latex')
-    title('Roll aeroelastic damping correction')
+    title('Roll aeroelastic damping correction (steady aerodynamics)')
     grid on
 end
 

@@ -1,4 +1,4 @@
-% Compute the aerodynamic stiffness matrix of the model (so far)
+% Compute the static aerodynamic matrices
 %%
 % DCFA swept wing assignement
 %
@@ -29,44 +29,7 @@ for i = 1:length(m.b)
             disp(m.b(i).name);
             dx = 1;
         end
-  
-        
-        for j=1:m.b(i).nel
-            % Calculate K_aero
-            m.b(i).el(j) = el_Ka_assembly(m.b(i),m.b(i).el(j),lambda,alpha,dx);
-            % Calculate f_aero
-            m.b(i).el(j) = el_fa_assembly(m.b(i),m.b(i).el(j),lambda,alpha,dx);
-            % Calculate matrices for control reversal 
-            m.b(i).el(j) = el_ctrl_rev_assembly(m.b(i),m.b(i).el(j),lambda,alpha,dx);
-            % Calculate matrices for consistend roll problems 
-            m.b(i).el(j) = el_consistent_assembly(m.b(i),m.b(i).el(j),j,lambda);
-        end
-        for k=1:m.b(i).nel 
-            % Create Ka matrix for the beam
-            m.b(i).Ka(6*(k-1)+1:6*(k+1),6*(k-1)+1:6*(k+1))=m.b(i).Ka(6*(k-1)+1:6*(k+1),6*(k-1)+1:6*(k+1))+m.b(i).el(k).Ka;
-            % Create Ca matrix for the beam
-            m.b(i).Ca(6*(k-1)+1:6*(k+1),6*(k-1)+1:6*(k+1))=m.b(i).Ca(6*(k-1)+1:6*(k+1),6*(k-1)+1:6*(k+1))+m.b(i).el(k).Ca;
-            % Create the fa vector for the beam 
-            m.b(i).fa(6*(k-1)+1:6*(k+1),1)=m.b(i).fa(6*(k-1)+1:6*(k+1),1)+m.b(i).el(k).fa;
-            % Create the fb vector for the beam 
-            m.b(i).fb(6*(k-1)+1:6*(k+1),1)=m.b(i).fb(6*(k-1)+1:6*(k+1),1)+m.b(i).el(k).fb;
-            % Create the Lq vector for the beam 
-            m.b(i).Lq(1,6*(k-1)+1:6*(k+1))=m.b(i).Lq(1,6*(k-1)+1:6*(k+1))+m.b(i).el(k).Lq;
-            % Create Lb for the beam 
-            m.b(i).Lb = m.b(i).Lb + m.b(i).el(k).Lb;    
-            % Jx
-            m.b(i).Jx = m.b(i).Jx + m.b(i).el(k).Jx; 
-            % lp 
-            m.b(i).lp = m.b(i).lp + m.b(i).el(k).lp; 
-            % lb
-            m.b(i).lb = m.b(i).lb + m.b(i).el(k).lb; 
-            % lq
-            m.b(i).lq(1,6*(k-1)+1:6*(k+1))=m.b(i).lq(1,6*(k-1)+1:6*(k+1))+m.b(i).el(k).lq;
-            % Sq
-            m.b(i).Sq(6*(k-1)+1:6*(k+1),1)=m.b(i).Sq(6*(k-1)+1:6*(k+1),1)+m.b(i).el(k).Sq;
-            % fp
-            m.b(i).fp(6*(k-1)+1:6*(k+1),1)=m.b(i).fp(6*(k-1)+1:6*(k+1),1)+m.b(i).el(k).fp;
-        end
+        m.b(i)=b_static_aero_assembly(m.b(i),lambda,alpha,dx);
     end
 end
 m = m_compute_matrices(m);
