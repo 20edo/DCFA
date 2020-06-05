@@ -11,7 +11,7 @@
 %
 %
 %
-clearvars -except wing_left , close all, clc
+clear all , close all, clc
 cd ..
 %% Generate the wing model
 cd generate_model
