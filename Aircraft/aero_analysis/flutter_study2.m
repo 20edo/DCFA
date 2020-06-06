@@ -53,44 +53,36 @@ Ca = V'*wing.Ca*V;
 % the solution of the problem is given by polyeig(K,C,M)
 
 %% Tracking of eigenvalues trough eigenvectors 
-v = [50:10:1800]; 
+v = [50:100:1800]; 
 q = 1/2*rho.*v.^2; 
 
+% First iteration
 [X_old,e_old] = polyeig(K,0*Ca,M);
-% [~, I] = sort(imag(e_old)); 
-% e_old = e_old(I); 
-% X_old = X_old(:,I); 
-% e_old = e_old(n+1:2*n); 
-% X_old = X_old(:,n+1:n*2);
 
+% Initialize non linear system variables
+A=zeros(size(M,1)+1);
+b=zeros(size(M,1)+1,1);
 
+% Following iterations
 for i=2:length(v)
-    [X,e] = polyeig(K-q(i)*Ka,-q(i)/v(i)*Ca,M);
-%     [~, I] = sort(imag(e));
-%     e = e(I);
-%     X = X(:,I);
-%     e = e(n+1:2*n);
-%     X = X(:,n+1:n*2);
-    Q=X_old'*X;
-    Q_out=Q-diag(diag(Q));
-    [~,I]=max(abs(Q));
-    X = X(:,I);
-    e=e(I);
+    
+    for k=1:size(X_old,1)
+            A(1:size(M,1),1:size(M,1))=e_old(k)^2*M-q(i)/v(i)*e_old(k)*Ca+K-q(i)*Ka;
+            A(1:size(M,1),1)=(2*e_old(k)*M-q(i)/v(i)*Ca)*X_old(:,k);
+            A(end,1:size(M,1))=2*X_old(:,k)';
+            A(end,end)=0;
+            b(1:size(M,1),1)=-(e_old(k)^2*M-q(i)/v(i)*e_old(k)*Ca+K-q(i)*Ka)*X_old(:,k);
+            b(end)=1-X_old(:,k)'*X_old(:,k);
+%             funz=@(z) A*z-b;
+%             z0=[X_old(:,k);e_old(k)];
+%             z=fsolve(funz,z0);
+            z=A\b;
+           X(:,k)=X_old(:,k)+z(1:end-1);
+           e(k)=e_old(k)+z(end);
+    end
+
     X_old = X;
     e_old = e;
     eig_(i,:) = e_old;
 end
-
-
-%% V-g plot 
-g = 2*real(eig_)./abs(imag(eig_)); 
-figure 
-hold on 
-for k = 1:n
-    plot(v,g(:,k));
-end
-
-
-
-
 
