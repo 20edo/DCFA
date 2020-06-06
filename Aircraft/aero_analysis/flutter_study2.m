@@ -56,7 +56,7 @@ Ca = V'*wing.Ca*V;
 v = [0:10:1800];
 q = 1/2*rho.*v.^2;
 
-alpha = 0.02;
+alpha = 0.01;
 gamma = 0.01; 
 Cs = alpha*M + gamma*K; 
 % First iteration
