@@ -41,13 +41,20 @@ wing = m_add_aero_loads(wing,[1,0,0]');
 n = 15;
 [V,D] = eigs(wing.K,wing.M,n,'smallestabs');
 V_red = V;
+
+alpha = 0.08;
+gamma = 0;
+Cs = alpha*wing.M + gamma*wing.K;
+% Cs = 1e-3*sum(sum(diag(wing.K)))/size(wing.K,1)*eye(size(wing.M)); 
+
 M = V'*wing.M*V;
 K = V'*wing.K*V;
 Ka = V'*wing.Ka*V;
 Ca = V'*wing.Ca*V;
+Cs = V'*Cs*V;
 
 %% Altitude fixed to 10.000 m
-[T,a,P,rho] = atmosisa(0);
+[T,a,P,rho] = atmosisa(10000);
 
 % the problem is in the form
 % M*q_dotdot - q/Vinf*C*q_dot + (K - q*Ka)*q = 0
@@ -57,11 +64,13 @@ Ca = V'*wing.Ca*V;
 v = [0:10:1800];
 q = 1/2*rho.*v.^2;
 
-alpha = 0.01;
-gamma = 0.01; 
-Cs = alpha*M + gamma*K; 
+% Cs = 1e-3*sum(sum(diag(K)))/size(K,1)*eye(size(M)); 
+% % alpha = 0.1;
+% % gamma = 0.1;
+% % Cs = alpha*M + gamma*K;
+
 % First iteration
-[X_old,e_old] = polyeig(K-q(1)*Ka,0*Ca+Cs,M);
+[X_old,e_old] = polyeig(K,Cs,M);
 
 % Initialize non linear system variables
 A=zeros(size(M,1)+1);
@@ -78,10 +87,7 @@ for i=2:length(v)
         A(end,end)=0;
         b(1:size(M,1),1)=-(e_old(k)^2*M-q(i)/v(i)*e_old(k)*Ca+e_old(k)*Cs+K-q(i)*Ka)*X_old(:,k);
         b(end)=1-X_old(:,k)'*X_old(:,k);
-        funz=@(z) A*z-b;
-        z0=[X_old(:,k);e_old(k)];
-        [z,~,exitflag]=fsolve(funz,z0);
-        %            z=A\b;
+        z=A\b;
         X(:,k)=X_old(:,k)+z(1:end-1);
         e(k)=e_old(k)+z(end);
     end
@@ -95,17 +101,18 @@ end
 g = 2*real(eig_)./abs(imag(eig_));
 figure 
 hold on 
+ylim([-1,1])
 for k = 1:n
     plot(v,g(:,k));
 end
-ylim([-50,50])
+grid on 
 ylabel('g')
 
-figure 
-hold on 
-for k = 1:n
-    plot(v,real(eig_(:,k)));
-end
-ylim([-50,50])
-ylabel('real(eig)')
+% figure 
+% hold on 
+% for k = 1:n
+%     plot(v,real(eig_(:,k)));
+% end
+% ylim([-50,50])
+% ylabel('real(eig)')
 

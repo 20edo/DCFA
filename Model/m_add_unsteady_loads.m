@@ -51,6 +51,7 @@ dof = 6*dof;
 
 % inizilise the matrices
 m.Ham = sparse(zeros(dof));
+m.Ham_dk = sparse(zeros(dof));
 m.Hamb=  sparse(zeros(dof,1));
 m.Hbam = sparse(zeros(1,dof));
 m.Hbb = 0; 
@@ -68,6 +69,7 @@ for i=1:size(m.b,2)
     beam=b_rotate(m.b(i));
     % compute the model matrices
     m.Ham = m.Ham + (m.b(i).A)*(beam.Ham)*(m.b(i).A)';
+    m.Ham_dk = m.Ham_dk + (m.b(i).A)*(beam.Ham_dk)*(m.b(i).A)';
     m.Hamb = m.Hamb + (m.b(i).A)*(beam.Hamb);
     m.Hbam = m.Hbam + (beam.Hbam)*(m.b(i).A)';
     m.Hbb = m.Hbb + beam.Hbb; 
@@ -81,6 +83,7 @@ for i=1:length(m.en)
         if m.en(i).c(k) % remove row and column 6(i-1)+k
             index = 6*(i-1)+k-n_dv;
             m.Ham = m.Ham([1:index-1,index+1:end],[1:index-1,index+1:end]);
+            m.Ham_dk = m.Ham_dk([1:index-1,index+1:end],[1:index-1,index+1:end]);
             m.Hamb = m.Hamb([1:index-1,index+1:end]);
             m.Hbam = m.Hbam([1:index-1,index+1:end]);
             n_dv = n_dv + 1; 

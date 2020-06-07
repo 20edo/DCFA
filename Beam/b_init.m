@@ -116,6 +116,7 @@ b.lq = NaN;
 b.Sq = NaN;
 b.fp = NaN;
 b.Ham = NaN;
+b.Ham_dk = NaN;
 b.Hbam = NaN;
 b.Hamb = NaN;
 b.Hbb = NaN; 

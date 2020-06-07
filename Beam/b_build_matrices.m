@@ -16,6 +16,7 @@ b.C=sparse(zeros(6*(b.nel+1)));
 b.Ka=sparse(zeros(6*(b.nel+1)));
 b.Ca=sparse(zeros(6*(b.nel+1)));
 b.Ham=sparse(zeros(6*(b.nel+1)));
+b.Ham_dk=sparse(zeros(6*(b.nel+1)));
 b.f=sparse(zeros(6*(b.nel+1),1));
 b.fa=sparse(zeros(6*(b.nel+1),1));
 b.Hamb=sparse(zeros(6*(b.nel+1),1));

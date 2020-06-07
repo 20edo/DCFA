@@ -43,10 +43,15 @@ wing = m_compute_matrices(wing);
 n = 15;
 [V,D] = eigs(wing.K,wing.M,n,'smallestabs');
 V_red = V;
+
+% alpha = 0.01;
+% gamma = 0.01;
+% Cs = alpha*M + gamma*K;
+Cs = 1e-3*sum(sum(diag(K)))/size(K,1)*ones(size(K));  
+
 M = V'*wing.M*V;
 K = V'*wing.K*V;
-Ka = V'*wing.Ka*V;
-Ca = V'*wing.Ca*V;
+Cs = V'*Cs*V; 
 
 %% Altitude fixed to 10.000 m
 [T,a,P,rho] = atmosisa(10000);
@@ -56,28 +61,26 @@ Ca = V'*wing.Ca*V;
 % the solution of the problem is given by polyeig(K,C,M)
 
 %% Tracking of eigenvalues trough eigenvectors
-v = [0:20:400];
+v = [0:50:500];
 q = 1/2*rho.*v.^2;
 
-alpha = 0.01;
-gamma = 0.01;
-Cs = alpha*M + gamma*K;
+
 % First iteration
-[X_old,e_old] = polyeig(K-q(1)*Ka,Cs,M);
+[X_old,e_old] = polyeig(K,Cs,M);
 
-% Find the derivatives of Ham
-k1 = 0.5e-12;
-wing = m_add_unsteady_loads(wing,[1,0,0]',k1);
-Ham = wing.Ham;
-wing = m_add_unsteady_loads(wing,[1,0,0]',0);
-Ham_zero = wing.Ham;
-Ham_dk = 1i*imag(Ham)/k1;
-Ham_dk2 = 2*(real(Ham)-Ham_zero)/k1^2;
-
-% Reduce matrices
-Ham_zero = V'*Ham_zero*V;
-Ham_dk = V'*Ham_dk*V;
-Ham_dk2 = V'*Ham_dk2*V;
+% % Find the derivatives of Ham
+% k1 = 0.5e-12;
+% wing = m_add_unsteady_loads(wing,[1,0,0]',k1);
+% Ham = wing.Ham;
+% wing = m_add_unsteady_loads(wing,[1,0,0]',0);
+% Ham_zero = wing.Ham;
+% Ham_dk = 1i*imag(Ham)/k1;
+% Ham_dk2 = 2*(real(Ham)-Ham_zero)/k1^2;
+% 
+% % Reduce matrices
+% Ham_zero = V'*Ham_zero*V;
+% Ham_dk = V'*Ham_dk*V;
+% Ham_dk2 = V'*Ham_dk2*V;
 
 
 
@@ -90,21 +93,30 @@ for i=2:length(v)
     X = zeros(size(M,1),2*size(M,1));
     e = zeros(2*size(M,1),1);
     for k=1:size(X_old,2)
-        A(1:size(M,1),1:size(M,1))=e_old(k)^2*M+e_old(k)*Cs+K- ...
-            q(i)*(Ham_zero-1i*Ham_dk*l*e_old(k)/v(i)-1/2*Ham_dk2*(l*e_old(k)/v(i))^2);
+        tic
+        kk = l*imag(e_old(k))/v(i); 
+        wing = m_add_unsteady_loads(wing,[1,0,0]',kk); 
+        Ham = wing.Ham;
+        Ham_dk = wing.Ham_dk;
+        Ham = V'*Ham*V; 
+        Ham_dk = V'*Ham_dk*V;
+        A(1:size(M,1),1:size(M,1))=e_old(k)^2*M+e_old(k)*Cs+K-q(i)*(Ham);
         A(1:size(M,1),end)=(2*e_old(k)*M+Cs-q(i)*(-1i*Ham_dk*l/v(i)))*X_old(:,k);
         A(end,1:size(M,1))=2*X_old(:,k)';
         A(end,end)=0;
         b(1:size(M,1),1)=-A(1:size(M,1),1:size(M,1))*X_old(:,k);
         b(end)=1-X_old(:,k)'*X_old(:,k);
-        funz=@(z) A*z-b;
-        z0=[X_old(:,k);e_old(k)];
-        [z,~,exitflag]=fsolve(funz,z0);
-        %            z=A\b;
+%         funz=@(z) A*z-b;
+%         z0=[X_old(:,k);e_old(k)];
+%         [z,~,exitflag]=fsolve(funz,z0);
+        z=A\b;
         X(:,k)=X_old(:,k)+z(1:end-1);
         e(k)=e_old(k)+z(end);
+        phrase = ['Eig number ',num2str(k),' out of ',num2str(n),'; Velocity ',num2str(i),' out of ',num2str(length(v))];
+        disp(phrase)
+        toc
+        
     end
-    
     X_old = X;
     e_old = e;
     eig_(i,:) = e_old;

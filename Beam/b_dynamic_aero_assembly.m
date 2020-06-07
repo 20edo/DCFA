@@ -19,6 +19,7 @@ for j=1:b.nel
     b.el(j) = el_dynamic_aero_assembly(b,b.el(j),lambda,dx,k);
     %% Update beam matrices
     b.Ham(6*(j-1)+1:6*(j+1),6*(j-1)+1:6*(j+1))=b.Ham(6*(j-1)+1:6*(j+1),6*(j-1)+1:6*(j+1))+b.el(j).Ham;
+    b.Ham_dk(6*(j-1)+1:6*(j+1),6*(j-1)+1:6*(j+1))=b.Ham_dk(6*(j-1)+1:6*(j+1),6*(j-1)+1:6*(j+1))+b.el(j).Ham_dk;
     b.Hamb(6*(j-1)+1:6*(j+1),1)=b.Hamb(6*(j-1)+1:6*(j+1),1)+b.el(j).Hamb;
     b.Hbam(1,6*(j-1)+1:6*(j+1))=b.Hbam(1,6*(j-1)+1:6*(j+1))+b.el(j).Hbam;
     b.Hbb = b.Hbb + b.el(j).Hbb;

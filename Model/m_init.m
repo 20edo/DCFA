@@ -41,6 +41,7 @@ m.lq = NaN;
 m.Sq = NaN;
 m.fp = NaN;
 m.Ham = NaN;
+m.Ham_dk = NaN;
 m.Hbam = NaN;
 m.Hamb = NaN;
 m.Hbb = NaN; 
