@@ -36,8 +36,9 @@ for i=1:length(wing_list)
 end
 
 chord=7.72;
+l = chord/2;
 
-wing = m_compute_matrices(wing); 
+wing = m_compute_matrices(wing);
 %% Reduction of the model using n eigenvectors
 n = 15;
 [V,D] = eigs(wing.K,wing.M,n,'smallestabs');
@@ -59,44 +60,68 @@ v = [0:20:400];
 q = 1/2*rho.*v.^2;
 
 alpha = 0.01;
-gamma = 0.01; 
-Cs = alpha*M + gamma*K; 
+gamma = 0.01;
+Cs = alpha*M + gamma*K;
 % First iteration
 [X_old,e_old] = polyeig(K-q(1)*Ka,Cs,M);
+
+% Find the derivatives of Ham
+k1 = 0.5e-12;
+wing = m_add_unsteady_loads(wing,[1,0,0]',k1);
+Ham = wing.Ham;
+wing = m_add_unsteady_loads(wing,[1,0,0]',0);
+Ham_zero = wing.Ham;
+Ham_dk = 1i*imag(Ham)/k1;
+Ham_dk2 = 2*(real(Ham)-Ham_zero)/k1^2;
+
+% Reduce matrices
+Ham_zero = V'*Ham_zero*V;
+Ham_dk = V'*Ham_dk*V;
+Ham_dk2 = V'*Ham_dk2*V;
+
+
 
 % Initialize non linear system variables
 A=zeros(size(M,1)+1);
 b=zeros(size(M,1)+1,1);
 
-% For each airspeed
+% Following iterations
 for i=2:length(v)
-    % For each eigenvalue
-    for j=1:length(e_old)
-        k=imag(e_old(j))*chord/v(i);
-        % Assemble Ham matrices
-        wing=m_add_unsteady_loads(wing,[v(i) 0 0]',k);
-        w=linspace(-1,1,10);
-        for k=1:length(w)
-        W_vect(:,:,k)=funz(wing,[v(i) 0 0]',w(k));
-        end
-        Ham_k=gradient(W_vect);
+    X = zeros(size(M,1),2*size(M,1));
+    e = zeros(2*size(M,1),1);
+    for k=1:size(X_old,2)
+        A(1:size(M,1),1:size(M,1))=e_old(k)^2*M+e_old(k)*Cs+K- ...
+            q(i)*(Ham_zero-1i*Ham_dk*l*e_old(k)/v(i)-1/2*Ham_dk2*(l*e_old(k)/v(i))^2);
+        A(1:size(M,1),end)=(2*e_old(k)*M+Cs-q(i)*(-1i*Ham_dk*l/v(i)))*X_old(:,k);
+        A(end,1:size(M,1))=2*X_old(:,k)';
+        A(end,end)=0;
+        b(1:size(M,1),1)=-A(1:size(M,1),1:size(M,1))*X_old(:,k);
+        b(end)=1-X_old(:,k)'*X_old(:,k);
+        funz=@(z) A*z-b;
+        z0=[X_old(:,k);e_old(k)];
+        [z,~,exitflag]=fsolve(funz,z0);
+        %            z=A\b;
+        X(:,k)=X_old(:,k)+z(1:end-1);
+        e(k)=e_old(k)+z(end);
     end
-            
     
+    X_old = X;
+    e_old = e;
+    eig_(i,:) = e_old;
 end
 
-%% V-g plot 
+%% V-g plot
 g = 2*real(eig_)./abs(imag(eig_));
-figure 
-hold on 
+figure
+hold on
 for k = 1:n
     plot(v,g(:,k));
 end
 ylim([-50,50])
 ylabel('g')
 
-figure 
-hold on 
+figure
+hold on
 for k = 1:n
     plot(v,real(eig_(:,k)));
 end
