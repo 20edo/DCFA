@@ -1,11 +1,14 @@
 %% bla bla 
 clear all, clc, close all
-syms Q11 Q12 Q13 Q21 Q22 Q23 Q31 Q32 Q33 L x m k F G b lambda
+syms Q11 Q12 Q13 Q21 Q22 Q23 Q31 Q32 Q33 L x m k F(k) G(k) b e chord lambda
 % m = el.sc.m
 % b = chord/2
 %% Define geometrical variables
 a = -1/2; % we want to be in the aerodynamic centre
-c = 1/2;  % we put the aileron hinge at 75% of the chord 
+c = 1/2;  % we put the aileron hinge at 75% of the chord
+
+F(k) = real(besselh(1, 2, k)./(besselh(1, 2, k) + 1i*besselh(0, 2, k)));
+G(k) = imag(besselh(1, 2, k)./(besselh(1, 2, k) + 1i*besselh(0, 2, k)));
 %% Define Theodorsen coefficients T
 T1 = -1/3*sqrt(1-c^2)*(2+c^2)+c*acos(c); 
 T2 = c*(1-c^2)-sqrt(1-c^2)*(1+c^2)*acos(c)+c*(acos(c))^2; 
@@ -36,10 +39,10 @@ Q31i = 2*pi/m*(k+2*(1/2-a)*F*k + 2*G);
 Q31 = Q31r + 1i*Q31i; 
 
 Q12r = 2/m*((T7+(c-a)*T1)*k^2+(T4+T10)+(a+1/2)*T11*G*k - 2*(a+1/2)*T10*F); 
-Q12i = 2/m*(-(2*p+(1/2-a)*T4)*k-(a+1/2)*T11*F*k - 2(a+1/2)*T10*G); 
+Q12i = 2/m*(-(2*p+(1/2-a)*T4)*k-(a+1/2)*T11*F*k - 2*(a+1/2)*T10*G); 
 Q12 = Q12r + 1i*Q12i; 
 
-Q22r = 2/(m*pi)*(T3*k^2 + (T5-T4*T10)-T11*T12/2*G*k*T10*T12*F); 
+Q22r = 2/(m*pi)*(T3*k^2 + (T5-T4*T10)-T11*T12/2*G*k+T10*T12*F); 
 Q22i = 2/(m*pi)*(-T4*T11/2*k + T11*T12/2*F*k + T10*T12*G); 
 Q22 = Q22r + 1i*Q22i; 
 
@@ -47,16 +50,16 @@ Q32r = 2/m*(T1*k^2 - T11*G*k + 2*T10*F);
 Q32i = 2/m*(-T4*k + T11*F*k + 2*T10*G); 
 Q32 = Q32r + 1i*Q32i; 
 
-Q13r = 2*pi/(M*b)*(a*k^2+2*(a+1/2)*G*k); 
-Q13i = 2*pi/(M*b)*(-2*(a+1/2)*F*k); 
+Q13r = 2*pi/(m*b)*(a*k^2+2*(a+1/2)*G*k); 
+Q13i = 2*pi/(m*b)*(-2*(a+1/2)*F*k); 
 Q13 = Q13r + 1i*Q13i; 
 
-Q23r = 2/(M*b)*(T1*k^2 - T12*G*k); 
-Q23i = 2/(M*b)*(T12*F*k); 
+Q23r = 2/(m*b)*(T1*k^2 - T12*G*k); 
+Q23i = 2/(m*b)*(T12*F*k); 
 Q23 = Q23r + 1i*Q23i; 
 
-Q33r = 2*pi/(M*b)*(-k^2-2*G*k); 
-Q33i = 2*pi/(M*b)*(2*F*k); 
+Q33r = 2*pi/(m*b)*(-k^2-2*G*k); 
+Q33i = 2*pi/(m*b)*(2*F*k); 
 Q33 = Q33r + 1i*Q33i; 
 
 
@@ -67,11 +70,18 @@ Q_th = [Q11, Q12, Q13;  % alpha, beta, h positive down
 
 % alpha = cos(lambda)*th - sin(lambda)*w/y 
 % we want u,v,w,th,w/x,b positive up
+% Move reference point to the elastic axis
+% - h ca = -w -e*cos(lambda)*th + e*sin(lambda)*w/y
 T = [0 0 0 cos(lambda) sin(lambda) 0; 
     0 0 0 0 0 1; 
-    0 0 -1 0 0 0]; 
+    0 0 -1 -e*cos(lambda) e*sin(lambda) 0]; 
 
-Q_us = transpose(T)*Q_th*T; 
+
+Chord = [chord 0 0; 
+        0 chord^2 0; 
+        0   0 chord^2];
+
+Q_us = transpose(T)*(Chord*Q_th)*T; 
 
 %% Expand the shape funcions
 
@@ -88,12 +98,12 @@ N=  [N       zeros(size(N,1),1);
 %% Expand the Q in our reference through shape functions
 Q_tot = transpose(N)*Q_us*N; 
 Q_tot = simplify(Q_tot); 
-Q_tot = int(Q_tot,x,-1,1)*L/2; 
+Q_tot = int(Q_tot,x,-1,1)*L/2*cos(lambda); 
 
-Ham = Q_tot(1:end-1,1:end-1); 
-Hbam = Q_tot(end,1:end-1); 
-Hamb = Q_tot(1:end-1,end); 
-Hbb = Q_tot(end,end); 
+Ham = Q_tot(1:12,1:12); 
+Hbam = Q_tot(13,1:12); 
+Hamb = Q_tot(1:12,13); 
+Hbb = Q_tot(13,13); 
 
 
 
