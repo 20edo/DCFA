@@ -39,4 +39,8 @@ el.lb = 0;
 el.lq = sparse(zeros(1,12)); 
 el.Sq = sparse(zeros(12,1));
 el.fp = sparse(zeros(12,1));
+el.Ham = sparse(zeros(12));
+el.Hbam = sparse(zeros(12,1));
+el.Hamb = sparse(zeros(1,12));
+el.Hbb = 0; 
 

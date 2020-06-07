@@ -12,11 +12,12 @@
 %
 clear all, close all, clc
 cd ..
+cd ..
 %% Generate the wing model
 cd generate_model
 generate_model
 % Move to the analysis folder
-cd aero_analysis\
+cd aero_analysis\Steady
 
 % switch off the aerodynamic properties of the engine support
 for i=16:19

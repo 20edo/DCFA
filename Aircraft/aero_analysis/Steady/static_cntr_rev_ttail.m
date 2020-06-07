@@ -12,11 +12,12 @@
 %
 clear all, close all, clc
 cd ..
+cd ..
 %% Generate the aircraft model
 cd generate_model
 generate_model
 % Move to the analysis folder
-cd aero_analysis\
+cd aero_analysis\Steady
 
 
 %% Build the wing model

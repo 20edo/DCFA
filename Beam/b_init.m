@@ -115,3 +115,7 @@ b.lb = NaN;
 b.lq = NaN; 
 b.Sq = NaN;
 b.fp = NaN;
+b.Ham = NaN;
+b.Hbam = NaN;
+b.Hamb = NaN;
+b.Hbb = NaN; 

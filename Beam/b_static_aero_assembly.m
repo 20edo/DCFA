@@ -10,6 +10,10 @@ function b=b_static_aero_assembly(b,lambda,alpha,dx)
 %
 %
 %
+% b->           Beam
+% lambda->      Sweep angle
+% dx->          1 for "right wings, -1 for "left" wings
+% w_frac_vinf-> reduced frequency * chord (i.e. frequency/v_infinity)
 
 for j=1:b.nel
     %% Calculate element matrices

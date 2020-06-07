@@ -12,11 +12,12 @@
 %
 clear all , close all, clc
 cd ..
+cd ..
 %% Generate the wing model
 cd generate_model
 generate_model
 % Move to the analysis folder
-cd aero_analysis\
+cd aero_analysis\Unsteady
 
 % switch off the aerodynamic properties of the engine support
 for i=16:19
@@ -33,9 +34,10 @@ wing_list=[aircraft.b(7) aircraft.b(8) aircraft.b(9) aircraft.b(16) aircraft.b(1
 for i=1:length(wing_list)
     wing=m_add_beam(wing,wing_list(i));
 end
-%% Add the aero loads
-wing = m_add_aero_loads(wing,[1,0,0]');
 
+chord=7.72;
+
+wing = m_compute_matrices(wing); 
 %% Reduction of the model using n eigenvectors
 n = 15;
 [V,D] = eigs(wing.K,wing.M,n,'smallestabs');
@@ -46,48 +48,41 @@ Ka = V'*wing.Ka*V;
 Ca = V'*wing.Ca*V;
 
 %% Altitude fixed to 10.000 m
-[T,a,P,rho] = atmosisa(0);
+[T,a,P,rho] = atmosisa(10000);
 
 % the problem is in the form
 % M*q_dotdot - q/Vinf*C*q_dot + (K - q*Ka)*q = 0
 % the solution of the problem is given by polyeig(K,C,M)
 
 %% Tracking of eigenvalues trough eigenvectors
-v = [0:10:1800];
+v = [0:20:400];
 q = 1/2*rho.*v.^2;
 
 alpha = 0.01;
 gamma = 0.01; 
 Cs = alpha*M + gamma*K; 
 % First iteration
-[X_old,e_old] = polyeig(K-q(1)*Ka,0*Ca+Cs,M);
+[X_old,e_old] = polyeig(K-q(1)*Ka,Cs,M);
 
 % Initialize non linear system variables
 A=zeros(size(M,1)+1);
 b=zeros(size(M,1)+1,1);
 
-% Following iterations
+% For each airspeed
 for i=2:length(v)
-    X = zeros(size(M,1),2*size(M,1));
-    e = zeros(2*size(M,1),1);
-    for k=1:size(X_old,2)
-        A(1:size(M,1),1:size(M,1))=e_old(k)^2*M-q(i)/v(i)*e_old(k)*Ca+e_old(k)*Cs+K-q(i)*Ka;
-        A(1:size(M,1),end)=(2*e_old(k)*M-q(i)/v(i)*Ca+Cs)*X_old(:,k);
-        A(end,1:size(M,1))=2*X_old(:,k)';
-        A(end,end)=0;
-        b(1:size(M,1),1)=-(e_old(k)^2*M-q(i)/v(i)*e_old(k)*Ca+e_old(k)*Cs+K-q(i)*Ka)*X_old(:,k);
-        b(end)=1-X_old(:,k)'*X_old(:,k);
-        funz=@(z) A*z-b;
-        z0=[X_old(:,k);e_old(k)];
-        [z,~,exitflag]=fsolve(funz,z0);
-        %            z=A\b;
-        X(:,k)=X_old(:,k)+z(1:end-1);
-        e(k)=e_old(k)+z(end);
+    % For each eigenvalue
+    for j=1:length(e_old)
+        k=imag(e_old(j))*chord/v(i);
+        % Assemble Ham matrices
+        wing=m_add_unsteady_loads(wing,[v(i) 0 0]',k);
+        w=linspace(-1,1,10);
+        for k=1:length(w)
+        W_vect(:,:,k)=funz(wing,[v(i) 0 0]',w(k));
+        end
+        Ham_k=gradient(W_vect);
     end
+            
     
-    X_old = X;
-    e_old = e;
-    eig_(i,:) = e_old;
 end
 
 %% V-g plot 

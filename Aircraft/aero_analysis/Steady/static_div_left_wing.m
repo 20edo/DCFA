@@ -1,6 +1,5 @@
 % Static aero analysis of the clamped wing
 % - Divergence
-% - Control reversal
 %%
 % DCFA swept wing assignement
 %
@@ -11,26 +10,27 @@
 %
 %
 %
-clear all , close all, clc
+clear all, close all, clc
+cd ..
 cd ..
 %% Generate the wing model
 cd generate_model
 generate_model
 % Move to the analysis folder
-cd aero_analysis\
+cd aero_analysis\Steady
 
 % switch off the aerodynamic properties of the engine support
-for i=16:19
+for i=16:19 
     aircraft.b(i).ssh = false; 
 end
 
 %% Build the swept wing model
 wing=m_init();
 wing.en=[en_ground(aircraft.en(7).x) ...
-    aircraft.en(17) aircraft.en(18)];
-wing_list=[aircraft.b(7) aircraft.b(8) aircraft.b(9) aircraft.b(16) aircraft.b(17)];
+    aircraft.en(19) aircraft.en(20)];
+wing_list=[aircraft.b(10) aircraft.b(11) aircraft.b(12) aircraft.b(18) aircraft.b(19)];
 % wing.en=[en_ground(aircraft.en(7).x)];
-% wing_list=[aircraft.b(7) aircraft.b(8) aircraft.b(9)];
+% wing_list=[aircraft.b(10) aircraft.b(11) aircraft.b(12)];
 for i=1:length(wing_list)
     wing=m_add_beam(wing,wing_list(i));
 end
@@ -50,48 +50,11 @@ q_div(q_div<1)=[];
 q_div = q_div(1);                       % select the minimum positive q_inf
 V_div = V(:,1);                         % select its eigenshape
 
-%% Direct problem
-q = 24500; 
-A = wing.K - q*wing.Ka;
-b = q*wing.fa; 
-q_stat = A\b; 
-if 0
-    % switch on the aero properties for the plot 
-    for i=4:5
-        wing.b(i).ssh = true; 
-    end
-    options.plot_original          = 1;
-    options.plot_deformed          = 1;
-    options.plotColor              = 'green';
-    options.saveSTL                = 0;
-    options.point_section          = 8;
-    options.N                      = 1;        % we have only one eig
-    
-m_plot_eigenshape(wing,options,q_stat*10);
-end
-    
-
-
-
 %% Find the divergence dynamic pressure - straight wing
 q_div_straight = eigs(wing_straight.K,wing_straight.Ka,30,'smallestabs');
 q_div_straight = sort(real(q_div_straight));
 q_div_straight(q_div_straight<0)=[];
 q_div_straight = q_div_straight(1);
-
-%% Assebly stiffness the K matrices for cntr_rev
-K_cr = [wing_straight.K, zeros(size(wing_straight.K,1),1); zeros(1,size(wing_straight.K,2)),0]; 
-Ka_cr = [wing_straight.Ka, wing_straight.fb; wing_straight.Lq, wing_straight.Lb]; 
-
-%% Find the control reversal (cr) dynamic pressure
-[V_cr,D_cr]= eig(full(K_cr),full(Ka_cr));
-q_cr = diag(D_cr);
-[q_cr,I] = sort(real(q_cr));
-V_cr = V_cr(:,I);                         % sort the eigenshapes
-V_cr(:,q_cr<1)=[];                    % select the eigenshapes with positive eig
-q_cr(q_cr<1)=[];
-q_cr = q_cr(1);                   % select the minimum positive q_inf
-V_cr = V_cr(:,1);                     % select its eigenshape
 
 
 %% Calculations for the plotting VTAS and MACH when altitude changes - swept wing
@@ -106,6 +69,7 @@ M_straight = v_straight./a_straight;
 
 %% Plot and save results
 if 1
+    
     % switch on the aero properties for the plot 
     for i=4:5
         wing.b(i).ssh = true; 
@@ -117,7 +81,7 @@ if 1
     options.saveSTL                = 0;
     options.point_section          = 8;
     options.N                      = 1;        % we have only one eig
-    m_plot_eigenshape(wing,options,V_div*10);
+    m_plot_eigenshape(wing,options,V_div/20)
     
     
     figure(2)
