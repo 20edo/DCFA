@@ -266,7 +266,7 @@ for j=1:length(model.en)
         end
     end            
 end
-
+%% Add the eigenshapes into the displacements
 for i = 1:length(model.b)
     u_beam = transpose(model.b(i).A)*U; 
     for k = 1:model.b(i).nel+1
