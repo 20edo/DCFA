@@ -38,12 +38,12 @@ end
 wing = m_add_aero_loads(wing,[1,0,0]');
 
 %% Reduction of the model using n eigenvectors
-n = 15;
+n = 30;
 [V,D] = eigs(wing.K,wing.M,n,'smallestabs');
 V_red = V;
 
-alpha = 0.08;
-gamma = 0;
+alpha = 0.04;
+gamma = 0.025;
 Cs = alpha*wing.M + gamma*wing.K;
 % Cs = 1e-3*sum(sum(diag(wing.K)))/size(wing.K,1)*eye(size(wing.M)); 
 
@@ -61,7 +61,7 @@ Cs = V'*Cs*V;
 % the solution of the problem is given by polyeig(K,C,M)
 
 %% Tracking of eigenvalues trough eigenvectors
-v = [0:10:1800];
+v = [0:1:600];
 q = 1/2*rho.*v.^2;
 
 % Cs = 1e-3*sum(sum(diag(K)))/size(K,1)*eye(size(M)); 
@@ -76,16 +76,19 @@ q = 1/2*rho.*v.^2;
 A=zeros(size(M,1)+1);
 b=zeros(size(M,1)+1,1);
 
+eig_ = zeros(length(v),2*n); 
+eig_(1,:) = e_old;
+
 % Following iterations
 for i=2:length(v)
     X = zeros(size(M,1),2*size(M,1));
     e = zeros(2*size(M,1),1);
     for k=1:size(X_old,2)
-        A(1:size(M,1),1:size(M,1))=e_old(k)^2*M-q(i)/v(i)*e_old(k)*Ca+e_old(k)*Cs+K-q(i)*Ka;
-        A(1:size(M,1),end)=(2*e_old(k)*M-q(i)/v(i)*Ca+Cs)*X_old(:,k);
+        A(1:size(M,1),1:size(M,1))=e_old(k)^2*M+e_old(k)*(Cs-q(i)/v(i)*Ca)+K-q(i)*Ka;
+        A(1:size(M,1),end)=(2*e_old(k)*M+Cs-q(i)/v(i)*Ca)*X_old(:,k);
         A(end,1:size(M,1))=2*X_old(:,k)';
         A(end,end)=0;
-        b(1:size(M,1),1)=-(e_old(k)^2*M-q(i)/v(i)*e_old(k)*Ca+e_old(k)*Cs+K-q(i)*Ka)*X_old(:,k);
+        b(1:size(M,1),1)=-A(1:size(M,1),1:size(M,1))*X_old(:,k);
         b(end)=1-X_old(:,k)'*X_old(:,k);
         z=A\b;
         X(:,k)=X_old(:,k)+z(1:end-1);
@@ -102,9 +105,9 @@ g = 2*real(eig_)./abs(imag(eig_));
 figure 
 hold on 
 ylim([-1,1])
-for k = 1:n
-    plot(v,g(:,k));
-end
+
+plot(v,g);
+
 grid on 
 ylabel('g')
 

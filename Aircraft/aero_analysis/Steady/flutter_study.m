@@ -41,10 +41,17 @@ wing = m_add_aero_loads(wing,[1,0,0]');
 n = 15; 
 [V,D] = eigs(wing.K,wing.M,n,'smallestabs'); 
 V_red = V; 
-M = V'*wing.M*V; 
-K = V'*wing.K*V; 
-Ka = V'*wing.Ka*V; 
+
+alpha = 0.001;
+gamma = 0.001;
+Cs = alpha*wing.M + gamma*wing.K;
+% Cs = 1e-3*sum(sum(diag(wing.K)))/size(wing.K,1)*eye(size(wing.M)); 
+
+M = V'*wing.M*V;
+K = V'*wing.K*V;
+Ka = V'*wing.Ka*V;
 Ca = V'*wing.Ca*V;
+Cs = V'*Cs*V;
 
 %% Altitude fixed to 10.000 m 
 [T,a,P,rho] = atmosisa(10000); 
@@ -57,7 +64,7 @@ Ca = V'*wing.Ca*V;
 v = [50:10:1800]; 
 q = 1/2*rho.*v.^2; 
 
-[X_old,e_old] = polyeig(K,0*Ca,M);
+[X_old,e_old] = polyeig(K,Cs,M);
 % [~, I] = sort(imag(e_old)); 
 % e_old = e_old(I); 
 % X_old = X_old(:,I); 
@@ -66,7 +73,7 @@ q = 1/2*rho.*v.^2;
 
 
 for i=2:length(v)
-    [X,e] = polyeig(K-q(i)*Ka,-q(i)/v(i)*Ca,M);
+    [X,e] = polyeig(K-q(i)*Ka,-q(i)/v(i)*Ca+Cs,M);
 %     [~, I] = sort(imag(e));
 %     e = e(I);
 %     X = X(:,I);
