@@ -89,9 +89,11 @@ D_yu = 0;
 D_yd = 0;
 
 %% Performance indicator
-C_z = [-M_red\K_red -M_red\C_red]; %SAID IN THE LECTURE OF 07/05/2020 
-                                             %CHECK
-D_zu = [M_red\(q*Fb)];
+% % C_z = [-M_red\K_red -M_red\C_red]; 
+% % D_zu = [M_red\(q*Fb)];
+
+C_z = [zeros(N) eye(N)];
+D_zu = zeros(N,1);
 
 % C_z = [zeros(N) eye(N)]*A;
 % C_z = A(N+1:end,:);
@@ -99,9 +101,10 @@ D_zu = [M_red\(q*Fb)];
 %% Weight matrixes
 weight = 0.1;
 
-W_zz = (weight) * eye(N)/N;
+W_zz = (1-weight) * sqrt(lambda)/(sum(sum(sqrt(lambda))));
+% W_zz = (1-weight) * (lambda)/(sum(sum(lambda)));
 
-W_uu = (1);
+W_uu = (weight);
 %% Setting up the Riccati equation
 Q = C_z'*W_zz*C_z;
 S = C_z'*W_zz*D_zu;
@@ -109,6 +112,8 @@ R = D_zu'*W_zz*D_zu+W_uu;
 
 P = are(A-B_u*inv(R)*S', B_u*inv(R)*B_u', C_z'*W_zz*C_z-S*inv(R)*S');
 G = inv(R)*(B_u'*P+S');
+
+% Ritar
 %% State space model
 A_controlled = A-B_u*G;
 
@@ -139,15 +144,15 @@ for i =1:length(t)
     
 end
 
-[z] = lsim(SYS_controlled, u, t);
+[z,~,x] = lsim(SYS_controlled, u, t);
 [z_v] = lsim(SYS_controlled_velocity, u, t);
 [z_acc] = lsim(SYS_controlled_accelerations, u, t);
-[y_nc] = lsim(SYS_notcontrolled, u, t);
+[y_nc,~,x_nc] = lsim(SYS_notcontrolled, u, t);
 [y_nc_v] = lsim(SYS_notcontrolled_velocity, u, t);
 [y_nc_acc] = lsim(SYS_notcontrolled_accelerations, u, t);
 
 for i = 1:length(t)
-    z_sol(:,i) = V*z(i,1:N)'; % I'm recovering the physic coordinates from
+    z_sol(:,i) = V*z(i,1:N)'; % I'm recovering the physical coordinates from
                               % the modal ones
     z_sol_v(:,i) = V*z_v(i,1:N)';
     z_sol_acc(:,i) = V*z_acc(i,1:N)';
@@ -155,62 +160,56 @@ for i = 1:length(t)
     y_sol_nc_v(:,i) = V*y_nc_v(i,1:N)';
     y_sol_nc_acc(:,i) = V*y_nc_acc(i,1:N)';
 end
-z_sol = [zeros(6,length(t)); z_sol];
-z_sol_v = [zeros(6,length(t)); z_sol_v];
-z_sol_acc = [zeros(6,length(t)); z_sol_acc];
-y_sol_nc = [zeros(6,length(t)); y_sol_nc];
-y_sol_nc_v = [zeros(6,length(t)); y_sol_nc_v];
-y_sol_nc_acc = [zeros(6,length(t)); y_sol_nc_acc];
+
 %% plot the vertical acceleration of the tip of the wing
 % if we want to see the vertical acceleration of the tip of the wing 
 % (if the model in input is the wing, if not it doesn't have any sense)
 figure
-plot(t,z_sol_acc(end-3,:))
-hold on
-plot(t,y_sol_nc_acc(end-3,:))
-legend('accelerations cotrolled','accelerations not controlled')
-xlabel('t(s)')
-ylabel('$\ddot{q}$','Interpreter','latex')
 
-figure
-plot(t,z_sol_v(end-3,:))
-hold on
-plot(t,y_sol_nc_v(end-3,:))
-legend('velocities cotrolled','velocities not controlled')
-xlabel('t(s)')
-ylabel('$\dot{q}$','Interpreter','latex')
-
-figure
+subplot(2,2,1)
 plot(t,z_sol(end-3,:))
 hold on
+grid on
 plot(t,y_sol_nc(end-3,:))
+title('Vertical displacement of the tip')
 legend('displacements cotrolled','displacements not controlled')
 xlabel('t(s)')
 ylabel('$q$','Interpreter','latex')
 
-%% qdotdot finite differences
 
-qdotdot=zeros(1,length(z_sol));
-qdotdotnc=qdotdot;
+subplot(2,2,2)
+plot(t,z_sol_v(end-3,:))
+hold on
+grid on
+plot(t,y_sol_nc_v(end-3,:))
+title('Vertical velocity of the tip')
+legend('velocities cotrolled','velocities not controlled')
+xlabel('t(s)')
+ylabel('$\dot{q}$','Interpreter','latex')
 
-for i=2:length(z_sol)-1
-    qdotdot(i)=(z_sol(i-1)-2*z_sol(i)+z_sol(i+1));
-    qdotdotnc(i)=(y_sol_nc(i-1)-2*y_sol_nc(i)+y_sol_nc(i+1));
-end
-
-figure
-
-plot(t,qdotdot./(deltat^2))
-legend('Controlled','Non controlled')
-
-title('qdotdotFD')
-
-figure
-
-plot(t,qdotdotnc./(deltat^2))
-title('Non contrlled')
-
+subplot(2,2,3)
+plot(t,z_sol_acc(end-3,:))
+hold on
+grid on
+plot(t,y_sol_nc_acc(end-3,:))
+title('Vertical acceleration of the tip')
+legend('accelerations cotrolled','accelerations not controlled')
+xlabel('t(s)')
+ylabel('$\ddot{q}$','Interpreter','latex')
 
 
+subplot(2,2,4)
+plot(t,-G*x')
+hold on
+grid on
+plot(t,-G*x'+u)
+plot(t,u)
+title('Aileron deflection')
+legend('Controller output','Controlled','Non controlled')
+xlabel('t(s)')
+ylabel('$\beta$','Interpreter','latex')
+
+
+%% Plot the engines' displacements
 
 
