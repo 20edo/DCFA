@@ -212,4 +212,22 @@ ylabel('$\beta$','Interpreter','latex')
 
 %% Plot the engines' displacements
 
+plot(t,z_sol(6+3,:))
+hold on
+grid on
+plot(t,y_sol_nc(6+3,:))
+title('Vertical displacement of the engine')
+legend('displacements controlled','displacements not controlled')
+xlabel('t(s)')
+ylabel('$q$','Interpreter','latex')
+
+plot(t,z_sol(12+3,:))
+hold on
+grid on
+plot(t,y_sol_nc(12+3,:))
+title('Vertical displacement of the engine')
+legend('displacements controlled','displacements not controlled')
+xlabel('t(s)')
+ylabel('$q$','Interpreter','latex')
+
 
