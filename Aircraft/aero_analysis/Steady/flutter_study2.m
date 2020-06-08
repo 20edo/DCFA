@@ -38,12 +38,12 @@ end
 wing = m_add_aero_loads(wing,[1,0,0]');
 
 %% Reduction of the model using n eigenvectors
-n = 30;
+n = 5;
 [V,D] = eigs(wing.K,wing.M,n,'smallestabs');
 V_red = V;
 
-alpha = 0.04;
-gamma = 0.025;
+alpha = 0;
+gamma = 0;
 Cs = alpha*wing.M + gamma*wing.K;
 % Cs = 1e-3*sum(sum(diag(wing.K)))/size(wing.K,1)*eye(size(wing.M)); 
 
@@ -61,7 +61,7 @@ Cs = V'*Cs*V;
 % the solution of the problem is given by polyeig(K,C,M)
 
 %% Tracking of eigenvalues trough eigenvectors
-v = [0:1:600];
+v = [0:1:6000];
 q = 1/2*rho.*v.^2;
 
 % Cs = 1e-3*sum(sum(diag(K)))/size(K,1)*eye(size(M)); 
@@ -70,6 +70,7 @@ q = 1/2*rho.*v.^2;
 % % Cs = alpha*M + gamma*K;
 
 % First iteration
+
 [X_old,e_old] = polyeig(K,Cs,M);
 
 % Initialize non linear system variables
@@ -101,21 +102,17 @@ for i=2:length(v)
 end
 
 %% V-g plot 
+close all 
 g = 2*real(eig_)./abs(imag(eig_));
 figure 
 hold on 
-ylim([-1,1])
-
+ylim([-0.05,0.05])
 plot(v,g);
-
 grid on 
 ylabel('g')
 
-% figure 
-% hold on 
-% for k = 1:n
-%     plot(v,real(eig_(:,k)));
-% end
-% ylim([-50,50])
-% ylabel('real(eig)')
+figure 
+hold on 
+plot(v,imag(eig_));
+ylabel('imag(eig)')
 

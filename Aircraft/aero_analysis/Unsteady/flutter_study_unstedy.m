@@ -44,8 +44,8 @@ n = 18;
 [V,D] = eigs(wing.K,wing.M,n,'smallestabs');
 V_red = V;
 
-alpha = 0.04;
-gamma = 0.03;
+alpha = 0;
+gamma = 0;
 Cs = alpha*wing.M + gamma*wing.K;
 % Cs = 1e-3*sum(sum(diag(wing.K)))/size(wing.K,1)*ones(size(wing.K));  
 
@@ -61,7 +61,7 @@ Cs = V'*Cs*V;
 % the solution of the problem is given by polyeig(K,C,M)
 
 %% Tracking of eigenvalues trough eigenvectors
-v = [0:10:200];
+v = [0:15:400];
 q = 1/2*rho.*v.^2;
 
 
