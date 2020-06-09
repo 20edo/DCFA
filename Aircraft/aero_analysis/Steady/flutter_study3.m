@@ -20,6 +20,9 @@ generate_model
 % Move to the analysis folder
 cd aero_analysis\Steady
 
+chord = 7.72; 
+l = chord/2;  
+
 % switch off the aerodynamic properties of the engine support
 for i=16:19
     aircraft.b(i).ssh = false;
@@ -118,6 +121,9 @@ end
 close all
 
 g = 2*real(eig_)./abs(imag(eig_));
+for k = 1:length(e_old)
+    kk(:,k) = l*abs(imag(eig_(:,k)))./v';
+end
 %% Plot frequency diagram and V-G diagram
 figure
 hold on
@@ -132,14 +138,17 @@ ylabel('g')
 grid on
 ylim([-0.05,0.05])
 
-figure
-hold on
-for k=1:size(eig_,2)
-    plot(real(eig_(:,k)),imag(eig_(:,k)))
-end
+% figure
+% hold on
+% for k=1:size(eig_,2)
+%     plot(real(eig_(:,k)),imag(eig_(:,k)))
+% end
 
+figure 
+plot(v,kk)
+ylim([-1,1])
 %% Plot the corresponding modeshapes
-if 1
+if 0
 figure
 phi = deg2rad(60);
 for i=4:5

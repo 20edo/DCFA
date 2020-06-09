@@ -143,7 +143,7 @@ end
 close all
 
 g = 2*real(eig_)./(imag(eig_));
-%% Plot frequency diagram and V-G diagram
+
 figure
 hold on
 subplot(2,1,1)
