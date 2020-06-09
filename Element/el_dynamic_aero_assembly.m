@@ -26,7 +26,7 @@ k = k;            % Reduced frequency
 b=chord/2;
 %% Calculate Theodorsen function
 if k == 0
-    k=1e-5;
+    k=1e-9;
     C = besselh(1, 2, k)./(besselh(1, 2, k) + 1i*besselh(0, 2, k));
     F = real(C);
     G = imag(C);

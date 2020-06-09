@@ -34,7 +34,7 @@ Ca = transpose(N)*Q_us*N;
 Ca = simplify(Ca); 
 Ca = int(Ca,x,-1,1)*L/2*cos(lambda); 
 
-a = 1/2;
+a = -1/2;
 q = 1; 
 Vinf = 1; 
 eval(Ca)

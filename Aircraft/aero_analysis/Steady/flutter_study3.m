@@ -1,3 +1,4 @@
+
 % This is a script to study the flutter problem at 10.000 m for the clamped
 % wing
 
@@ -38,7 +39,7 @@ end
 wing = m_add_aero_loads(wing,[1,0,0]');
 
 %% Reduction of the model using n eigenvectors
-n = 10;
+n = 6;
 [V,D] = eigs(wing.K,wing.M,n,'smallestabs');
 V_red = V;
 
@@ -72,35 +73,45 @@ q = 1/2*rho.*v.^2;
 % First iteration
 
 [X_old,e_old] = polyeig(K,Cs,M);
+[~, II] = sort(imag(e_old));
+e_old = e_old(II);
+X_old = X_old(:,II);
 X_zero = X_old;
 e_zero = e_old;
+
+
 % Initialize non linear system variables
 A=zeros(size(M,1)+1);
 b=zeros(size(M,1)+1,1);
 
 eig_ = zeros(length(v),2*n);
 eig_(1,:) = e_old;
-
-
+ 
 % Following iterations
 for i=2:length(v)
     X = zeros(size(M,1),2*size(M,1));
     e = zeros(2*size(M,1),1);
-    for k=1:size(X_old,2)
-        A(1:size(M,1),1:size(M,1))=e_old(k)^2*M+e_old(k)*(Cs-q(i)/v(i)*Ca)+K-q(i)*Ka;
-        A(1:size(M,1),end)=(2*e_old(k)*M+Cs-q(i)/v(i)*Ca)*X_old(:,k);
-        A(end,1:size(M,1))=2*X_old(:,k)';
-        A(end,end)=0;
-        b(1:size(M,1),1)=-A(1:size(M,1),1:size(M,1))*X_old(:,k);
-        b(end)=1-X_old(:,k)'*X_old(:,k);
-        z=A\b;
-        X(:,k)=X_old(:,k)+z(1:end-1);
-        e(k)=e_old(k)+z(end);
-    end
-    
+    [X,e] = polyeig(K-q(i)*Ka,-q(i)/v(i)*Ca+Cs,M);
+    %     Q=X_old'*X;
+    %     Q_out=Q-diag(diag(Q));
+    %     [~,I]=max(abs(Q));
+    %     X = X(:,I);
+    %     e=e(I);
     X_old = X;
     e_old = e;
+    [~, II] = sort(imag(e_old));
+    e_old = e_old(II);
+    X_old = X_old(:,II);
+    for j = 1:size(eig_,2)-1
+        if abs(eig_(i-1,j+1)-e_old(j))<abs(eig_(i-1,j)-e_old(j))
+            temp = e_old(j);
+            e_old(j) = e_old(j+1);
+            e_old(j+1) = temp;
+        end
+    end
+    
     eig_(i,:) = e_old;
+    
 end
 
 %% V-g plot
@@ -121,32 +132,37 @@ ylabel('g')
 grid on
 ylim([-0.05,0.05])
 
+figure
+hold on
+for k=1:size(eig_,2)
+    plot(real(eig_(:,k)),imag(eig_(:,k)))
+end
 
 %% Plot the corresponding modeshapes
-if 0
-    figure
-    phi = deg2rad(45);
-    for i=4:5
-        wing.b(i).ssh = true;
-    end
-    options.plot_original          = 1;
-    options.plot_deformed          = 1;
-    options.plotColor              = 'green';
-    options.saveSTL                = 0;
-    options.point_section          = 8;
-    options.N                      = 1;        % we have only one eig
-    
-    num = sum(imag(e_zero)>=-0.1);
-    i = 1;
-    for k = 1:2*n
-        if imag(e_zero(k))>=-0.1
-            subplot(2,(num+mod(num,2))/2,i)
-            m_plot_eigenshape2(wing,options,real(exp(1i*phi)*V*(X_zero(:,k))*30));
-            title(num2str(abs(imag(e_zero(k)))))
-            i = i+1;
-        end
-    end
-    
+if 1
+figure
+phi = deg2rad(60);
+for i=4:5
+    wing.b(i).ssh = true;
 end
+options.plot_original          = 1;
+options.plot_deformed          = 1;
+options.plotColor              = 'green';
+options.saveSTL                = 0;
+options.point_section          = 8;
+options.N                      = 1;        % we have only one eig
+
+num = sum(imag(e_zero)>=-0.1);
+i = 1;
+for k = 1:2*n
+    if imag(e_zero(k))>=-0.1
+        subplot(2,(num+mod(num,2))/2,i)
+        m_plot_eigenshape2(wing,options,real(exp(1i*phi)*V*(X_zero(:,k))*30));
+        title(num2str(abs(imag(e_zero(k)))))
+        i = i+1;
+    end
+end
+end
+
 
 

@@ -90,12 +90,28 @@ for i=2:length(v)
 end
 
 
-%% V-g plot 
-g = 2*real(eig_)./abs(imag(eig_)); 
-figure 
-hold on 
-for k = 1:n
-    plot(v,g(:,k));
+%% V-g plot
+close all
+
+g = 2*real(eig_)./abs(imag(eig_));
+%% Plot frequency diagram and V-G diagram
+figure
+hold on
+subplot(2,1,1)
+plot(v,abs(imag(eig_)));
+ylabel('imag(eig)')
+grid on
+
+subplot(2,1,2)
+plot(v,g);
+ylabel('g')
+grid on
+ylim([-0.05,0.05])
+
+figure
+hold on
+for k=1:size(eig_,2)
+    plot(real(eig_(:,k)),imag(eig_(:,k)))
 end
 
 
