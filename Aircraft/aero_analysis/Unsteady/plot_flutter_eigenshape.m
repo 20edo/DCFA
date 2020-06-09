@@ -91,12 +91,13 @@ b=zeros(size(M,1)+1,1);
 eig_ = zeros(length(v),2*n); 
 eig_(1,:) = e_old;
 
-
+k_index = 18; % eigenvalue index 
+i_index = 27; % velocity index
 % Following iterations
-for i=2:21
+for i=2:i_index
     X = zeros(size(M,1),2*size(M,1));
     e = zeros(2*size(M,1),1);
-    for k=31
+    for k=k_index
         tic
         kk = l*imag(e_old(k))/v(i); 
         wing = m_add_unsteady_loads(wing,[1,0,0]',kk); 
@@ -116,7 +117,7 @@ for i=2:21
         z=A\b;
         X(:,k)=X_old(:,k)+z(1:end-1);
         e(k)=e_old(k)+z(end);
-        phrase = ['Eig number ',num2str(k),' out of ',num2str(2*n),'; Velocity ',num2str(i),' out of ',num2str(length(v))];
+        phrase = ['Eig number ',num2str(k),'; Velocity ',num2str(i),' out of ',num2str(i_index)];
         disp(phrase)
         toc
         
@@ -127,7 +128,7 @@ for i=2:21
 end
 %%
 close all 
-phi = deg2rad(270); 
+phi = deg2rad(0); 
 clear e 
 for i=4:5
         wing.b(i).ssh = true; 
@@ -139,5 +140,5 @@ for i=4:5
     options.saveSTL                = 0;
     options.point_section          = 8;
     options.N                      = 1;        % we have only one eig
-    m_plot_eigenshape(wing,options,real(exp(1i*phi)*V*X(:,31)*30));
+    m_plot_eigenshape(wing,options,real(exp(1i*phi)*V*X(:,k_index))*5);
 %     m_plot_eigenshape(wing,options,real(V*X(:,28))*30);
