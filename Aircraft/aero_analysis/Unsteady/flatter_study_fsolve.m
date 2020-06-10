@@ -40,7 +40,7 @@ l = chord/2;
 
 wing = m_compute_matrices(wing);
 %% Reduction of the model using n eigenvectors
-n = 10;
+n = 6;
 [V,D] = eigs(wing.K,wing.M,n,'smallestabs');
 V_red = V;
 
@@ -83,7 +83,7 @@ e_old=e_old*scaling;
 % e_old = e_pulito;
 X_zero = X_old;
 e_zero = e_old;
-scaling=sum(abs(e_zero));
+% scaling=sum(abs(e_zero));
 
 % % Find the derivatives of Ham
 % k1 = 0.5e-12;
@@ -114,7 +114,7 @@ for i=2:length(v)
     for k=1:length(e_old)
         tic
         options = optimoptions('fsolve','Display','iter','FunctionTolerance',1e-6,'algorithm','levenberg-marquardt',...
-            'UseParallel',true);
+            'ScaleProblem','jacobian','UseParallel',true);
         [x,~,exitflag(i,k)] = fsolve(@(Unknown) funz(wing,v(i),V,q(i),scaling,Unknown(2:end),Unknown(1)),[e_old(k);X_old(:,k)],options);
         e=x(1);
         X=x(2:end);
@@ -135,7 +135,7 @@ for i=2:length(v)
         t(i,k)=toc;
     end
     eig_(i,:) = e_old;
-    scaling=sum(abs(aig_i));
+%     scaling=sum(abs(eig_(i,:)));
 end
 
 %% V-g plot
