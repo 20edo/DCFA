@@ -40,7 +40,7 @@ l = chord/2;
 
 wing = m_compute_matrices(wing);
 %% Reduction of the model using n eigenvectors
-n = 4;
+n = 6;
 [V,D] = eigs(wing.K,wing.M,n,'smallestabs');
 V_red = V;
 
@@ -53,6 +53,10 @@ M = V'*wing.M*V;
 K = V'*wing.K*V;
 Cs = V'*Cs*V;
 
+normK = norm(K); 
+M = M/normK;
+K = K/normK;
+Cs = Cs/normK; 
 %% Altitude fixed to 10.000 m
 [T,a,P,rho] = atmosisa(10000);
 
@@ -61,41 +65,15 @@ Cs = V'*Cs*V;
 % the solution of the problem is given by polyeig(K,C,M)
 
 %% Tracking of eigenvalues trough eigenvectors
-v = [0:1:30];
+v = [0:10:300];
 q = 1/2*rho.*v.^2;
 
 
 % First iteration
 [X_old,e_old] = polyeig(K,Cs,M);
-% I = imag(e_old)<=0.1;
-% e_old = e_old.*I;
-% e_pulito = [];
-% X_pulito = [];
-% for i = 1:2*n
-%     if abs(e_old(i))>1e-3
-%         e_pulito = [e_pulito; e_old(i)];
-%         X_pulito = [X_pulito, X_old(:,i)];
-%     end
-% end
-% X_old = X_pulito;
-% e_old = e_pulito;
+
 X_zero = X_old;
 e_zero = e_old;
-
-% % Find the derivatives of Ham
-% k1 = 0.5e-12;
-% wing = m_add_unsteady_loads(wing,[1,0,0]',k1);
-% Ham = wing.Ham;
-% wing = m_add_unsteady_loads(wing,[1,0,0]',0);
-% Ham_zero = wing.Ham;
-% Ham_dk = 1i*imag(Ham)/k1;
-% Ham_dk2 = 2*(real(Ham)-Ham_zero)/k1^2;
-%
-% % Reduce matrices
-% Ham_zero = V'*Ham_zero*V;
-% Ham_dk = V'*Ham_dk*V;
-% Ham_dk2 = V'*Ham_dk2*V;
-
 
 % Initialize non linear system variables
 A=zeros(size(M,1)+1);
@@ -115,6 +93,7 @@ for i=2:length(v)
         wing = m_add_unsteady_loads(wing,[1,0,0]',kk);
         Ham = wing.Ham;
         Ham = V'*Ham*V;
+        Ham = Ham/normK; 
         [X,e] = polyeig(K-q(i)*Ham,Cs,M);
         %e
         d_e = abs(e-e_old(k));
@@ -143,7 +122,7 @@ end
 close all
 
 g = 2*real(eig_)./(imag(eig_));
-%% Plot frequency diagram and V-G diagram
+
 figure
 hold on
 subplot(2,1,1)
@@ -183,3 +162,6 @@ if 0
         end
     end
 end
+
+load handel
+sound(y,Fs)

@@ -150,7 +150,7 @@ ylim([-1,1])
 %% Plot the corresponding modeshapes
 if 0
 figure
-phi = deg2rad(60);
+phi = deg2rad(90);
 for i=4:5
     wing.b(i).ssh = true;
 end

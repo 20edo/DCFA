@@ -158,12 +158,13 @@ ylim([-0.05,0.05])
 
 
 %% Plot the corresponding modeshapes
-if 0
+if 1
     figure
     phi = deg2rad(45);
     for i=4:5
         wing.b(i).ssh = true;
     end
+    clear options
     options.plot_original          = 1;
     options.plot_deformed          = 1;
     options.plotColor              = 'green';

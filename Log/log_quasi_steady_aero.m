@@ -57,3 +57,19 @@ Vinf = 1;
 % lambda = 0;
 % a = 1/2; 
 eval(Ca)
+
+%%
+
+load C_a.mat 
+ord = [1 5 2 3 6 4]; 
+C_a = C_a(ord,ord); 
+expand = [0 0 1 0 0 0 0 0 0 0 0 0; 
+          0 0 0 1 0 0 0 0 0 0 0 0; 
+          0 0 0 0 1 0 0 0 0 0 0 0; 
+          0 0 0 0 0 0 0 0 1 0 0 0; 
+          0 0 0 0 0 0 0 0 0 1 0 0; 
+          0 0 0 0 0 0 0 0 0 0 1 0]; 
+ C_a = expand'*C_a*expand; 
+ v_inf = 1; 
+ eval(C_a)
+          

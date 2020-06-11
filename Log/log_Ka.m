@@ -35,3 +35,7 @@ A6 = zeros(4)*x;
 A6(3,3) = cos(lambda)*sin(lambda)^2*e*c*CLa;
 Ka = Ka + int(N'*A5*diff(N,x),x,-1,1) + int(diff(N',x)*A6*diff(N,x),x,-1,1)*2/L;
 
+Ka(:,4+6) = -Ka(:,4+6); 
+Ka(:,5+6) = -Ka(:,5+6); 
+Ka(4+6,:) = -Ka(4+6,:); 
+Ka(5+6,:) = -Ka(5+6,:); 
