@@ -65,7 +65,7 @@ Cs = V'*Cs*V;
 % the solution of the problem is given by polyeig(K,C,M)
 
 %% Tracking of eigenvalues trough eigenvectors
-v = [0:1:6000];
+v = [0:1:1000];
 q = 1/2*rho.*v.^2;
 
 % Cs = 1e-3*sum(sum(diag(K)))/size(K,1)*eye(size(M));
@@ -150,7 +150,7 @@ ylim([-1,1])
 %% Plot the corresponding modeshapes
 if 0
 figure
-phi = deg2rad(90);
+phi = deg2rad(120);
 for i=4:5
     wing.b(i).ssh = true;
 end

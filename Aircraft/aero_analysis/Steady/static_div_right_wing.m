@@ -44,6 +44,7 @@ wing_straight = m_add_aero_loads_straight(wing_straight,[1,0,0]');
 %% Find the divergence dynamic pressure - swept wing
 [V,D]= eig(full(wing.K),full(wing.Ka));
 q_div = diag(D);
+q_div = q_div.*(abs(imag(q_div))<10^-3);
 [q_div,I] = sort(real(q_div));
 V = V(:,I);                             % sort the eigenshapes
 V(:,q_div<1)=[];                        % select the eigenshapes with positive eig
@@ -68,17 +69,23 @@ if 0
     options.point_section          = 8;
     options.N                      = 1;        % we have only one eig
     
-m_plot_eigenshape(wing,options,q_stat*10);
+m_plot_eigenshape(wing,options,q_stat*50);
 end
     
 
 
 
 %% Find the divergence dynamic pressure - straight wing
-q_div_straight = eigs(wing_straight.K,wing_straight.Ka,30,'smallestabs');
-q_div_straight = sort(real(q_div_straight));
-q_div_straight(q_div_straight<0)=[];
-q_div_straight = q_div_straight(1);
+%% Find the divergence dynamic pressure - swept wing
+[V_straight,D_straight]= eig(full(wing_straight.K),full(wing_straight.Ka));
+q_div_straight = diag(D_straight);
+q_div_straight = q_div_straight.*(abs(imag(q_div_straight))<10^-3);
+[q_div_straight,I] = sort(real(q_div_straight));
+V_straight = V_straight(:,I);                             % sort the eigenshapes
+V_straight(:,q_div_straight<1)=[];                        % select the eigenshapes with positive eig
+q_div_straight(q_div_straight<1)=[];
+q_div_straight = q_div_straight(1);                       % select the minimum positive q_inf
+V_div_straight = V_straight(:,1); 
 
 %% Assebly stiffness the K matrices for cntr_rev
 K_cr = [wing_straight.K, zeros(size(wing_straight.K,1),1); zeros(1,size(wing_straight.K,2)),0]; 
@@ -106,24 +113,27 @@ v_straight = sqrt(q_div_straight*2./rho_straight);
 M_straight = v_straight./a_straight;
 
 %% Plot and save results
+close all 
 if 1
+    if 1
     % switch on the aero properties for the plot 
     for i=4:5
         wing.b(i).ssh = true; 
     end
     
+    phi = rad2deg(0);
     options.plot_original          = 1;
     options.plot_deformed          = 1;
     options.plotColor              = 'green';
     options.saveSTL                = 0;
     options.point_section          = 8;
     options.N                      = 1;        % we have only one eig
-    m_plot_eigenshape(wing,options,V_div*10);
-    
+    m_plot_eigenshape(wing,options,(10*(V_div)));
+    end
     
     figure(2)
     title('Static divergence Wing modeshape')
-    fig = figure(2)
+    fig = figure(2);
     for h = 1:4
         if h==1
             fname = ['Static_Divergence_Wing_view3D'];

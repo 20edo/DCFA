@@ -61,7 +61,7 @@ Cs = V'*Cs*V;
 % the solution of the problem is given by polyeig(K,C,M)
 
 %% Tracking of eigenvalues trough eigenvectors
-v = [0:50:300];
+v = [0:30:300];
 q = 1/2*rho.*v.^2;
 
 scaling=1;  %redifined later
@@ -142,7 +142,7 @@ end
 close all
 
 g = 2*real(eig_)./(imag(eig_));
-%% Plot frequency diagram and V-G diagram
+
 figure
 hold on
 subplot(2,1,1)
@@ -154,7 +154,7 @@ subplot(2,1,2)
 plot(v,g);
 ylabel('g')
 grid on
-ylim([-0.05,0.05])
+
 
 
 %% Plot the corresponding modeshapes
@@ -184,5 +184,5 @@ if 1
     end
 end
 
-load handel
-sound(y,Fs)
+% load handel
+% sound(y,Fs)

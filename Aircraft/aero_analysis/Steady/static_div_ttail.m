@@ -55,7 +55,7 @@ if 1
     options.saveSTL                = 0;
     options.point_section          = 8;
     options.N                      = 1;         % we have only one eig
-    m_plot_eigenshape(ttail,options,20*V_div);
+    m_plot_eigenshape(ttail,options,1000*V_div);
     
     figure(2)
     title('Static divergence T-Tail modeshape')

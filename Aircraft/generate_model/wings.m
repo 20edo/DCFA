@@ -21,20 +21,20 @@ nel_3=66;
 
 
 %% Parameters of the wing
-
+parameter_sweep = 1; 
 x0=[0 0 2]';                                    % Higth of the wings
-x1=[4.6 10 0]';                                % Relative position of the engine 1 (right) wrt node 3
+x1=[4.6/parameter_sweep 10 0]';                                % Relative position of the engine 1 (right) wrt node 3
 x1(3)=-norm(x1)*tand(3);                         % Added anhedral angle
-x2=[7  15 0]';                                 % Relative position of the engine 2 (right) wrt node 3
+x2=[7/parameter_sweep  15 0]';                                 % Relative position of the engine 2 (right) wrt node 3
 x2(3)=-norm(x2)*tand(3);                         % Added anhedral angle
-x3=[13 27 0]';                                 % Relative position of the tip of the wing (right) wrt node 3
+x3=[13/parameter_sweep 27 0]';                                 % Relative position of the tip of the wing (right) wrt node 3
 x3(3)=-norm(x3)*tand(3);                         % Added anhedral angle
 i_ang=2;                                        % Angle of incidence (calettamento)
 
 
 chord=@(x) 7.72+2-x/norm(x3)*5;            % Chord of the wing
 heigth=@(x) 0.12+0.*x;                          % Relative heigth of the wing section
-thickness=@(x) 0.015+0.01-x/norm(x3)*0.02;      % Thickness of the panels (see ssh_profile) 
+thickness=@(x) 0.0015+0.001-x/norm(x3)*0.002;      % Thickness of the panels (see ssh_profile) 
 
 Node7=en_free(aircraft.en(3).x+x0);
 Node8=en_free(Node7.x+x1);                      % Position of the right engine closer to the root

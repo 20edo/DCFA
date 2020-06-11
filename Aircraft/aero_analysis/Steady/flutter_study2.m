@@ -38,7 +38,7 @@ end
 wing = m_add_aero_loads(wing,[1,0,0]');
 
 %% Reduction of the model using n eigenvectors
-n = 10;
+n = 6;
 [V,D] = eigs(wing.K,wing.M,n,'smallestabs');
 V_red = V;
 
@@ -61,7 +61,7 @@ Cs = V'*Cs*V;
 % the solution of the problem is given by polyeig(K,C,M)
 
 %% Tracking of eigenvalues trough eigenvectors
-v = [0:1:6000];
+v = [0:1:1000];
 q = 1/2*rho.*v.^2;
 
 % Cs = 1e-3*sum(sum(diag(K)))/size(K,1)*eye(size(M));
@@ -119,13 +119,13 @@ subplot(2,1,2)
 plot(v,g);
 ylabel('g')
 grid on
-ylim([-0.05,0.05])
+ylim([-0.1,0.1])
 
 
 %% Plot the corresponding modeshapes
 if 0
     figure
-    phi = deg2rad(45);
+    phi = deg2rad(70);
     for i=4:5
         wing.b(i).ssh = true;
     end
@@ -138,6 +138,11 @@ if 0
     
     num = sum(imag(e_zero)>=-0.1);
     i = 1;
+    
+    [~, II] = sort(imag(e_zero));
+    e_zero = e_zero(II);
+    X_zero = X_zero(:,II);
+    
     for k = 1:2*n
         if imag(e_zero(k))>=-0.1
             subplot(2,(num+mod(num,2))/2,i)

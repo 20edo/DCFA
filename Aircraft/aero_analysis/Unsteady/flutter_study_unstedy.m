@@ -38,6 +38,7 @@ end
 chord=7.72;
 l = chord/2;
 wing = m_add_aero_loads(wing,[1,0,0]');
+wing = m_add_unsteady_loads(wing,[1,0,0]',0.001);
 wing = m_compute_matrices(wing);
 %% Reduction of the model using n eigenvectors
 n = 6;
@@ -202,5 +203,5 @@ if 0
     end
 end
 
-load handel
-sound(y,Fs)
+% load handel
+% sound(y,Fs)
