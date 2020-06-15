@@ -49,6 +49,8 @@ wing_straight = m_add_aero_loads_straight(wing_straight,[1,0,0]');
 %
 % wing = m_compute_matrices(wing);
 
+% wing.Lb = -wing.Lb;
+% wing.Lq = -wing.Lq;
 
 
 %% Assebly stiffness the K matrices for cntr_rev
@@ -58,10 +60,25 @@ Ka_cr = [wing.Ka, wing.fb; wing.Lq, wing.Lb];
 %% Direct problem
 q = 24500;
 A = [wing.K-q*wing.Ka, zeros(size(wing.K,1),1); -q*wing.Lq, 1];
-b = q*[wing.fb; wing.Lb]*deg2rad(20);
+b = q*[wing.fb; wing.Lb]*deg2rad(4);
 sol = A\b;
 DL = sol(end);
 
+if 0
+    % switch on the aero properties for the plot
+    for i=4:5
+        wing.b(i).ssh = true;
+    end
+    
+    phi = rad2deg(0);
+    options.plot_original          = 1;
+    options.plot_deformed          = 1;
+    options.plotColor              = 'green';
+    options.saveSTL                = 0;
+    options.point_section          = 8;
+    options.N                      = 1;        % we have only one eig
+    m_plot_eigenshape(wing,options,((sol(1:end-1)))*100);
+end
 
 %% Find the control reversal (cr) dynamic pressure
 [V_cr,D_cr]= eig(full(K_cr),full(Ka_cr));
@@ -109,5 +126,5 @@ if 1
     options.saveSTL                = 0;
     options.point_section          = 8;
     options.N                      = 1;        % we have only one eig
-    m_plot_eigenshape(wing,options,((V_cr(1:end-1)))*3);
+    m_plot_eigenshape(wing,options,((V_cr(1:end-1)))*2);
 end

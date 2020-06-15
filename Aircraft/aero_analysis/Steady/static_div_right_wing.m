@@ -42,6 +42,7 @@ wing = m_add_aero_loads(wing,[1,0,0]');
 wing_straight = m_add_aero_loads_straight(wing_straight,[1,0,0]');
 
 %% Find the divergence dynamic pressure - swept wing
+% we take the smallest one positive 
 [V,D]= eig(full(wing.K),full(wing.Ka));
 q_div = diag(D);
 q_div = q_div.*(abs(imag(q_div))<10^-3);
@@ -57,7 +58,7 @@ q = 24500;
 A = wing.K - q*wing.Ka;
 b = q*wing.fa; 
 q_stat = A\b; 
-if 0
+if 1
     % switch on the aero properties for the plot 
     for i=4:5
         wing.b(i).ssh = true; 
@@ -69,7 +70,7 @@ if 0
     options.point_section          = 8;
     options.N                      = 1;        % we have only one eig
     
-m_plot_eigenshape(wing,options,q_stat*50);
+m_plot_eigenshape(wing,options,q_stat*10);
 end
     
 
@@ -128,7 +129,7 @@ if 1
     options.saveSTL                = 0;
     options.point_section          = 8;
     options.N                      = 1;        % we have only one eig
-    m_plot_eigenshape(wing,options,(10*(V_div)));
+    m_plot_eigenshape(wing,options,(5*(V_div)));
     end
     
     figure(2)
