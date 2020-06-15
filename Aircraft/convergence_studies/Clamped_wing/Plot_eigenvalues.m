@@ -17,8 +17,8 @@ load w_esatta.mat
 
 fig=figure;
 semilogy(1:length(w_esatta),w_esatta,'xr')
-title('Clamped wing')
+% title('Wing')
 xlabel('Number of eigenvalue')
 ylabel('Frequency')
 grid on
-saveas(fig,'Eigenvalues_clamped_wing','svg')
+saveas(fig,'Eigenvalues_clamped_wing','eps')

@@ -14,9 +14,9 @@
 
 
 %% Discretisation parameters
-nel_1=50;
-nel_2=50;
-nel_3=50;
+nel_1=40;
+nel_2=40;
+nel_3=70;
 
 %% Material properties (Aluminium)
 

@@ -69,23 +69,21 @@ subplot(1,3,1)
     loglog(nel_tot,einf)
     grid on
     xlabel('Number of elements')
-    ylabel('Error')
-    title('Norm INF error')
+    ylabel('Norm INF error')
 subplot(1,3,2)
     loglog(nel_tot,e2)
     grid on
     xlabel('Number of elements')
-    ylabel('Error')
-    title('Norm 2 error')
+    ylabel('Norm 2 error')
 subplot(1,3,3)
     loglog(nel_tot,t)
     grid on
     xlabel('Number of elements')
-    ylabel('Time')
-    title('Time spent')
+    ylabel('Time spent')
+% sgtitle('Wing')
    
-if 0
-    saveas(fig,'Convergence_clamped_wing_eig','svg')
+if 1
+    saveas(fig,'Convergence_clamped_wing_eig','eps')
 end
 %% plot Modes
 if 0
