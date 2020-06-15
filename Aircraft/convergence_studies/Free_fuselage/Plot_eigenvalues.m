@@ -17,8 +17,8 @@ load w_esatta.mat
 
 fig=figure;
 semilogy(1:length(w_esatta)-6,w_esatta(7:end),'xr')
-title('Free fuselage')
+% title('Fuselage')
 xlabel('Number of eigenvalue')
 ylabel('Frequency')
 grid on
-saveas(fig,'Eigenvalues_free_fuselage','svg')
+saveas(fig,'Eigenvalues_free_fuselage','eps')
