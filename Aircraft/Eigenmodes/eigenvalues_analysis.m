@@ -24,10 +24,10 @@ alpha=1;        % Shift
 w=real(diag(D-alpha).^0.5);
 
 fig=figure;
-set(gcf, 'Position',  [100, 100, 1000, 800])
+set(gcf, 'Position',  [100, 100, 5000, 4000])
 semilogy(1:length(w)-6,w(7:end),'xr')
-% title('Aircraft')
+title('Aircraft')
 xlabel('Number of eigenvalue')
 ylabel('Frequency')
 grid on
-saveas(fig,'Eigenvalues_aircraft','eps')
+saveas(fig,'Eigenvalues_aircraft','svg')

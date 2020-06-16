@@ -396,19 +396,19 @@ if options.plot_deformed
             for h = 1:4
                 if h==1
                     fname = ['Mode_', num2str(i),'_view3D'];
-                    saveas(fig,fname,'eps')
+                    saveas(fig,fname,'svg')
                 elseif h == 2
                     view([1 0 0])
                     fname = ['Mode_', num2str(i),'_viewX'];
-                    saveas(fig,fname,'eps')
+                    saveas(fig,fname,'svg')
                 elseif h==3
                     view([0 1 0])
                     fname = ['Mode_', num2str(i),'_viewY'];
-                    saveas(fig,fname,'eps')
+                    saveas(fig,fname,'svg')
                 elseif h==4
                     view([0 0 1])
                     fname = ['Mode_', num2str(i),'_viewZ'];
-                    saveas(fig,fname,'eps')
+                    saveas(fig,fname,'svg')
                 end
             end
         end

@@ -22,13 +22,13 @@ rho=804;    % Density
 %% Fuel percentage
 % Tanks are ordered from the fuselage to the tip of the wing
 % Right
-fuel_t1=0.4;      % Percentage of fuel tank1
-fuel_t2=0.4;      % Percentage of fuel tank2
-fuel_t3=0.4;      % Percentage of fuel tank3
+fuel_t1=1;      % Percentage of fuel tank1
+fuel_t2=1;      % Percentage of fuel tank2
+fuel_t3=1;      % Percentage of fuel tank3
 % Left
-fuel_t4=0.4;      % Percentage of fuel tank4
-fuel_t5=0.4;      % Percentage of fuel tank5
-fuel_t6=0.4;      % Percentage of fuel tank6
+fuel_t4=1;      % Percentage of fuel tank4
+fuel_t5=1;      % Percentage of fuel tank5
+fuel_t6=1;      % Percentage of fuel tank6
 
 %% Tank
 % Tank1
@@ -43,7 +43,7 @@ tank.vx=aircraft.b(7).vx;
 tank.vy=aircraft.b(7).vy;
 % disp('Tank_1')
 % disp(sum(sum(tank.M(1:6:end,1:6:end))))
-aircraft.b(7).M=aircraft.b(7).M+(fuel_t1+0.6)*tank.M;
+aircraft.b(7).M=aircraft.b(7).M+fuel_t1*tank.M;
 
 % Tank2
 
@@ -57,7 +57,7 @@ tank.vx=aircraft.b(8).vx;
 tank.vy=aircraft.b(8).vy;
 % disp('Tank_2')
 % disp(sum(sum(tank.M(1:6:end,1:6:end))))
-aircraft.b(8).M=aircraft.b(8).M+(fuel_t2+0.6)*tank.M;
+aircraft.b(8).M=aircraft.b(8).M+fuel_t2*tank.M;
 
 % Tank3
 
@@ -71,7 +71,7 @@ tank.vx=aircraft.b(9).vx;
 tank.vy=aircraft.b(9).vy;
 % disp('Tank_3')
 % disp(sum(sum(tank.M(1:6:end,1:6:end))))
-aircraft.b(9).M=aircraft.b(9).M+(fuel_t3*0.6)*tank.M;
+aircraft.b(9).M=aircraft.b(9).M+fuel_t3*tank.M;
 
 % Tank4
 
@@ -85,7 +85,7 @@ tank.vx=aircraft.b(10).vx;
 tank.vy=aircraft.b(10).vy;
 % disp('Tank_4')
 % disp(sum(sum(tank.M(1:6:end,1:6:end))))
-aircraft.b(10).M=aircraft.b(10).M+(fuel_t4+0.6)*tank.M;
+aircraft.b(10).M=aircraft.b(10).M+fuel_t4*tank.M;
 
 % Tank5
 
@@ -99,7 +99,7 @@ tank.vx=aircraft.b(11).vx;
 tank.vy=aircraft.b(11).vy;
 % disp('Tank_5')
 % disp(sum(sum(tank.M(1:6:end,1:6:end))))
-aircraft.b(11).M=aircraft.b(11).M+(fuel_t5+0.6)*tank.M;
+aircraft.b(11).M=aircraft.b(11).M+fuel_t5*tank.M;
 
 % Tank6
 
@@ -113,7 +113,7 @@ tank.vx=aircraft.b(12).vx;
 tank.vy=aircraft.b(12).vy;
 % disp('Tank_6')
 % disp(sum(sum(tank.M(1:6:end,1:6:end))))
-aircraft.b(12).M=aircraft.b(12).M+(fuel_t6+0.6)*tank.M;
+aircraft.b(12).M=aircraft.b(12).M+fuel_t6*tank.M;
 
 
 
