@@ -47,3 +47,6 @@ sc.GJ=nan;                  % Torsional stiffness
 sc.yct=nan;                 % Coordinate of the shear center[mm]
 sc.zct=nan;                 % Coordinate of the shear center[mm] 
 sc.Jp=nan;                  % Polar moment of inertia       [kg*mm^2]
+
+
+sc.navier=zeros(6);         % Has no sense for continuous sections, but need it to assemble the model

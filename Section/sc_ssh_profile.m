@@ -141,5 +141,39 @@ sc.CLb = 0.7;
 % sc.CMb = -0.843680353330137;
 sc.CMb = -0.4; 
 
+%% Matrices for loads recovery (nei correnti)
+% Coordinates of correnti (with origin=leading edge)
+coordinates=[
+         0     0
+         c/4   h/2
+         3/4*c h/2
+         c     0
+         3/4*c -h/2
+         1/4*c -h/2];
 
+% Move the origin to the mass center
+coordinates(:,1)=coordinates(:,1)+sc.yo-sc.ya;
+
+% Contains the contribuition of each force to the stress (local elastic
+% frame)
+navier_vector=[1/sc.EA  0   0   0   1/sc.EJy 1/sc.EJz ];
+
+% Matrix to transform the forces from the ct reference to the elastic
+% reference
+reference_matrix=[
+    ones(3)     zeros(3)
+    0           0   0   1   0   0
+    -sc.za      0   0   0   1   0
+    +sc.ya     0   0   0   0   1];
+% Aree dei correnti^-1/ A
+invarea=ones(6,1);
+invarea(2)=1/2;
+invarea(1)=1/2;
+% Matrix that calculates the shear of each corrente from the force vector
+% applied to the elastic center
+stress_elastic=[ invarea zeros(6,3) coordinates ] .*navier_vector;
+% Transform to the ct to comply with other definitions
+stress_ct=stress_elastic*reference_matrix;
+sc.navier=stress_ct;
+    
 end

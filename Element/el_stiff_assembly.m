@@ -42,10 +42,9 @@ K = [[       EA/L,              0,              0,     0,     (EA*zA)/L,    -(EA
 
 
 % Change of reference
-
 R=[ 1   0   0   0   0   0
-    0   1   0   el.sc.yct   0  0
-    0   0   1   -el.sc.zct  0  0
+    0   1   0   -el.sc.zct  0  0
+    0   0   1   el.sc.yct   0  0
     0   0   0   1   0   0
     0   0   0   0   1   0
     0   0   0   0   0   1];

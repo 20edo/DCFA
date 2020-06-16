@@ -42,10 +42,9 @@ M = [[ (L*m)/3,                   (m*yM)/2,                   (m*zM)/2,         
  
 
 % Change of reference
-
 R=[ 1   0   0   0   0   0
-    0   1   0   el.sc.yct   0  0
-    0   0   1   -el.sc.zct  0  0
+    0   1   0   -el.sc.zct  0  0
+    0   0   1   el.sc.yct   0  0
     0   0   0   1   0   0
     0   0   0   0   1   0
     0   0   0   0   0   1];
