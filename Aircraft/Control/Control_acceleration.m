@@ -158,7 +158,8 @@ switch controller
         D_zu = zeros(N,1);
         W_zz = sqrt(lambda)/(sum(sum(sqrt(lambda))));
     case 4
-        % Select the elements where I want to minimize the stress
+        % Select the elements where I want to minimize the stress (root,
+        % element before and after the engines' support)
         elements_correnti=[wing.b(1).A(:,[7:12 end-6:end]) wing.b(2).A(:,[7:12 end-6:end]) wing.b(3).A(:,[7:12])];
         elements_correnti=elements_correnti';
         C_z=elements_correnti*wing.navier(:,7:end)*K*V;
@@ -171,7 +172,7 @@ end
 % C_z = [zeros(N) eye(N)]*A;
 % C_z = A(N+1:end,:);
 % D_zu = B_u(N+1:end);
-%% Weight matrixes
+%% Normalizing weight matrixes
 weight = 0.1;
 % weight=1 ->   Only u counts
 % Weight=0 ->   Only z counts
@@ -180,6 +181,7 @@ W_zz=(1-weight)*W_zz/norm(W_zz);
 % W_zz = (1-weight) * (lambda)/(sum(sum(lambda)));
 
 W_uu = (weight);
+
 %% Setting up the Riccati equation
 Q = C_z'*W_zz*C_z;
 S = C_z'*W_zz*D_zu;
@@ -208,10 +210,14 @@ D_Recover_acc = [M_red\(q*Fb)];
 SYS_controlled_accelerations = ss(A_controlled, B_u, C_Recover_acc, D_Recover_acc);
 SYS_notcontrolled_accelerations = ss(A, B_u, C_Recover_acc, D_Recover_acc);
 
-%% Recover stresses
-% A
-% C_Recover_v = [elements_correnti*wing.navier*K*V zeros(N)];
-% D_Recover_v=0;
+%% Recover stresses 
+elements_correnti=[wing.b(1).A(:,[7:12 end-6:end]) wing.b(2).A(:,[7:12 end-6:end]) wing.b(3).A(:,[7:12])];
+elements_correnti=elements_correnti';
+C_Recover_internalforces= elements_correnti*wing.navier(:,7:end)*K*V;
+C_Recover_internalforces=[C_Recover_internalforces zeros(size(C_Recover_internalforces))];
+D_Recover_internalforces = zeros(size(C_Recover_internalforces,1),1);
+SYS_controlled_internalforces = ss(A_controlled, B_u, C_Recover_internalforces, D_Recover_internalforces);
+SYS_notcontrolled_internalforces = ss(A, B_u, C_Recover_internalforces, D_Recover_internalforces);
 
 %% Define the input
 % Define time axis
@@ -253,18 +259,22 @@ end
 [z,~,x] = lsim(SYS_controlled, u, t);
 [z_v] = lsim(SYS_controlled_velocity, u, t);
 [z_acc] = lsim(SYS_controlled_accelerations, u, t);
+[z_Recover_internalforces] = lsim(SYS_controlled_Recover_internalforces, u, t);
 [y_nc,~,x_nc] = lsim(SYS_notcontrolled, u, t);
 [y_nc_v] = lsim(SYS_notcontrolled_velocity, u, t);
 [y_nc_acc] = lsim(SYS_notcontrolled_accelerations, u, t);
+[y_nc_Recover_internalforces] = lsim(SYS_notcontrolled_Recover_internalforces, u, t);
 
 for i = 1:length(t)
     z_sol(:,i) = V*z(i,1:N)'; % I'm recovering the physical coordinates from
     % the modal ones
     z_sol_v(:,i) = V*z_v(i,1:N)';
     z_sol_acc(:,i) = V*z_acc(i,1:N)';
+    z_sol_Recover_internalforces(:,i) = V*z_Recover_internalforces(i,1:N)';
     y_sol_nc(:,i) = V*y_nc(i,1:N)';
     y_sol_nc_v(:,i) = V*y_nc_v(i,1:N)';
     y_sol_nc_acc(:,i) = V*y_nc_acc(i,1:N)';
+    y_sol_nc_Recover_internalforces(:,i) = V*y_nc_Recover_internalforces(i,1:N)';
 end
 
 %% plot the vertical acceleration of the tip of the wing
@@ -380,5 +390,5 @@ legend('Acceleration controlled','Acceleration not controlled')
 xlabel('t(s)')
 ylabel('$\ddot{q}$','Interpreter','latex')
 
-
+%% Plot the internal forces at the root
 
