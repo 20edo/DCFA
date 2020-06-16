@@ -138,7 +138,8 @@ sc.CLb = 0.7;
 % CMb = temp(1);
 % clear temp
 % sc.CMb = -1.7; 
-sc.CMb = -0.843680353330137;
+% sc.CMb = -0.843680353330137;
+sc.CMb = -0.4; 
 
 
 end

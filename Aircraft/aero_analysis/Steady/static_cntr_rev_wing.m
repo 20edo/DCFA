@@ -77,7 +77,12 @@ if 0
     options.saveSTL                = 0;
     options.point_section          = 8;
     options.N                      = 1;        % we have only one eig
-    m_plot_eigenshape(wing,options,((sol(1:end-1)))*100);
+    for g = 1:length(sol)-1
+        if mod(g,6)==3 || mod(g,6)==5
+            sol(g) = -sol(g);
+        end
+    end
+    m_plot_eigenshape(wing,options,((sol(1:end-1)))*30);
 end
 
 %% Find the control reversal (cr) dynamic pressure
@@ -126,5 +131,10 @@ if 1
     options.saveSTL                = 0;
     options.point_section          = 8;
     options.N                      = 1;        % we have only one eig
-    m_plot_eigenshape(wing,options,((V_cr(1:end-1)))*2);
+    for g = 1:length(sol)-1
+        if mod(g,6)==3 || mod(g,6)==5
+            V_cr(g) = -V_cr(g);
+        end
+    end
+    m_plot_eigenshape(wing,options,(-(V_cr(1:end-1)))*2);
 end
