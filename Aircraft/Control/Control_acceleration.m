@@ -102,7 +102,7 @@ switch controller
         C_z = [zeros(N) eye(N)];
         C_z = C_z/N;
         D_zu = zeros(N,1);
-        
+        W_zz = sqrt(lambda)/(sum(sum(sqrt(lambda))));
     case 2
         % Define relative importance of modes velocity engines' acceleration
         % 1 -> Only modes velocity count
@@ -129,7 +129,7 @@ switch controller
         %         D_zu_phy=[Minv(index,index)*q*fb(index) zeros(index(end),size(K,1)-index(end))];
         % Define the input matrix
         D_zu = zeros(N,1);
-        
+        W_zz = sqrt(lambda)/(sum(sum(sqrt(lambda))));
     case 3
         % Define relative importance of modes velocity engines' acceleration
         % 1 -> Only modes velocity count
@@ -156,12 +156,16 @@ switch controller
         %         D_zu_phy=[Minv(index,index)*q*fb(index) zeros(index(end),size(K,1)-index(end))];
         % Define the input matrix
         D_zu = zeros(N,1);
+        W_zz = sqrt(lambda)/(sum(sum(sqrt(lambda))));
     case 4
-        C_Ku = [K*V zeros(N)];
+        % Select the elements where I want to minimize the stress
+        elements_correnti=[wing.b(1).A(:,[7:12 end-6:end]) wing.b(2).A(:,[7:12 end-6:end]) wing.b(3).A(:,[7:12])];
+        elements_correnti=elements_correnti';
+        C_z=elements_correnti*wing.navier(:,7:end)*K*V;
+        C_z=[C_z zeros(size(C_z))];
 %         D_Ku = [eye(N)-M*V*diag(1/M_red)*V'];
-        D_Ku = zeros(N,1);
-        SYS_internalforce = ss(A, B_u, C_Ku, D_Ku);
-        [Ku] = lsim(SYS_internalforce, u, t);
+        D_zu = zeros(size(C_z,1),1);
+        W_zz=eye(size(C_z,1));
 end
 
 % C_z = [zeros(N) eye(N)]*A;
@@ -172,7 +176,6 @@ weight = 0.1;
 % weight=1 ->   Only u counts
 % Weight=0 ->   Only z counts
 
-W_zz = sqrt(lambda)/(sum(sum(sqrt(lambda))));
 W_zz=(1-weight)*W_zz/norm(W_zz);
 % W_zz = (1-weight) * (lambda)/(sum(sum(lambda)));
 
@@ -204,6 +207,11 @@ D_Recover_acc = [M_red\(q*Fb)];
 % Recover accelerations
 SYS_controlled_accelerations = ss(A_controlled, B_u, C_Recover_acc, D_Recover_acc);
 SYS_notcontrolled_accelerations = ss(A, B_u, C_Recover_acc, D_Recover_acc);
+
+%% Recover stresses
+% A
+% C_Recover_v = [elements_correnti*wing.navier*K*V zeros(N)];
+% D_Recover_v=0;
 
 %% Define the input
 % Define time axis
