@@ -92,7 +92,9 @@ D_yd = 0;
 % 1 -> Controller based only on modal velocities
 % 2 -> Controller based on modal velocities and engines accelerations
 % 3 -> Controller based on modal velocities and engines velocities
-controller=1;
+% 4 -> Controller based on allieviation of the loads at the root of the
+%      wing and at the root of the engines' support
+controller=4;
 
 switch controller
     
@@ -154,6 +156,12 @@ switch controller
         %         D_zu_phy=[Minv(index,index)*q*fb(index) zeros(index(end),size(K,1)-index(end))];
         % Define the input matrix
         D_zu = zeros(N,1);
+    case 4
+        C_Ku = [K*V zeros(N)];
+%         D_Ku = [eye(N)-M*V*diag(1/M_red)*V'];
+        D_Ku = zeros(N,1);
+        SYS_internalforce = ss(A, B_u, C_Ku, D_Ku);
+        [Ku] = lsim(SYS_internalforce, u, t);
 end
 
 % C_z = [zeros(N) eye(N)]*A;

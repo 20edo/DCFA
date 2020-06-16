@@ -32,5 +32,5 @@ el=el_stiff_assembly(el);
 el.C=zeros(size(el.M));
 % Medium forces = forces on the medium section
 el.navier=sparse(1/2*[el.sc.navier  el.sc.navier
-                      zerso(size(el.sc.navier))  zeros(size(el.sc.navier))]);
+                      zeros(size(el.sc.navier))  zeros(size(el.sc.navier))]);
 end
