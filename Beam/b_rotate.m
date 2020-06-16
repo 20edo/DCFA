@@ -42,3 +42,4 @@ R = sparse(blkdiag(Ac{:}));
 % rotate matrices
 b.M = R*b.M*R';
 b.K = R*b.K*R';
+b.navier=b.navier*R';
