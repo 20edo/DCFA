@@ -40,14 +40,14 @@ wing = m_add_aero_loads(wing,[1,0,0]');
 wing_straight = m_add_aero_loads_straight(wing_straight,[1,0,0]');
 
 
-% wing.b(1).fb = zeros(size(wing.b(1).fb));
-% wing.b(1).Lq = zeros(size(wing.b(1).Lq));
-% wing.b(1).Lb = zeros(size(wing.b(1).Lb));
-% wing.b(2).fb = zeros(size(wing.b(2).fb));
-% wing.b(2).Lq = zeros(size(wing.b(2).Lq));
-% wing.b(2).Lb = zeros(size(wing.b(2).Lb));
-%
-% wing = m_compute_matrices(wing);
+wing.b(1).fb = zeros(size(wing.b(1).fb));
+wing.b(1).Lq = zeros(size(wing.b(1).Lq));
+wing.b(1).Lb = zeros(size(wing.b(1).Lb));
+wing.b(2).fb = zeros(size(wing.b(2).fb));
+wing.b(2).Lq = zeros(size(wing.b(2).Lq));
+wing.b(2).Lb = zeros(size(wing.b(2).Lb));
+
+wing = m_compute_matrices(wing);
 
 % wing.Lb = -wing.Lb;
 % wing.Lq = -wing.Lq;

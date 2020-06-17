@@ -259,11 +259,11 @@ end
 [z,~,x] = lsim(SYS_controlled, u, t);
 [z_v] = lsim(SYS_controlled_velocity, u, t);
 [z_acc] = lsim(SYS_controlled_accelerations, u, t);
-[z_Recover_internalforces] = lsim(SYS_controlled_Recover_internalforces, u, t);
+[z_Recover_internalforces] = lsim(SYS_controlled_internalforces, u, t);
 [y_nc,~,x_nc] = lsim(SYS_notcontrolled, u, t);
 [y_nc_v] = lsim(SYS_notcontrolled_velocity, u, t);
 [y_nc_acc] = lsim(SYS_notcontrolled_accelerations, u, t);
-[y_nc_Recover_internalforces] = lsim(SYS_notcontrolled_Recover_internalforces, u, t);
+[y_nc_Recover_internalforces] = lsim(SYS_notcontrolled_internalforces, u, t);
 
 for i = 1:length(t)
     z_sol(:,i) = V*z(i,1:N)'; % I'm recovering the physical coordinates from

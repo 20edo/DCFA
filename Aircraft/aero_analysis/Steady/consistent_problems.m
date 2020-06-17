@@ -67,7 +67,7 @@ K = wing.K;
 Ka = wing.Ka;
 
 %% Number of problem to be solved
-problem=3;
+problem=1;
 %% #1
 % initial roll acceleration p_dot for prescribed aileron deflection beta
 %% #2
@@ -174,7 +174,7 @@ end
 
 %% Control aeroelastic
 
-q_ref=linspace(1,15000*1e3,5*1e2);
+q_ref=linspace(1,600*1e3,5*1e2);
 elastic_control=zeros(size(q_ref));
 
 for i=1:length(q_ref)
@@ -185,7 +185,7 @@ for i=1:length(q_ref)
         -q*lq, Jx];
     b = q*[fb; lb]*beta;
     sol = A\b;
-    p_dot(i) = sol(end);
+    p_dot1(i) = sol(end);
     
     % Rigid solution problem 1
     
@@ -193,43 +193,46 @@ for i=1:length(q_ref)
            -0*lq, Jx];
     b_r = q*[fb; lb]*beta;
     sol_r = A_r\b_r;
-    p_dot_r(i) = sol_r(end);
-    elastic_control(i)=p_dot(i)/p_dot_r(i);
+    p_dot_r1(i) = sol_r(end);
+    elastic_control(i)=p_dot1(i)/p_dot_r1(i);
     
     
 end
 
-% %% Roll damping aeroelastic correction
-% 
-% elastic_damping=zeros(size(q_ref));
-% 
-% for i=1:length(q_ref)
-%     q=q_ref(i);
-%     
-%     % Elastic solution, problem 5
-%     p_fract_vinf = deg2rad(2)/200;
-%     A = [K-q*Ka, Sq; -q*lq, Jx];
-%     b = q*[fp; lp]*p_fract_vinf;
-%     sol = A\b;
-%     p_dot = sol(end);
-%     
-%     % Rigid solution, problem 5
-%     
-%     A_r = [K, Sq
-%         -0*lq, Jx];
-%     b_r= q*[fp; lp]*p_fract_vinf;
-%     sol_r = A_r\b_r;
-%     p_dot_r = sol_r(end);
-%     elastic_damping(i)=p_dot/p_dot_r;
-% end
+%% Roll damping aeroelastic correction
+
+elastic_damping=zeros(size(q_ref));
+
+for i=1:length(q_ref)
+    q=q_ref(i);
+    
+    % Elastic solution, problem 5
+    p_fract_vinf = deg2rad(2)/200;
+    A = [K-q*Ka, Sq; -q*lq, Jx];
+    b = q*[fp; lp]*p_fract_vinf;
+    sol = A\b;
+    p_dot5(i) = sol(end);
+    
+    % Rigid solution, problem 5
+    
+    A_r = [K, Sq
+        -0*lq, Jx];
+    b_r= q*[fp; lp]*p_fract_vinf;
+    sol_r = A_r\b_r;
+    p_dot_r5(i) = sol_r(end);
+    elastic_damping(i)=p_dot5(i)/p_dot_r5(i);
+end
 
 
 %% Plot
 
 figure 
 hold on 
-plot(q_ref,p_dot,'b')
-plot(q_ref,p_dot_r,'r')
+plot(q_ref,p_dot1,'b')
+plot(q_ref,p_dot_r1,'r')
+grid
+legend('Elastic pdot','Rigid pdot')
+% ylim([-10 10])
 hold off 
  
 % Deformative shape plot
@@ -262,18 +265,18 @@ if 1
     ylabel('$\frac{\dot{p}}{\dot{p_r}}$','Interpreter','latex')
     title('Roll control aeroelastic correction (steady aerodynamics)')
     grid on
-    ylim([-5 30])
+    ylim([-2 2])
 end
 
-% % Damping aeroelastic correction
-% if 1
-%     figure 
-%     plot(q_ref,elastic_damping)
-%     xlabel('Dynamic pressure')
-%     ylabel('$\frac{\dot{p}}{\dot{p_r}}$','Interpreter','latex')
-%     title('Roll aeroelastic damping correction (steady aerodynamics)')
-%     grid on
-% end
+% Damping aeroelastic correction
+if 1
+    figure 
+    plot(q_ref,elastic_damping)
+    xlabel('Dynamic pressure')
+    ylabel('$\frac{\dot{p}}{\dot{p_r}}$','Interpreter','latex')
+    title('Roll aeroelastic damping correction (steady aerodynamics)')
+    grid on
+end
 
 
 
