@@ -136,5 +136,5 @@ if 1
             V_cr(g) = -V_cr(g);
         end
     end
-    m_plot_eigenshape(wing,options,(-(V_cr(1:end-1)))*2);
+    m_plot_eigenshape(wing,options,-sign(V_cr(end))*((V_cr(1:end-1)))*2);
 end
