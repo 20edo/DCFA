@@ -62,8 +62,11 @@ Cs = V'*Cs*V;
 % the solution of the problem is given by polyeig(K,C,M)
 
 %% Tracking of eigenvalues trough eigenvectors
-v = [0:5:1000];
+v = [0:15:700];
 q = 1/2*rho.*v.^2;
+q = linspace(q(1),q(end),length(q)); 
+v = sqrt(2*q/rho); 
+
 
 scaling=1;  %redifined later
 
@@ -114,7 +117,7 @@ t=zeros(length(v),length(e_old));
 for i=2:length(v)
     for k=1:length(e_old)
         tic
-        options = optimoptions('fsolve','Display','iter','FunctionTolerance',1e-6,'algorithm','levenberg-marquardt',...
+        options = optimoptions('fsolve','Display','iter','FunctionTolerance',1e-8,'algorithm','levenberg-marquardt',...
             'ScaleProblem','jacobian','UseParallel',true);
         [x,~,exitflag(i,k)] = fsolve(@(Unknown) funz(wing,v(i),V,q(i),scaling,Unknown(2:end),Unknown(1)),[e_old(k);X_old(:,k)],options);
         e=x(1);
