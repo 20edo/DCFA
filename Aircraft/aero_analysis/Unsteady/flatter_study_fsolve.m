@@ -64,8 +64,6 @@ Cs = V'*Cs*V;
 %% Tracking of eigenvalues trough eigenvectors
 v = [0:15:700];
 q = 1/2*rho.*v.^2;
-q = linspace(q(1),q(end),length(q)); 
-v = sqrt(2*q/rho); 
 
 
 scaling=1;  %redifined later
@@ -145,7 +143,7 @@ end
 %% V-g plot
 close all
 
-g = 2*real(eig_)./(imag(eig_));
+g = 2*real(eig_)./abs(imag(eig_));
 
 figure
 hold on
@@ -180,7 +178,7 @@ grid on
 ylim([-0.05,0.05])
 
 %% Plot the corresponding modeshapes
-if 1
+if 0
     figure
     phi = deg2rad(45);
     for i=4:5
