@@ -180,6 +180,7 @@ switch problem
         end     
 end
 
+%% Plot consistent problem
 % Deformative shape plot
 if 0
     % switch on the aero properties for the plot 
@@ -227,6 +228,36 @@ for i=1:length(q_ref)
     
 end
 
+
+% Plot
+
+figure 
+hold on 
+title('Pdot_comparison rigid vs elastic')
+plot(q_ref,p_dot1,'b')
+plot(q_ref,p_dot_r1,'r')
+grid
+legend('Elastic pdot','Rigid pdot')
+% ylim([-10 10])
+hold off 
+ 
+
+
+
+    
+% Control aeroelastic correction
+
+if 1
+    figure 
+    plot(q_ref,elastic_control)
+    xlabel('Dynamic pressure')
+    ylabel('$\frac{\dot{p}}{\dot{p_r}}$','Interpreter','latex')
+    title('Roll control aeroelastic correction (steady aerodynamics)')
+    grid on
+    ylim([-2 2])
+end
+
+
 %% Roll damping aeroelastic correction
 
 elastic_damping=zeros(size(q_ref));
@@ -251,35 +282,7 @@ for i=1:length(q_ref)
     elastic_damping(i)=p_dot5(i)/p_dot_r5(i);
 end
 
-
 % Plot
-
-figure 
-hold on 
-plot(q_ref,p_dot1,'b')
-plot(q_ref,p_dot_r1,'r')
-grid
-legend('Elastic pdot','Rigid pdot')
-% ylim([-10 10])
-hold off 
- 
-
-
-
-    
-% Control aeroelastic correction
-
-if 1
-    figure 
-    plot(q_ref,elastic_control)
-    xlabel('Dynamic pressure')
-    ylabel('$\frac{\dot{p}}{\dot{p_r}}$','Interpreter','latex')
-    title('Roll control aeroelastic correction (steady aerodynamics)')
-    grid on
-    ylim([-2 2])
-end
-
-% Damping aeroelastic correction
 if 1
     figure 
     plot(q_ref,elastic_damping)
@@ -288,11 +291,4 @@ if 1
     title('Roll aeroelastic damping correction (steady aerodynamics)')
     grid on
 end
-
-
-
-
-
-
-
 
