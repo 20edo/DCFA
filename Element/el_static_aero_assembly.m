@@ -79,7 +79,7 @@ if dx==1
                                         -(CLb*L^2*c*cos(lambda))/12
                                                                   0];
     % Give a name to this
-    Lq = [ 0, 0, -(CLa*c*sin(2*lambda))/2, (CLa*L*c*cos(lambda)^2)/2, 0, 0, 0, 0, (CLa*c*sin(2*lambda))/2, (CLa*L*c*cos(lambda)^2)/2, 0, 0];
+    Lq = [ 0, 0, (CLa*c*sin(2*lambda))/2, (CLa*L*c*cos(lambda)^2)/2, 0, 0, 0, 0, -(CLa*c*sin(2*lambda))/2, (CLa*L*c*cos(lambda)^2)/2, 0, 0];
     
     % Give a name to this
     Lb = CLb*L*c*cos(lambda);
