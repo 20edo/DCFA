@@ -21,4 +21,4 @@ title('Clamped wing')
 xlabel('Number of eigenvalue')
 ylabel('Frequency')
 grid on
-saveas(fig,'Eigenvalues_clamped_wing','svg')
+saveas(fig,'Eigenvalues_clamped_wing','eps')

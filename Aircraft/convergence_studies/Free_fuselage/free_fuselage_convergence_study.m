@@ -23,13 +23,11 @@ cd generate_model
 
 %% Perform analysis
 
-% nel_tot=400;          % Exact (reference) eigenvalues
+% nel_tot=500;          % Exact (reference) eigenvalues
 nel_tot=50:15:300;
 t=zeros(size(nel_tot));
 number=30;      % Number of eigenvalues considered
 w_esatta(number+1:end)=[];
-% Suppress rigid body egienvalues
-w_esatta(1:6)=[];
 V_esatti(:,number+1:end)=[];
 model=m_init();
 
@@ -41,7 +39,7 @@ for i =1:length(nel_tot)
     % Shift
     alpha=1;
     % Solve
-    [V,D,flag] = eigs(model.K+alpha*model.M,model.M,number,'smallestabs');
+    [V,D,flag] = eigs(model.K+alpha*model.M,model.M,number+6,'smallestabs');
     w=real(diag(D-alpha).^0.5);
     t(i)=toc;
     % Suppress rigid body egienvalues
@@ -61,7 +59,7 @@ cd ..
 cd convergence_studies\Free_fuselage\ % Move to the right folder 
 
 fig=figure;
-set(gcf, 'Position',  [100, 100, 5000, 4000])
+set(gcf, 'Position',  [0, 0, 5000, 4000])
 subplot(1,3,1)
     loglog(nel_tot,einf)
     grid on
