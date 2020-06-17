@@ -16,8 +16,7 @@ clear all, close all, clc
 load w_esatta.mat
 
 fig=figure;
-semilogy(1:length(w_esatta),w_esatta(1:end),'xr')
-title('Free fuselage')
+semilogy(1:length(w_esatta)+6,[0 0 0 0 0 0 w_esatta(1:end)'],'xr')
 xlabel('Number of eigenvalue')
 ylabel('Frequency')
 grid on
