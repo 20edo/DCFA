@@ -34,6 +34,7 @@ wing_list=[aircraft.b(7) aircraft.b(8) aircraft.b(9) aircraft.b(16) aircraft.b(1
 for i=1:length(wing_list)
     wing=m_add_beam(wing,wing_list(i));
 end
+wing = m_add_aero_loads(wing,[1,0,0]');
 
 chord=7.72;
 l = chord/2;
@@ -61,7 +62,7 @@ Cs = V'*Cs*V;
 % the solution of the problem is given by polyeig(K,C,M)
 
 %% Tracking of eigenvalues trough eigenvectors
-v = [0:30:300];
+v = [0:5:1000];
 q = 1/2*rho.*v.^2;
 
 scaling=1;  %redifined later
@@ -145,6 +146,25 @@ g = 2*real(eig_)./(imag(eig_));
 
 figure
 hold on
+for j = 2:2:size(eig_,2)
+    
+subplot(2,1,1)
+hold on 
+plot(v,abs(imag(eig_(:,j))))
+hold off 
+ylabel('imag(eig)')
+grid on
+
+subplot(2,1,2)
+hold on 
+plot(v,g(:,j))
+hold off 
+ylabel('g')
+grid on
+end
+
+figure
+hold on
 subplot(2,1,1)
 plot(v,abs(imag(eig_)));
 ylabel('imag(eig)')
@@ -154,8 +174,7 @@ subplot(2,1,2)
 plot(v,g);
 ylabel('g')
 grid on
-
-
+ylim([-0.05,0.05])
 
 %% Plot the corresponding modeshapes
 if 1
