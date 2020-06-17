@@ -67,7 +67,7 @@ K = wing.K;
 Ka = wing.Ka;
 
 %% Number of problem to be solved
-problem=1;
+problem=3;
 %% #1
 % initial roll acceleration p_dot for prescribed aileron deflection beta
 %% #2
@@ -90,6 +90,7 @@ switch problem
         b = q*[fb; lb]*beta;
         sol = A\b;
         p_dot = sol(end);
+        p_dot = rad2deg(p_dot);
         [V,D] = eig(full([K, Sq; zeros(1,size(K,1)), Jx]),full([Ka, zeros(size(Ka,1),1); lq, 0]));
         q_div = diag(D);
         [q_div,I] = sort(real(q_div));
@@ -105,6 +106,7 @@ switch problem
         b = -[Sq; Jx]*p_dot;
         sol = A\b;
         beta = sol(end);
+        beta = rad2deg(beta);
         [V,D] = eig(full([K, zeros(size(K,1),1); zeros(1,size(K,1)), 0]),full([Ka, fb; lq, lb]));
         q_div = diag(D);
         [q_div,I] = sort(real(q_div));
@@ -115,11 +117,12 @@ switch problem
         end
         
     case 3
-        beta = deg2rad(20);
+        beta = deg2rad(10);
         A = [K-q*Ka, -q*fp; -q*lq, -q*lp];
         b = q*[fb; lb]*beta;
         sol = A\b;
         p_fract_vinf = sol(end);
+        p_fract_vinf = rad2deg(p_fract_vinf);
         [V,D] = eig(full([K, zeros(size(K,1),1); zeros(1,size(K,1)), 0]),full([Ka, fp; lq, lp]));
         q_div = diag(D);
         [q_div,I] = sort(real(q_div));
@@ -129,11 +132,13 @@ switch problem
             warning('You are over the divergence dynamic pressure for the manouver')
         end
     case 4 
-        p_fract_vinf = 0.05; 
+        p_fract_vinf = 0.05;
+        p_fract_vinf = deg2rad(p_fract_vinf); 
         A = [K-q*Ka, -q*fb; -q*lq, -q*lb]; 
         b = q*[fp; lp]*p_fract_vinf; 
         sol = A\b; 
         beta = sol(end); 
+        beta = rad2deg(beta);
         [V,D] = eig(full([K, zeros(size(K,1),1); zeros(1,size(K,1)), 0]),full([Ka, fb; lq, lb]));
         q_div = diag(D);
         [q_div,I] = sort(real(q_div));
@@ -144,10 +149,12 @@ switch problem
         end
     case 5 
         p_fract_vinf = 0.05; 
+        p_fract_vinf = deg2rad(p_fract_vinf); 
         A = [K-q*Ka, Sq; -q*lq, Jx]; 
         b = q*[fp; lp]*p_fract_vinf; 
         sol = A\b; 
         p_dot = sol(end); 
+        p_dot = rad2deg(p_dot);
         [V,D] = eig(full([K, Sq; zeros(1,size(K,1)), Jx]),full([Ka, zeros(size(Ka,1),1); lq, 0]));
         q_div = diag(D);
         [q_div,I] = sort(real(q_div));
@@ -162,6 +169,7 @@ switch problem
         b = -[Sq; Jx]*p_dot; 
         sol = A\b; 
         p_fract_vinf = sol(end); 
+        p_fract_vinf = rad2deg(p_fract_vinf);
         [V,D] = eig(full([K, zeros(size(K,1),1); zeros(1,size(K,1)), 0]),full([Ka, fp; lq, lp]));
         q_div = diag(D);
         [q_div,I] = sort(real(q_div));
@@ -170,6 +178,26 @@ switch problem
         if q > q_div
             warning('You are over the divergence dynamic pressure for the manouver')
         end     
+end
+
+% Deformative shape plot
+if 0
+    % switch on the aero properties for the plot 
+    for i=4:5
+        wing.b(i).ssh = true; 
+    end
+    options.plot_original          = 1;
+    options.plot_deformed          = 1;
+    options.plotColor              = 'green';
+    options.saveSTL                = 0;
+    options.point_section          = 8;
+    options.N                      = 1;        % we have only one eig
+    for g = 1:length(sol)-1
+        if mod(g,6)==3 || mod(g,6)==5
+            sol(g) = -sol(g); 
+        end
+    end
+    m_plot_eigenshape(wing,options,sol(1:end-1)*40)
 end
 
 %% Control aeroelastic
@@ -224,7 +252,7 @@ for i=1:length(q_ref)
 end
 
 
-%% Plot
+% Plot
 
 figure 
 hold on 
@@ -235,26 +263,9 @@ legend('Elastic pdot','Rigid pdot')
 % ylim([-10 10])
 hold off 
  
-% Deformative shape plot
 
-if 0
-    % switch on the aero properties for the plot 
-    for i=4:5
-        wing.b(i).ssh = true; 
-    end
-    options.plot_original          = 1;
-    options.plot_deformed          = 1;
-    options.plotColor              = 'green';
-    options.saveSTL                = 0;
-    options.point_section          = 8;
-    options.N                      = 1;        % we have only one eig
-    for g = 1:length(sol)-1
-        if mod(g,6)==3 || mod(g,6)==5
-            sol(g) = -sol(g); 
-        end
-    end
-    m_plot_eigenshape(wing,options,sol(1:end-1)*40)
-end
+
+
     
 % Control aeroelastic correction
 
