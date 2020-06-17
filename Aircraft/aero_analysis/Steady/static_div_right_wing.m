@@ -129,7 +129,7 @@ if 1
     options.saveSTL                = 0;
     options.point_section          = 8;
     options.N                      = 1;        % we have only one eig
-    m_plot_eigenshape(wing,options,(5*(V_div)));
+    m_plot_eigenshape(wing,options,(-4*(V_div)));
     end
     
     figure(2)

@@ -81,7 +81,31 @@ q_cr_s = q_cr_s(1);                   % select the minimum positive q_inf
 V_cr_s = V_cr_s(:,1);                     % select its eigenshape
 
 
+if 1
+    % switch on the aero properties for the plot   
+    phi = rad2deg(0);
+    options.plot_original          = 1;
+    options.plot_deformed          = 1;
+    options.plotColor              = 'green';
+    options.saveSTL                = 0;
+    options.point_section          = 8;
+    options.N                      = 1;        % we have only one eig
+    m_plot_eigenshape(ttail,options,((V_cr_s(1:end-1)))*2);
+   title('Control reversal stabilasers')
+end
 
+if 1
+    % switch on the aero properties for the plot   
+    phi = rad2deg(0);
+    options.plot_original          = 1;
+    options.plot_deformed          = 1;
+    options.plotColor              = 'green';
+    options.saveSTL                = 0;
+    options.point_section          = 8;
+    options.N                      = 1;        % we have only one eig
+    m_plot_eigenshape(ttail,options,((V_cr_r(1:end-1)))*3);
+   title('Control reversal rudder')
+end
 
 
 

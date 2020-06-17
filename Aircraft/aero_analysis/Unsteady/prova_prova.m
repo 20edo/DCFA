@@ -27,11 +27,11 @@ wing_straight = wing;
 %% Add the aero loads
 wing = m_add_aero_loads(wing,[1,0,0]');
 
-for i=1:12
-Ka = full(wing.b(2).el(i).Ka);
+for i=1:10
+Ka = full(wing.b(1).el(i).Ka);
 
 k = 1e-12; 
-el = wing.b(2).el(i); 
+el = wing.b(1).el(i); 
 L=el.L;                             % Length of the element
 chord = el.sc.Ymax - el.sc.Ymin ;   % Chord
 e = -el.sc.yo - 1/4*chord;          % e -> distance between the shear center (elastic axis) and AC

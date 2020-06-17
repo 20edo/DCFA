@@ -33,14 +33,15 @@ ttail = m_add_aero_loads(ttail,[1,0,0]');
 
 %% Find the divergence dynamic pressure
 
-[V_div,D_div]= eigs(ttail.K,ttail.Ka,30,'smallestabs');
+[V,D_div]= eigs(ttail.K,ttail.Ka,30,'smallestabs');
 q_div = diag(D_div);
+q_div = q_div.*(abs(imag(q_div))<10^-3);
 [q_div,I] = sort(real(q_div));
-V_div = V_div(:,I);                         % sort the eigenshapes
-V_div(:,q_div<1)=[];                    % select the eigenshapes with positive eig
+V = V(:,I);                             % sort the eigenshapes
+V(:,q_div<1)=[];                        % select the eigenshapes with positive eig
 q_div(q_div<1)=[];
-q_div = q_div(1);                   % select the minimum positive q_inf
-V_div = V_div(:,1);                     % select its eigenshape
+q_div = q_div(1);                       % select the minimum positive q_inf
+V_div = V(:,1);                         % select its eigenshape
 
 %% Calculations for the plotting VTAS and MACH when altitude changes
 [T, a, P, rho] = atmosisa(0:100:11000);
