@@ -260,7 +260,8 @@ clear r h i j
 % [w, U, k] = ROM_solver(options.N, model.M, model.K, options.alpha);
 [U, lambda] = eigs(model.K+options.alpha*model.M,model.M,options.N,'smallestabs');
 w = sqrt(diag(lambda)-options.alpha); 
-
+w(1:6)=real(w(1:6));
+U(:,1:6)=real(U(:,1:6));
 
 %% Add the zeros for the constrained displacements
 for j=1:length(model.en)
@@ -379,7 +380,7 @@ end
 if options.plot_deformed
     close all
     for i = 1:options.N
-        fig=figure('visible','off');
+        fig=figure('visible','on');
         for r = 1:size(model.b,2)
             TR = triangulation(Support(r).Mesh_elements,Support(r).Deformed_nodes(i).modes.');
             [f,p] = freeBoundary(TR);
