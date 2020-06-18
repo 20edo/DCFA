@@ -156,7 +156,7 @@ coordinates(:,1)=coordinates(:,1)+sc.yo-sc.ya;
 
 % Contains the contribuition of each force to the stress (local elastic
 % frame)
-navier_vector=[1/sc.EA  0   0   0  -1/sc.EJz 1/sc.EJy];
+navier_vector=[1/sc.EA  0   0   0  -1/sc.EJz 1/sc.EJy]*E;
 
 % Matrix to transform the forces from the ct reference to the elastic
 % reference

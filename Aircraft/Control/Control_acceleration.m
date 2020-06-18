@@ -38,12 +38,13 @@ v = Ma*a;
 q = 0.5*rho*v^2;
 %% Add the aero loads
 wing = m_add_aero_loads(wing,[1,0,0]');
-
+%% Add weight loads
+wing = m_add_mass_forces(wing, 1, [0 0 -1]');
 %% Compute properties
 
 wing=m_compute_matrices(wing);
-
-%% Clamp the aircraft (to eliminate rigid body motion)
+% wing.navier = eye(size(wing.navier));
+%% Matrix of the model
 K = wing.K;
 C = wing.C;
 M = wing.M;
@@ -63,28 +64,22 @@ M_red = V'*M*V;
 
 %% Taking into account the max frequency in order to choose a correct
 %  sampling frequency in time
-w = sqrt(diag(lambda)-alpha); %prendi doppio freq più alta
+w = sqrt(diag(lambda)-alpha); 
 max_freq = w(end);
 deltat = 1/(max_freq*2); %Nyquist
 %% External input
 % I'm taking into account the force given by the aileron deflection
 Fb = transpose(V)*fb;
 
-%% Matrix assembly
+%% Matrix assembly of the model
 A = [zeros(N) eye(N);
     -M_red\K_red -M_red\C_red];
 
 B_u = [zeros(N,1);
     M_red\(q*Fb)];
 
-B_d = [zeros(N,1);
-    M_red\ones(N,1)];
-
-C_y = [eye(N) zeros(N)];
-
-D_yu = 0;
-
-D_yd = 0;
+% B_d = [zeros(N,1);
+%     M_red\ones(N,1)];
 
 %% Performance indicator
 % % C_z = [-M_red\K_red -M_red\C_red];
@@ -121,8 +116,8 @@ switch controller
         % Matrix to value the velocity of the whole wing
         C_z_v= [zeros(N) eye(N)];
         % Normalize matrices
-        C_z_e=C_z_e/norm(C_z_e*C_z_e');
-        C_z_v=C_z_v/norm(C_z_v*C_z_v');
+        C_z_e=C_z_e/norm(sqrt(C_z_e*C_z_e'));
+        C_z_v=C_z_v/norm(sqrt(C_z_v*C_z_v'));
         C_z=(1-rho)*C_z_e+rho*C_z_v;
         %         % Define input matrix in physical coordinates      NOT NECESSARY,
         %         THERE IS NO AERO-FORCE ON THE ENGINES
@@ -148,8 +143,8 @@ switch controller
         % Matrix to value the velocity of the whole wing
         C_z_v= [zeros(N) eye(N)];
         % Normalize matrices
-        C_z_e=C_z_e/norm(C_z_e*C_z_e');
-        C_z_v=C_z_v/norm(C_z_v*C_z_v');
+        C_z_e=C_z_e/norm(sqrt(C_z_e*C_z_e'));
+        C_z_v=C_z_v/norm(sqrt(C_z_v*C_z_v'));
         C_z=(1-rho)*C_z_e+rho*C_z_v;
         %         % Define input matrix in physical coordinates      NOT NECESSARY,
         %         THERE IS NO AERO-FORCE ON THE ENGINES
@@ -160,22 +155,19 @@ switch controller
     case 4
         % Select the elements where I want to minimize the stress (root,
         % element before and after the engines' support)
-        elements_correnti=[wing.b(1).A(:,[7:12 end-6:end]) wing.b(2).A(:,[7:12 end-6:end]) wing.b(3).A(:,[7:12])];
+        elements_correnti=[wing.b(1).A(:,[7:12 end-11:end-6]) wing.b(2).A(:,[7:12 end-11:end-6]) wing.b(3).A(:,[7:12])];
         elements_correnti=elements_correnti';
-        C_z=elements_correnti*wing.navier(:,7:end)*K*V;
+        C_z=elements_correnti*wing.navier(:,7:end)*V;
         C_z=[C_z zeros(size(C_z))];
-%         D_Ku = [eye(N)-M*V*diag(1/M_red)*V'];
+        C_z = C_z/sqrt(norm(full(C_z*C_z')));
         D_zu = zeros(size(C_z,1),1);
-        W_zz=eye(size(C_z,1));
+        W_zz=eye(size(C_z,1))/(size(C_z,1));
 end
 
-% C_z = [zeros(N) eye(N)]*A;
-% C_z = A(N+1:end,:);
-% D_zu = B_u(N+1:end);
 %% Normalizing weight matrixes
-weight = 0.1;
 % weight=1 ->   Only u counts
 % Weight=0 ->   Only z counts
+weight = 0.001;
 
 W_zz=(1-weight)*W_zz/norm(W_zz);
 % W_zz = (1-weight) * (lambda)/(sum(sum(lambda)));
@@ -192,7 +184,19 @@ G = inv(R)*(B_u'*P+S');
 
 %% State space model
 A_controlled = A-B_u*G;
-% Simulate the model to obtain displacements
+
+%% loads static sol
+q0_sol_static = [(K-q*Ka)\(q*fa+wing.f)];
+q0_sol_static_red = V'*q0_sol_static;
+load_static = wing.load(7:end,7:end)*q0_sol_static;
+if 0
+    plot(load_static(3:6:end))
+end
+q0 = [q0_sol_static_red;
+    zeros(N,1)];
+%% Recover displacements
+C_y = [eye(N) zeros(N)];
+D_yu = 0;
 SYS_controlled = ss(A_controlled, B_u, C_y, D_yu);
 SYS_notcontrolled = ss(A, B_u, C_y, D_yu);
 
@@ -210,18 +214,21 @@ D_Recover_acc = [M_red\(q*Fb)];
 SYS_controlled_accelerations = ss(A_controlled, B_u, C_Recover_acc, D_Recover_acc);
 SYS_notcontrolled_accelerations = ss(A, B_u, C_Recover_acc, D_Recover_acc);
 
-%% Recover stresses 
-elements_correnti=[wing.b(1).A(:,[7:12 end-6:end]) wing.b(2).A(:,[7:12 end-6:end]) wing.b(3).A(:,[7:12])];
+%% Recover stresses physical
+% Build internal loads recover matrix
+elements_correnti=[wing.b(1).A(:,[7:12 end-11:end-6]) wing.b(2).A(:,[13:18 end-11:end-6]) wing.b(3).A(:,[13:18])];
 elements_correnti=elements_correnti';
-C_Recover_internalforces= elements_correnti*wing.navier(:,7:end)*K*V;
+% Build internal loads recover matrix
+C_Recover_internalforces= elements_correnti*wing.navier(:,7:end)*V;
 C_Recover_internalforces=[C_Recover_internalforces zeros(size(C_Recover_internalforces))];
 D_Recover_internalforces = zeros(size(C_Recover_internalforces,1),1);
+% Recover internal loads
 SYS_controlled_internalforces = ss(A_controlled, B_u, C_Recover_internalforces, D_Recover_internalforces);
 SYS_notcontrolled_internalforces = ss(A, B_u, C_Recover_internalforces, D_Recover_internalforces);
 
 %% Define the input
 % Define time axis
-t = [0:deltat:1];
+t = [0:deltat:5];
 beta = deg2rad(2);
 % input =
 % 1     -> impulse
@@ -230,6 +237,7 @@ beta = deg2rad(2);
 % 4     -> rampa
 % 5     -> randn
 % 6     -> sin
+% 7     -> sinc
 input=3;
 switch input
     case 1
@@ -256,26 +264,27 @@ for i =1:length(t)
     
 end
 %% Plot of the output
-[z,~,x] = lsim(SYS_controlled, u, t);
-[z_v] = lsim(SYS_controlled_velocity, u, t);
-[z_acc] = lsim(SYS_controlled_accelerations, u, t);
-[z_Recover_internalforces] = lsim(SYS_controlled_internalforces, u, t);
-[y_nc,~,x_nc] = lsim(SYS_notcontrolled, u, t);
-[y_nc_v] = lsim(SYS_notcontrolled_velocity, u, t);
-[y_nc_acc] = lsim(SYS_notcontrolled_accelerations, u, t);
-[y_nc_Recover_internalforces] = lsim(SYS_notcontrolled_internalforces, u, t);
+% q0 = zeros(2*N,1);
+[z,~,x] = lsim(SYS_controlled, u, t,q0);
+[z_v] = lsim(SYS_controlled_velocity, u, t,q0);
+[z_acc] = lsim(SYS_controlled_accelerations, u, t,q0);
+[z_internalforces] = lsim(SYS_controlled_internalforces, u, t,q0);
+[y_nc,~,x_nc] = lsim(SYS_notcontrolled, u, t,q0);
+[y_nc_v] = lsim(SYS_notcontrolled_velocity, u, t,q0);
+[y_nc_acc] = lsim(SYS_notcontrolled_accelerations, u, t,q0);
+[y_nc_internalforces] = lsim(SYS_notcontrolled_internalforces, u, t,q0);
 
+%% I'm recovering the physical coordinates from the modal ones
 for i = 1:length(t)
-    z_sol(:,i) = V*z(i,1:N)'; % I'm recovering the physical coordinates from
-    % the modal ones
+    z_sol(:,i) = V*z(i,1:N)'; 
     z_sol_v(:,i) = V*z_v(i,1:N)';
     z_sol_acc(:,i) = V*z_acc(i,1:N)';
-    z_sol_Recover_internalforces(:,i) = V*z_Recover_internalforces(i,1:N)';
     y_sol_nc(:,i) = V*y_nc(i,1:N)';
     y_sol_nc_v(:,i) = V*y_nc_v(i,1:N)';
     y_sol_nc_acc(:,i) = V*y_nc_acc(i,1:N)';
-    y_sol_nc_Recover_internalforces(:,i) = V*y_nc_Recover_internalforces(i,1:N)';
 end
+z_sol_internalforces= z_internalforces';
+y_sol_nc_internalforces = y_nc_internalforces';
 
 %% plot the vertical acceleration of the tip of the wing
 % if we want to see the vertical acceleration of the tip of the wing
@@ -325,9 +334,7 @@ legend('Controller output','Controlled','Non controlled')
 xlabel('t(s)')
 ylabel('$\beta$','Interpreter','latex')
 
-
 %% Plot the engines' displacements
-
 figure
 subplot(2,3,1)
 plot(t,z_sol(3,:))
@@ -390,5 +397,324 @@ legend('Acceleration controlled','Acceleration not controlled')
 xlabel('t(s)')
 ylabel('$\ddot{q}$','Interpreter','latex')
 
-%% Plot the internal forces at the root
-
+%% Plot the stresses for in the CORRENTI for each section
+if controller == 4
+    % plot of the stress of the 6 CORRENTI in the root section
+    figure
+    subplot(2,3,1)
+    plot(t,z_sol_internalforces(1,:))
+    hold on
+    grid on
+    plot(t,y_sol_nc_internalforces(1,:))
+    title('Stress 1 at root section')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
+    
+    subplot(2,3,2)
+    plot(t,z_sol_internalforces(2,:))
+    hold on
+    grid on
+    plot(t,y_sol_nc_internalforces(2,:))
+    title('Stress 2 at root section')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
+    
+    subplot(2,3,3)
+    plot(t,z_sol_internalforces(3,:))
+    hold on
+    grid on
+    plot(t,y_sol_nc_internalforces(3,:))
+    title('Stress 3 at root section')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
+    
+    
+    subplot(2,3,4)
+    plot(t,z_sol_internalforces(4,:))
+    hold on
+    grid on
+    plot(t,y_sol_nc_internalforces(4,:))
+    title('Stress 4 at root section')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
+    
+    subplot(2,3,5)
+    plot(t,z_sol_internalforces(5,:))
+    hold on
+    grid on
+    plot(t,y_sol_nc_internalforces(5,:))
+    title('Stress 5 at root section')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
+    
+    subplot(2,3,6)
+    plot(t,z_sol_internalforces(6,:))
+    hold on
+    grid on
+    plot(t,y_sol_nc_internalforces(6,:))
+    title('Stress 6 at root section')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
+    
+    % plot of the stress in the 6 CORRENTI in the section before the first
+    % engine
+    figure
+    subplot(2,3,1)
+    plot(t,z_sol_internalforces(7,:))
+    hold on
+    grid on
+    plot(t,y_sol_nc_internalforces(7,:))
+    title('Stress 1 at the section before the first engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
+    
+    subplot(2,3,2)
+    plot(t,z_sol_internalforces(8,:))
+    hold on
+    grid on
+    plot(t,y_sol_nc_internalforces(8,:))
+    title('Stress 2 at the section before the first engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
+    
+    subplot(2,3,3)
+    plot(t,z_sol_internalforces(9,:))
+    hold on
+    grid on
+    plot(t,y_sol_nc_internalforces(9,:))
+    title('Stress 3 at the section before the first engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
+    
+    
+    subplot(2,3,4)
+    plot(t,z_sol_internalforces(10,:))
+    hold on
+    grid on
+    plot(t,y_sol_nc_internalforces(10,:))
+    title('Stress 4 at the section before the first engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
+    
+    subplot(2,3,5)
+    plot(t,z_sol_internalforces(11,:))
+    hold on
+    grid on
+    plot(t,y_sol_nc_internalforces(11,:))
+    title('Stress 5 at the section before the first engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
+    
+    subplot(2,3,6)
+    plot(t,z_sol_internalforces(12,:))
+    hold on
+    grid on
+    plot(t,y_sol_nc_internalforces(12,:))
+    title('Stress 6 at the section before the first engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
+    
+    % plot of the stress in the 6 CORRENTI in the section after the first
+    % engine
+    figure
+    subplot(2,3,1)
+    plot(t,z_sol_internalforces(13,:))
+    hold on
+    grid on
+    plot(t,y_sol_nc_internalforces(13,:))
+    title('Stress 1 at the section after the first engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
+    
+    subplot(2,3,2)
+    plot(t,z_sol_internalforces(14,:))
+    hold on
+    grid on
+    plot(t,y_sol_nc_internalforces(14,:))
+    title('Stress 2 at the section after the first engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
+    
+    subplot(2,3,3)
+    plot(t,z_sol_internalforces(15,:))
+    hold on
+    grid on
+    plot(t,y_sol_nc_internalforces(15,:))
+    title('Stress 3 at the section after the first engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
+    
+    
+    subplot(2,3,4)
+    plot(t,z_sol_internalforces(16,:))
+    hold on
+    grid on
+    plot(t,y_sol_nc_internalforces(16,:))
+    title('Stress 4 at the section after the first engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
+    
+    subplot(2,3,5)
+    plot(t,z_sol_internalforces(17,:))
+    hold on
+    grid on
+    plot(t,y_sol_nc_internalforces(17,:))
+    title('Stress 5 at the section after the first engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
+    
+    subplot(2,3,6)
+    plot(t,z_sol_internalforces(18,:))
+    hold on
+    grid on
+    plot(t,y_sol_nc_internalforces(18,:))
+    title('Stress 6 at the section after the first engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
+    
+    % plot of the stress in the 6 CORRENTI in the section before the second
+    % engine
+    figure
+    subplot(2,3,1)
+    plot(t,z_sol_internalforces(19,:))
+    hold on
+    grid on
+    plot(t,y_sol_nc_internalforces(19,:))
+    title('Stress 1 at the section before the second engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
+    
+    subplot(2,3,2)
+    plot(t,z_sol_internalforces(20,:))
+    hold on
+    grid on
+    plot(t,y_sol_nc_internalforces(20,:))
+    title('Stress 2 at the section before the second engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
+    
+    subplot(2,3,3)
+    plot(t,z_sol_internalforces(21,:))
+    hold on
+    grid on
+    plot(t,y_sol_nc_internalforces(21,:))
+    title('Stress 3 at the section before the second engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
+    
+    
+    subplot(2,3,4)
+    plot(t,z_sol_internalforces(22,:))
+    hold on
+    grid on
+    plot(t,y_sol_nc_internalforces(22,:))
+    title('Stress 4 at the section before the second engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
+    
+    subplot(2,3,5)
+    plot(t,z_sol_internalforces(23,:))
+    hold on
+    grid on
+    plot(t,y_sol_nc_internalforces(23,:))
+    title('Stress 5 at the section before the second engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
+    
+    subplot(2,3,6)
+    plot(t,z_sol_internalforces(24,:))
+    hold on
+    grid on
+    plot(t,y_sol_nc_internalforces(24,:))
+    title('Stress 6 at the section before the second engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
+    
+    % plot of the stress in the 6 CORRENTI in the section after the second
+    % engine
+    figure
+    subplot(2,3,1)
+    plot(t,z_sol_internalforces(25,:))
+    hold on
+    grid on
+    plot(t,y_sol_nc_internalforces(25,:))
+    title('Stress 1 at the section after the second engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
+    
+    subplot(2,3,2)
+    plot(t,z_sol_internalforces(26,:))
+    hold on
+    grid on
+    plot(t,y_sol_nc_internalforces(26,:))
+    title('Stress 2 at the section after the second engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
+    
+    subplot(2,3,3)
+    plot(t,z_sol_internalforces(27,:))
+    hold on
+    grid on
+    plot(t,y_sol_nc_internalforces(27,:))
+    title('Stress 3 at the section after the second engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
+    
+    
+    subplot(2,3,4)
+    plot(t,z_sol_internalforces(28,:))
+    hold on
+    grid on
+    plot(t,y_sol_nc_internalforces(28,:))
+    title('Stress 4 at the section after the second engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
+    
+    subplot(2,3,5)
+    plot(t,z_sol_internalforces(29,:))
+    hold on
+    grid on
+    plot(t,y_sol_nc_internalforces(29,:))
+    title('Stress 5 at the section after the second engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
+    
+    subplot(2,3,6)
+    plot(t,z_sol_internalforces(30,:))
+    hold on
+    grid on
+    plot(t,y_sol_nc_internalforces(30,:))
+    title('Stress 6 at the section after the second engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
+end
