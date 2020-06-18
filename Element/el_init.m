@@ -45,4 +45,4 @@ el.Hbam = sparse(zeros(12,1));
 el.Hamb = sparse(zeros(1,12));
 el.Hbb = 0; 
 el.navier=sparse(zeros(12));    % Matrix used to recover the stresses in the correnti
-
+el.load = sparse(zeros(12));

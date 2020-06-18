@@ -70,17 +70,15 @@ if 1
     options.point_section          = 8;
     options.N                      = 1;        % we have only one eig
     
-m_plot_eigenshape(wing,options,q_stat*10);
+m_plot_eigenshape(wing,options,q_stat);
 end
     
 
 
 
 %% Find the divergence dynamic pressure - straight wing
-%% Find the divergence dynamic pressure - swept wing
 [V_straight,D_straight]= eig(full(wing_straight.K),full(wing_straight.Ka));
 q_div_straight = diag(D_straight);
-q_div_straight = q_div_straight.*(abs(imag(q_div_straight))<10^-3);
 [q_div_straight,I] = sort(real(q_div_straight));
 V_straight = V_straight(:,I);                             % sort the eigenshapes
 V_straight(:,q_div_straight<1)=[];                        % select the eigenshapes with positive eig

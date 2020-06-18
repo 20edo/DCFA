@@ -27,7 +27,7 @@ wing_straight = wing;
 %% Add the aero loads
 wing = m_add_aero_loads(wing,[1,0,0]');
 
-for i=1:10
+for i=1
 Ka = full(wing.b(1).el(i).Ka);
 
 k = 1e-12; 

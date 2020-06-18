@@ -62,7 +62,7 @@ Cs = V'*Cs*V;
 % the solution of the problem is given by polyeig(K,C,M)
 
 %% Tracking of eigenvalues trough eigenvectors
-v = [0:15:700];
+v = [0:10:200];
 q = 1/2*rho.*v.^2;
 
 
@@ -71,18 +71,21 @@ scaling=1;  %redifined later
 % First iteration
 [X_old,e_old] = polyeig(K/scaling,Cs/scaling,M/scaling);
 e_old=e_old*scaling;
-% I = imag(e_old)<=0.1;
-% e_old = e_old.*I;
-% e_pulito = [];
-% X_pulito = [];
-% for i = 1:2*n
-%     if abs(e_old(i))>1e-3
-%         e_pulito = [e_pulito; e_old(i)];
-%         X_pulito = [X_pulito, X_old(:,i)];
-%     end
-% end
-% X_old = X_pulito;
-% e_old = e_pulito;
+I = imag(e_old)>-00000000.1;
+e_old = e_old.*I;
+e_pulito = [];
+X_pulito = [];
+for i = 1:2*n
+    if abs(e_old(i))>1e-3
+        e_pulito = [e_pulito; e_old(i)];
+        X_pulito = [X_pulito, X_old(:,i)];
+    end
+end
+X_old = X_pulito;
+e_old = e_pulito;
+[nn,II] = sort(imag(e_old));
+e_old = e_old(II); 
+X_old = X_old(:,II);
 X_zero = X_old;
 e_zero = e_old;
 % scaling=sum(abs(e_zero));
@@ -111,6 +114,7 @@ eig_(1,:) = e_old;
 exitflag=zeros(length(v),length(e_old));
 t=zeros(length(v),length(e_old));
 
+X_save = zeros(length(v),size(X_old,1),size(X_old,2));
 % Following iterations
 for i=2:length(v)
     for k=1:length(e_old)
@@ -137,6 +141,7 @@ for i=2:length(v)
         t(i,k)=toc;
     end
     eig_(i,:) = e_old;
+    X_save(i,:,k) = X; 
 %     scaling=sum(abs(eig_(i,:)));
 end
 
@@ -145,24 +150,24 @@ close all
 
 g = 2*real(eig_)./abs(imag(eig_));
 
-figure
-hold on
-for j = 2:2:size(eig_,2)
-    
-subplot(2,1,1)
-hold on 
-plot(v,abs(imag(eig_(:,j))))
-hold off 
-ylabel('imag(eig)')
-grid on
-
-subplot(2,1,2)
-hold on 
-plot(v,g(:,j))
-hold off 
-ylabel('g')
-grid on
-end
+% figure
+% hold on
+% for j = 2:2:size(eig_,2)
+%     
+% subplot(2,1,1)
+% hold on 
+% plot(v,abs(imag(eig_(:,j))))
+% hold off 
+% ylabel('imag(eig)')
+% grid on
+% 
+% subplot(2,1,2)
+% hold on 
+% plot(v,g(:,j))
+% hold off 
+% ylabel('g')
+% grid on
+% end
 
 figure
 hold on
@@ -178,7 +183,7 @@ grid on
 ylim([-0.05,0.05])
 
 %% Plot the corresponding modeshapes
-if 0
+if 1
     figure
     phi = deg2rad(45);
     for i=4:5
@@ -204,5 +209,5 @@ if 0
     end
 end
 
-% load handel
-% sound(y,Fs)
+load handel
+sound(y,Fs)

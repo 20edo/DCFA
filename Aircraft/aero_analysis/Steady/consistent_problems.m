@@ -67,7 +67,7 @@ K = wing.K;
 Ka = wing.Ka;
 
 %% Number of problem to be solved
-problem=3;
+problem=1;
 %% #1
 % initial roll acceleration p_dot for prescribed aileron deflection beta
 %% #2
@@ -249,7 +249,7 @@ hold off
 
 if 1
     figure 
-    plot(q_ref,elastic_control)
+    plot(sqrt(q_ref),elastic_control)
     xlabel('Dynamic pressure')
     ylabel('$\frac{\dot{p}}{\dot{p_r}}$','Interpreter','latex')
     title('Roll control aeroelastic correction (steady aerodynamics)')

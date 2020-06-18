@@ -43,3 +43,4 @@ R = sparse(blkdiag(Ac{:}));
 b.M = R*b.M*R';
 b.K = R*b.K*R';
 b.navier=b.navier*R';
+b.load=b.load*R';

@@ -60,4 +60,40 @@ el.K=sparse(K);
 
 
 el.K=K;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%% Assembly matrix for loads recovery 
+load_recovery = [[      -EA/L,            0,             0,     0, -(EA*zA)/L,  (EA*yA)/L,        EA/L,             0,            0,    0,  (EA*zA)/L, -(EA*yA)/L]
+[ (EA*yA)/L,            0,             0,     0,      EJyz/L,      -EJz/L, -(EA*yA)/L,             0,            0,    0,     -EJyz/L,       EJz/L]
+[ (EA*zA)/L,            0,             0,     0,       EJy/L,     -EJyz/L, -(EA*zA)/L,             0,            0,    0,      -EJy/L,      EJyz/L]
+[          0,            0,             0, -GJ/L,           0,           0,           0,             0,            0, GJ/L,           0,           0]
+[          0,            0, -(12*EJy)/L^3,     0, (6*EJy)/L^2,           0,           0,             0, (12*EJy)/L^3,    0, (6*EJy)/L^2,           0]
+[          0, (12*EJz)/L^3,             0,     0,           0, (6*EJz)/L^2,           0, -(12*EJz)/L^3,            0,    0,           0, (6*EJz)/L^2]];
+
+el.load = [load_recovery; zeros(6,12)]; 
+
+
+
+
+
 end

@@ -32,10 +32,13 @@ b.lq=sparse(zeros(1,6*(b.nel+1)));
 b.Sq=sparse(zeros(6*(b.nel+1),1));
 b.fp=sparse(zeros(6*(b.nel+1),1));
 b.navier=sparse(zeros(6*(b.nel+1)));
+b.load=sparse(zeros(6*(b.nel+1)));
 
 for i=1:b.nel
     b.M(6*(i-1)+1:6*(i+1),6*(i-1)+1:6*(i+1))=b.M(6*(i-1)+1:6*(i+1),6*(i-1)+1:6*(i+1))+b.el(i).M;
     b.K(6*(i-1)+1:6*(i+1),6*(i-1)+1:6*(i+1))=b.K(6*(i-1)+1:6*(i+1),6*(i-1)+1:6*(i+1))+b.el(i).K;
     b.C(6*(i-1)+1:6*(i+1),6*(i-1)+1:6*(i+1))=b.C(6*(i-1)+1:6*(i+1),6*(i-1)+1:6*(i+1))+b.el(i).C;   
     b.navier(6*(i-1)+1:6*(i+1),6*(i-1)+1:6*(i+1))=b.navier(6*(i-1)+1:6*(i+1),6*(i-1)+1:6*(i+1))+b.el(i).navier;
+    b.load(6*(i-1)+1:6*(i+1),6*(i-1)+1:6*(i+1))=b.load(6*(i-1)+1:6*(i+1),6*(i-1)+1:6*(i+1))+b.el(i).load;
+    
 end

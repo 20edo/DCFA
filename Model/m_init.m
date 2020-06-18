@@ -45,3 +45,5 @@ m.Ham_dk = NaN;
 m.Hbam = NaN;
 m.Hamb = NaN;
 m.Hbb = NaN; 
+m.navier = NaN; 
+m.load = NaN; 
