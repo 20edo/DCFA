@@ -156,7 +156,7 @@ coordinates(:,1)=coordinates(:,1)+sc.yo-sc.ya;
 
 % Contains the contribuition of each force to the stress (local elastic
 % frame)
-navier_vector=[1/sc.EA  0   0   0   1/sc.EJy 1/sc.EJz ];
+navier_vector=[1/sc.EA  0   0   0  -1/sc.EJz 1/sc.EJy];
 
 % Matrix to transform the forces from the ct reference to the elastic
 % reference
@@ -166,12 +166,15 @@ reference_matrix=[
     -sc.za      0   0   0   1   0
     +sc.ya     0   0   0   0   1];
 % Aree dei correnti^-1/ A
+% invarea=ones(6,1);
+% invarea(2)=1/2;
+% invarea(6)=1/2;
 invarea=ones(6,1);
-invarea(2)=1/2;
-invarea(1)=1/2;
 % Matrix that calculates the shear of each corrente from the force vector
 % applied to the elastic center
 stress_elastic=[ invarea zeros(6,3) coordinates ] .*navier_vector;
+% Exchange rows to comply with forces definition (Tx,Ty,Tz,Mx.My,Mz)
+stress_elastic=stress_elastic(:,[1:4 6 5]);
 % Transform to the ct to comply with other definitions
 stress_ct=stress_elastic*reference_matrix;
 sc.navier=stress_ct;
