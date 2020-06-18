@@ -20,4 +20,4 @@ semilogy(1:length(w_esatta)+6,[0 0 0 0 0 0 w_esatta(1:end)'],'xr')
 xlabel('Number of eigenvalue')
 ylabel('Frequency')
 grid on
-saveas(fig,'Eigenvalues_free_fuselage','eps')
+saveas(fig,'Eigenvalues_free_fuselage','epsc')
