@@ -86,7 +86,7 @@ SYS = ss(A_s,B_s,C_s,D_s);
 SYS_tf = tf(SYS);
 
 %% Number of problem to be solved
-problem=3;
+problem=1;
 %% #1
 % sinusoidal input
 %% #2
@@ -154,7 +154,7 @@ if 0
 end
 %% video of the easy-model in response to the input
 if 0
-    FR=m_plot_video_easy(wing,t,y_sol*10+y_sol_static*10); %y_sol*100+y_sol_static*10
+    FR=m_plot_video_easy(wing,t,y_sol+y_sol_static); %y_sol*100+y_sol_static*10
 end
 
 
