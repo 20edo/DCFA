@@ -31,4 +31,4 @@ xlabel('Number of eigenvalue')
 ylabel('Frequency')
 grid on
 xlim([0 100])
-saveas(fig,'Eigenvalues_aircraft','eps')
+saveas(fig,'Eigenvalues_aircraft','epsc')
