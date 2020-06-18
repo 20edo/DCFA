@@ -89,7 +89,7 @@ B_u = [zeros(N,1);
 % 3 -> Controller based on modal velocities and engines velocities
 % 4 -> Controller based on allieviation of the loads at the root of the
 %      wing and at the root of the engines' support
-controller=4;
+controller=1;
 
 switch controller
     
@@ -167,7 +167,7 @@ end
 %% Normalizing weight matrixes
 % weight=1 ->   Only u counts
 % Weight=0 ->   Only z counts
-weight = 0.001;
+weight = 1e-4;
 
 W_zz=(1-weight)*W_zz/norm(W_zz);
 % W_zz = (1-weight) * (lambda)/(sum(sum(lambda)));
@@ -195,11 +195,21 @@ end
 q0 = [q0_sol_static_red;
     zeros(N,1)];
 %% Recover displacements
-C_y = [eye(N) zeros(N)];
-D_yu = 0;
+C_y = [eye(N) zeros(N);
+    zeros(N) eye(N);
+    -M_red\K_red -M_red\C_red];
+D_yu = [zeros(N,1);
+zeros(N,1);
+M_red\(q*Fb)];
 SYS_controlled = ss(A_controlled, B_u, C_y, D_yu);
 SYS_notcontrolled = ss(A, B_u, C_y, D_yu);
 
+%% Actuator transfer function
+w_cut=2*pi*10;
+psi=1e-2;
+filtro=tf(1,[1 2*psi*w_cut w_cut^2]);
+actuator=ss(filtro*[G zeros(1,N)]);
+SYS_controlled = feedback(SYS_notcontrolled,actuator);
 %% Recover velocities and accelerations
 % Build velocity recover matrix
 C_Recover_v = [zeros(N) eye(N)];
@@ -238,7 +248,7 @@ beta = deg2rad(2);
 % 5     -> randn
 % 6     -> sin
 % 7     -> sinc
-input=3;
+input=2;
 switch input
     case 1
         u_func= @(t) beta.*(t<=0);
@@ -265,7 +275,7 @@ for i =1:length(t)
 end
 %% Plot of the output
 % q0 = zeros(2*N,1);
-[z,~,x] = lsim(SYS_controlled, u, t,q0);
+[z,~,x] = lsim(SYS_controlled, u, t,[q0; 0; 0]);
 [z_v] = lsim(SYS_controlled_velocity, u, t,q0);
 [z_acc] = lsim(SYS_controlled_accelerations, u, t,q0);
 [z_internalforces] = lsim(SYS_controlled_internalforces, u, t,q0);
