@@ -77,7 +77,7 @@ subplot(1,3,3)
     ylabel('Time spent')
 
 if 1
-    saveas(fig,'Convergence_free_fuselage_eig','svg')
+    saveas(fig,'Convergence_free_fuselage_eig','epsc')
 end
 %% plot Modes
 if 0

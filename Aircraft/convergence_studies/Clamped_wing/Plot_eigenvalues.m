@@ -21,4 +21,4 @@ semilogy(1:length(w_esatta),w_esatta,'xr')
 xlabel('Number of eigenvalue')
 ylabel('Frequency')
 grid on
-saveas(fig,'Eigenvalues_clamped_wing','eps')
+saveas(fig,'Eigenvalues_clamped_wing','epsc')

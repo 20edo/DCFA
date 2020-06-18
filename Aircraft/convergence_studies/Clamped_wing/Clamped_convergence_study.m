@@ -82,7 +82,7 @@ subplot(1,3,3)
     ylabel('Time spent')
    
 if 1
-    saveas(fig,'Convergence_clamped_wing_eig','eps')
+    saveas(fig,'Convergence_clamped_wing_eig','epsc')
 end
 %% plot Modes
 if 0
