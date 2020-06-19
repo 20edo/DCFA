@@ -32,6 +32,7 @@ cd generate_model
 %% Perform analysis
 
 nel_tot=30:15:300;
+% nel_tot=500;
 t=zeros(size(nel_tot));
 number=30;      % Number of eigenvalues considered
 w_esatta(number+1:end)=[];

@@ -26,7 +26,7 @@ cd generate_model
 % nel_tot=500;          % Exact (reference) eigenvalues
 nel_tot=50:15:300;
 t=zeros(size(nel_tot));
-number=30;      % Number of eigenvalues considered
+number=100;      % Number of eigenvalues considered
 w_esatta(number+1:end)=[];
 V_esatti(:,number+1:end)=[];
 model=m_init();

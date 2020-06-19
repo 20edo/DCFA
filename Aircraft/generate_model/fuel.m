@@ -24,11 +24,11 @@ rho=804;    % Density
 % Right
 fuel_t1=1;      % Percentage of fuel tank1
 fuel_t2=1;      % Percentage of fuel tank2
-fuel_t3=1;      % Percentage of fuel tank3
+fuel_t3=0.50;      % Percentage of fuel tank3
 % Left
 fuel_t4=1;      % Percentage of fuel tank4
 fuel_t5=1;      % Percentage of fuel tank5
-fuel_t6=1;      % Percentage of fuel tank6
+fuel_t6=0.50;      % Percentage of fuel tank6
 
 %% Tank
 % Tank1
