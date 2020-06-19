@@ -64,7 +64,7 @@ freq = w/2/pi;
 max_w = w(end);
 max_freq = max_w/2/pi;
 % deltat = 1/(max_freq*8); %Nyquist
-deltat = 0.001;
+deltat = 0.00390625;
 %% Reduced matrixes
 K_red = V'*(K-q*Ka)*V;
 C_red = V'*(C-q/v*Ca)*V;
@@ -218,32 +218,18 @@ D_yu = [zeros(N,1);
 SYS_notcontrolled = ss(A, B_u, C_y, D_yu);
 % SYS_controlled = ss(A_controlled, B_u, C_y, D_yu);
 %% Actuator transfer function
-w_cut_f=2*pi*10; 
-w_cut1=2*pi*10;
-w_cut2=2*pi*20;
+w_cut=2*pi*10; %10 Hz
 % psi=10;
 % filtro=tf(w_cut^2,[1 2*psi*w_cut w_cut^2]);
-denominator=conv([1 w_cut1],[1 w_cut2]);
-mechanical_actuator=tf(w_cut1*w_cut2, denominator);
 
-filtro = designfilt('lowpassiir','PassbandFrequency',w_cut_f,...
-  'StopbandFrequency',2*w_cut_f,'PassbandRipple',1,...
-  'StopbandAttenuation',80,'SampleRate',1/deltat,'DesignMethod','butter');
+filtro=designfilt('lowpassiir','FilterOrder',2,...
+    'PassbandFrequency',w_cut, ...
+    'SampleRate',1/deltat);
 N_filtro = filtord(filtro);
 fvtool(filtro)
 [num_f, den_f]=tf(filtro);
 filtro_tf = tf(num_f, den_f);
-
-figure
-bode(mechanical_actuator)
-title('Mechanical actuator')
-grid on
-filtered_actuator=series(filtro_tf,mechanical_actuator);
-figure 
-bode(filtered_actuator)
-title('Controlled actuator')
-grid on
-actuator=ss(filtered_actuator*[G zeros(1,N) zeros(1,size(C_stresses,1))]);
+actuator=ss(filtro_tf*[G zeros(1,N) zeros(1,size(C_stresses,1))]);
 % actuator=ss([G zeros(1,N) zeros(1,size(C_stresses,1))]);
 SYS_controlled = feedback(SYS_notcontrolled,actuator);
 
@@ -286,7 +272,7 @@ for i =1:length(t)
 end
 %% Plot of the output
 q0 = zeros(2*N,1);                 %[q0;0;0]
-[z,~,x] = lsim(SYS_controlled, u, t,zeros(size(SYS_controlled.A,1),1)); % i added 2 state for the filter dynamic
+[z,~,x] = lsim(SYS_controlled, u, t,[q0;zeros(N_filtro,1)]); % i added 2 state for the filter dynamic
 [y_nc,~,x_nc] = lsim(SYS_notcontrolled, u, t,q0);
 z = z';
 x = x';
