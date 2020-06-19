@@ -382,9 +382,9 @@ if options.plot_deformed
             axis('equal');
 %             title({['Deformed model for mode:',num2str(i)];['Frequency:',num2str(w)]});
             hold on
-            xlabel('x')
-            ylabel('y')
-            zlabel('z')
+%             xlabel('x')
+%             ylabel('y')
+%             zlabel('z')
         end
         if options.saveImages
             for h = 1:3

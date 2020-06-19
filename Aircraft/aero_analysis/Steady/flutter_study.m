@@ -38,12 +38,12 @@ end
 wing = m_add_aero_loads(wing,[1,0,0]');
 
 %% Reduction of the model using n eigenvectors
-n = 15; 
+n = 6; 
 [V,D] = eigs(wing.K,wing.M,n,'smallestabs'); 
 V_red = V; 
 
-alpha = 0.001;
-gamma = 0.001;
+alpha = 0;
+gamma = 0;
 Cs = alpha*wing.M + gamma*wing.K;
 % Cs = 1e-3*sum(sum(diag(wing.K)))/size(wing.K,1)*eye(size(wing.M)); 
 
@@ -61,7 +61,7 @@ Cs = V'*Cs*V;
 % the solution of the problem is given by polyeig(K,C,M)
 
 %% Tracking of eigenvalues trough eigenvectors 
-v = [50:10:1800]; 
+v = [0:1:1000]; 
 q = 1/2*rho.*v.^2; 
 
 [X_old,e_old] = polyeig(K,Cs,M);

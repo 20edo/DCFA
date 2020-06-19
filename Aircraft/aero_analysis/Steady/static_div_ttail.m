@@ -49,38 +49,38 @@ v_div = sqrt(q_div*2./rho);
 M_div = v_div./a;
 
 %% Plote and save results
-if 1
+if 0
     options.plot_original          = 1;
     options.plot_deformed          = 1;
     options.plotColor              = 'green';
     options.saveSTL                = 0;
     options.point_section          = 8;
     options.N                      = 1;         % we have only one eig
-    m_plot_eigenshape(ttail,options,10*V_div);
+    m_plot_eigenshape(ttail,options,15*V_div);
    %% 
-    figure(2)
-    title('Static divergence T-Tail modeshape')
-    fig = figure(2)
-    for h = 1:4
-        if h==1
-            fname = ['Static_Divergence_T-Tail_view3D'];
-            saveas(fig,fname,'svg')
-        elseif h == 2
-            view([1 0 0])
-            fname = ['Static_Divergence_T-Tail_viewX'];
-            saveas(fig,fname,'svg')
-        elseif h==3
-            view([0 1 0])
-            fname = ['Static_Divergence_T-Tail_viewY'];
-            saveas(fig,fname,'svg')
-        elseif h==4
-            view([0 0 1])
-            fname = ['Static_Divergence_T-Tail_viewZ'];
-            saveas(fig,fname,'svg')
-        end
-    end
-    
-    
+%     figure(2)
+%     title('Static divergence T-Tail modeshape')
+%     fig = figure(2)
+%     for h = 1:4
+%         if h==1
+%             fname = ['Static_Divergence_T-Tail_view3D'];
+%             saveas(fig,fname,'svg')
+%         elseif h == 2
+%             view([1 0 0])
+%             fname = ['Static_Divergence_T-Tail_viewX'];
+%             saveas(fig,fname,'svg')
+%         elseif h==3
+%             view([0 1 0])
+%             fname = ['Static_Divergence_T-Tail_viewY'];
+%             saveas(fig,fname,'svg')
+%         elseif h==4
+%             view([0 0 1])
+%             fname = ['Static_Divergence_T-Tail_viewZ'];
+%             saveas(fig,fname,'svg')
+%         end
+%     end
+end
+    if 0 % save in the same figure 
     figure(3)
     set(gcf, 'Position',  [40, 40, 700, 500])
     subplot(1,2,1)
@@ -96,4 +96,23 @@ if 1
     ylabel('Divergence Mach [-]')
     title('Divergence Mach T-Tail')
     saveas(figure(3),'Static_divergence_T-Tail_graph','svg')
-end
+    end 
+
+    
+    if 1 % different figures
+        figure(3)
+        plot(0:100:11000,v_div,'LineWidth',2)
+        grid on
+        xlabel('Altitude $\quad$ $[m]$','fontsize',14,'interpreter','latex')
+        ylabel('Velocity $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
+        set(gcf, 'Position',  [40, 40, 300, 300])
+        saveas(figure(3),'divergence_tail_1','epsc')
+        
+        figure(4)
+        plot(0:100:11000,M_div,'LineWidth',2)
+        grid on
+        xlabel('Altitude $\quad$ $[m]$','fontsize',14,'interpreter','latex')
+        ylabel('Mach [-]','fontsize',14,'interpreter','latex')
+        set(gcf, 'Position',  [40, 40, 300, 300])
+        saveas(figure(4),'divergence_tail_2','epsc')
+    end

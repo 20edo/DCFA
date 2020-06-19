@@ -101,24 +101,42 @@ V_cr = V_cr(:,1);                     % select its eigenshape
 [T, a, P, rho] = atmosisa(0:100:11000);v = sqrt(q_cr*2./rho);
 M = v./a;
 
+if 0 % all in 1 figure
+    figure
+    set(gcf, 'Position',  [40, 40, 700, 500])
+    subplot(1,2,1)
+    plot(0:100:11000,v,'LineWidth',2)
+    grid on
+    xlabel('Altitude [m]')
+    ylabel('Divergence Velocity [m/s]')
+    title('Divergence Velocity Swept Wing')
+    subplot(1,2,2)
+    plot(0:100:11000,M,'LineWidth',2)
+    grid on
+    xlabel('Altitude [m]')
+    ylabel('Divergence Mach [-]')
+    title('Divergence Mach Swept Wing')
+end
 
-figure
+if 1 % different figures
+    figure(1)
+    plot(0:100:11000,v,'LineWidth',2)
+    grid on
+    xlabel('Altitude $\quad$ $[m]$','fontsize',14,'interpreter','latex')
+    ylabel('Velocity $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
+    set(gcf, 'Position',  [40, 40, 300, 300])
+    saveas(figure(1),'cnt_rev_wing_1','epsc')
+    
+    figure(2)
+    plot(0:100:11000,M,'LineWidth',2)
+    grid on
+    xlabel('Altitude $\quad$ $[m]$','fontsize',14,'interpreter','latex')
+    ylabel('Mach [-]','fontsize',14,'interpreter','latex')
+    set(gcf, 'Position',  [40, 40, 300, 300])
+    saveas(figure(2),'cnt_rev_wing_2','epsc')
+end
 
-set(gcf, 'Position',  [40, 40, 700, 500])
-subplot(1,2,1)
-plot(0:100:11000,v,'LineWidth',2)
-grid on
-xlabel('Altitude [m]')
-ylabel('Divergence Velocity [m/s]')
-title('Divergence Velocity Swept Wing')
-subplot(1,2,2)
-plot(0:100:11000,M,'LineWidth',2)
-grid on
-xlabel('Altitude [m]')
-ylabel('Divergence Mach [-]')
-title('Divergence Mach Swept Wing')
-
-if 1
+if 0
     % switch on the aero properties for the plot
     for i=4:5
         wing.b(i).ssh = true;
@@ -136,5 +154,5 @@ if 1
             V_cr(g) = -V_cr(g);
         end
     end
-    m_plot_eigenshape(wing,options,-sign(V_cr(end))*((V_cr(1:end-1)))*2);
+    m_plot_eigenshape(wing,options,-sign(V_cr(end))*((V_cr(1:end-1)))*4);
 end

@@ -67,5 +67,22 @@ if 1
     
 m_plot_eigenshape(wing,options,q_stat);
 end
-figure(2) 
-title('Deformed  wing at M=0.7 - h=10000 m')
+% saveas(figure(2),'direct_solution_1','epsc')
+%%
+q_stat = [zeros(6,1); q_stat]; 
+beam1 = wing.b(1).A'*q_stat;
+beam2 = wing.b(2).A'*q_stat;
+beam3 = wing.b(3).A'*q_stat;
+flex = [beam1(3:6:end); beam2(9:6:end); beam3(9:6:end)]; 
+tor = rad2deg([beam1(4:6:end); beam2(10:6:end); beam3(10:6:end)]);  
+figure(5)
+yyaxis left
+plot(linspace(0,28,length(flex)),flex,'LineWidth',2);
+ylabel('Displacements $\quad$ $[m]$','fontsize',14,'interpreter','latex')
+yyaxis right 
+plot(linspace(0,28,length(tor)),tor,'LineWidth',2);
+ylabel('Rotations $\quad$ $[deg]$','fontsize',14,'interpreter','latex')
+xlabel('Wingspan $\quad$ $[m]$','fontsize',14,'interpreter','latex')
+legend('Vertical displacements','Torsional rotation','fontsize',10,'interpreter','latex','Location','northwest')
+grid on 
+saveas(figure(5),'direct_solution_2','epsc')
