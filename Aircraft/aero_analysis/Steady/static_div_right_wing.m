@@ -39,6 +39,8 @@ end
 wing_straight = wing;
 %% Add the aero loads
 wing = m_add_aero_loads(wing,[1,0,0]');
+wing = m_add_mass_forces(wing); 
+wing = m_compute_matrices(wing);
 wing_straight = m_add_aero_loads_straight(wing_straight,[1,0,0]');
 
 %% Find the divergence dynamic pressure - swept wing
@@ -54,9 +56,14 @@ q_div = q_div(1);                       % select the minimum positive q_inf
 V_div = V(:,1);                         % select its eigenshape
 
 %% Direct problem
-q = 24500; 
+% study the deflection of the wing 
+[T, a, P, rho] = atmosisa(10000);
+M = 0.7; 
+v = M*a; 
+q = 1/2*rho*v.^2; 
+
 A = wing.K - q*wing.Ka;
-b = q*wing.fa; 
+b = q*wing.fa + wing.f; 
 q_stat = A\b; 
 if 1
     % switch on the aero properties for the plot 
@@ -72,7 +79,8 @@ if 1
     
 m_plot_eigenshape(wing,options,q_stat);
 end
-    
+figure(2) 
+title('Deformed  wing at M=0.7 - h=10000 m')
 
 
 

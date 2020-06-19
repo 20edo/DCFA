@@ -45,7 +45,7 @@ wing = m_compute_matrices(wing);
 Jx = 0;         % Inizialize Jx
 % External nodes
 for i=1:length(aircraft.en)
-   Jx=Jx+aircraft.en(i).M(4,4)+aircraft.en(i).M(1,1)*norm(aircraft.en(1).x([2,3]))^2; 
+    Jx=Jx+aircraft.en(i).M(4,4)+aircraft.en(i).M(1,1)*norm(aircraft.en(1).x([2,3]))^2;
 end
 
 % Beams
@@ -74,32 +74,39 @@ problem=1;
 % aileron deflection b, for prescribed initial roll acceleration p_dot
 %% #3
 % asymptotic roll rate for prescribed beta
-%% #4 
-% aileron deflection beta for prescribed asymptotic roll rate 
-%% #5 
+%% #4
+% aileron deflection beta for prescribed asymptotic roll rate
+%% #5
 % initial roll acc p_dot for prescribed roll rate p
-%% 6 
-% roll rate p required for prescribed roll acceleration 
-
-q = 24500; % dynamic pressure
+%% 6
+% roll rate p required for prescribed roll acceleration
+[T, a, P, rho] = atmosisa(10000);
+M = 0.7;
+v = M*a;
+q = 1/2*rho*v.^2;
+beta_vect = 1:30;
 switch problem
     case 1
-        beta = deg2rad(2);
-        A = [K-q*Ka, Sq
-            -q*lq, Jx];
-        b = q*[fb; lb]*beta;
-        sol = A\b;
-        p_dot = sol(end);
-        p_dot = rad2deg(p_dot);
-        [V,D] = eig(full([K, Sq; zeros(1,size(K,1)), Jx]),full([Ka, zeros(size(Ka,1),1); lq, 0]));
-        q_div = diag(D);
-        [q_div,I] = sort(real(q_div));
-        q_div(q_div<1)=[];
-        q_div = q_div(1);
-        if q > q_div
-            warning('You are over the divergence dynamic pressure for the manouver')
-        end
-        
+%         for i=1:length(beta_vect)
+%             beta = beta_vect(i);
+            A = [K-q*Ka, Sq
+                -q*lq, Jx];
+            b = q*[fb; lb]*beta;
+            sol = A\b;
+            p_dot = sol(end);
+            p_dot = rad2deg(p_dot);
+%             p_dot_vect(i) = p_dot;
+            [V,D] = eig(full([K, Sq; zeros(1,size(K,1)), Jx]),full([Ka, zeros(size(Ka,1),1); lq, 0]));
+            q_div = diag(D);
+            [q_div,I] = sort(real(q_div));
+            q_div(q_div<1)=[];
+            q_div = q_div(1);
+            if q > q_div
+                warning('You are over the divergence dynamic pressure for the manouver')
+            end
+%         end
+        figure
+        plot(beta_vect,p_dot_vect)
     case 2
         p_dot = 1;
         A = [K-q*Ka, -q*fb; -q*lq, -q*lb];
@@ -131,13 +138,13 @@ switch problem
         if q > q_div
             warning('You are over the divergence dynamic pressure for the manouver')
         end
-    case 4 
+    case 4
         p_fract_vinf = 0.05;
-        p_fract_vinf = deg2rad(p_fract_vinf); 
-        A = [K-q*Ka, -q*fb; -q*lq, -q*lb]; 
-        b = q*[fp; lp]*p_fract_vinf; 
-        sol = A\b; 
-        beta = sol(end); 
+        p_fract_vinf = deg2rad(p_fract_vinf);
+        A = [K-q*Ka, -q*fb; -q*lq, -q*lb];
+        b = q*[fp; lp]*p_fract_vinf;
+        sol = A\b;
+        beta = sol(end);
         beta = rad2deg(beta);
         [V,D] = eig(full([K, zeros(size(K,1),1); zeros(1,size(K,1)), 0]),full([Ka, fb; lq, lb]));
         q_div = diag(D);
@@ -147,13 +154,13 @@ switch problem
         if q > q_div
             warning('You are over the control reversal dynamic pressure for the manouver')
         end
-    case 5 
-        p_fract_vinf = 0.05; 
-        p_fract_vinf = deg2rad(p_fract_vinf); 
-        A = [K-q*Ka, Sq; -q*lq, Jx]; 
-        b = q*[fp; lp]*p_fract_vinf; 
-        sol = A\b; 
-        p_dot = sol(end); 
+    case 5
+        p_fract_vinf = 0.05;
+        p_fract_vinf = deg2rad(p_fract_vinf);
+        A = [K-q*Ka, Sq; -q*lq, Jx];
+        b = q*[fp; lp]*p_fract_vinf;
+        sol = A\b;
+        p_dot = sol(end);
         p_dot = rad2deg(p_dot);
         [V,D] = eig(full([K, Sq; zeros(1,size(K,1)), Jx]),full([Ka, zeros(size(Ka,1),1); lq, 0]));
         q_div = diag(D);
@@ -163,12 +170,12 @@ switch problem
         if q > q_div
             warning('You are over the divergence dynamic pressure for the manouver')
         end
-    case 6 
-        p_dot = 0.04; 
-        A = [K-q*Ka, -q*fp; -q*lq, -q*lp]; 
-        b = -[Sq; Jx]*p_dot; 
-        sol = A\b; 
-        p_fract_vinf = sol(end); 
+    case 6
+        p_dot = 0.04;
+        A = [K-q*Ka, -q*fp; -q*lq, -q*lp];
+        b = -[Sq; Jx]*p_dot;
+        sol = A\b;
+        p_fract_vinf = sol(end);
         p_fract_vinf = rad2deg(p_fract_vinf);
         [V,D] = eig(full([K, zeros(size(K,1),1); zeros(1,size(K,1)), 0]),full([Ka, fp; lq, lp]));
         q_div = diag(D);
@@ -177,15 +184,15 @@ switch problem
         q_div = q_div(1);
         if q > q_div
             warning('You are over the divergence dynamic pressure for the manouver')
-        end     
+        end
 end
 
 %% Plot consistent problem
 % Deformative shape plot
 if 0
-    % switch on the aero properties for the plot 
+    % switch on the aero properties for the plot
     for i=4:5
-        wing.b(i).ssh = true; 
+        wing.b(i).ssh = true;
     end
     options.plot_original          = 1;
     options.plot_deformed          = 1;
@@ -195,7 +202,7 @@ if 0
     options.N                      = 1;        % we have only one eig
     for g = 1:length(sol)-1
         if mod(g,6)==3 || mod(g,6)==5
-            sol(g) = -sol(g); 
+            sol(g) = -sol(g);
         end
     end
     m_plot_eigenshape(wing,options,sol(1:end-1)*40)
@@ -219,7 +226,7 @@ for i=1:length(q_ref)
     % Rigid solution problem 1
     
     A_r = [K, Sq
-           -0*lq, Jx];
+        -0*lq, Jx];
     b_r = q*[fb; lb]*beta;
     sol_r = A_r\b_r;
     p_dot_r1(i) = sol_r(end);
@@ -231,25 +238,25 @@ end
 
 % Plot
 
-figure 
-hold on 
+figure
+hold on
 title('Pdot_comparison rigid vs elastic')
 plot(q_ref,p_dot1,'b')
 plot(q_ref,p_dot_r1,'r')
 grid
 legend('Elastic pdot','Rigid pdot')
 % ylim([-10 10])
-hold off 
- 
+hold off
 
 
 
-    
+
+
 % Control aeroelastic correction
 
 if 1
-    figure 
-    plot(sqrt(q_ref),elastic_control)
+    figure
+    plot(q_ref,elastic_control)
     xlabel('Dynamic pressure')
     ylabel('$\frac{\dot{p}}{\dot{p_r}}$','Interpreter','latex')
     title('Roll control aeroelastic correction (steady aerodynamics)')
@@ -284,7 +291,7 @@ end
 
 % Plot
 if 1
-    figure 
+    figure
     plot(q_ref,elastic_damping)
     xlabel('Dynamic pressure')
     ylabel('$\frac{\dot{p}}{\dot{p_r}}$','Interpreter','latex')
