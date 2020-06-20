@@ -70,9 +70,9 @@ K_red = V'*(K-q*Ka)*V;
 C_red = V'*(C-q/v*Ca)*V;
 M_red = V'*M*V;
 
-csi=2e-2;
-C_struct = 2*csi*diag(freq'*M_red);
-C_red = C_red + C_struct;
+% csi=2e-2;
+% C_struct = 2*csi*diag(freq'*M_red);
+% C_red = C_red + C_struct;
 %% External input
 % I'm taking into account the force given by the aileron deflection
 Fb = transpose(V)*fb;
@@ -173,7 +173,7 @@ end
 %% Normalizing weight matrixes
 % weight=1 ->   Only u counts
 % Weight=0 ->   Only z counts
-weight = 0.01;
+weight = 0.1;
 
 W_zz=(1-weight)*W_zz/norm(W_zz);
 % W_zz = (1-weight) * (lambda)/(sum(sum(lambda)));
@@ -220,12 +220,12 @@ SYS_notcontrolled = ss(A, B_u, C_y, D_yu);
 %% Actuator transfer function
 w_cut=2*pi*10; %10 Hz
 % psi=10;
-% filtro=tf(w_cut^2,[1 2*psi*w_cut w_cut^2]);
+% filtro_tf=tf(w_cut^2,[1 2*psi*w_cut w_cut^2]);
 
 filtro=designfilt('lowpassiir','FilterOrder',2,...
-    'PassbandFrequency',w_cut, ...
+    'PassbandFrequency',5, ...
     'SampleRate',1/deltat);
-N_filtro = filtord(filtro);
+N_filtro = filtord(filtro_tf);
 fvtool(filtro)
 [num_f, den_f]=tf(filtro);
 filtro_tf = tf(num_f, den_f);
@@ -272,7 +272,7 @@ for i =1:length(t)
 end
 %% Plot of the output
 q0 = zeros(2*N,1);                 %[q0;0;0]
-[z,~,x] = lsim(SYS_controlled, u, t,[q0;zeros(N_filtro,1)]); % i added 2 state for the filter dynamic
+[z,~,x] = lsim(SYS_controlled, u, t,zeros(size(SYS_controlled.A,1),1)); % i added 2 state for the filter dynamic
 [y_nc,~,x_nc] = lsim(SYS_notcontrolled, u, t,q0);
 z = z';
 x = x';
@@ -328,10 +328,10 @@ ylabel('$\ddot{q}$','Interpreter','latex')
 
 
 subplot(2,2,4)
-plot(t,-G*x(1:2*N,:))
+plot(t,-x(end,:))
 hold on
 grid on
-plot(t,-G*x(1:2*N,:)+u)
+plot(t,-x(end,:)+u)
 plot(t,u)
 title('Aileron deflection')
 legend('Controller output','Controlled','Non controlled')
