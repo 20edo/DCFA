@@ -173,7 +173,7 @@ end
 %% Normalizing weight matrixes
 % weight=1 ->   Only u counts
 % Weight=0 ->   Only z counts
-weight = 0.01;
+weight = 0.7;
 
 W_zz=(1-weight)*W_zz/norm(W_zz);
 % W_zz = (1-weight) * (lambda)/(sum(sum(lambda)));
@@ -223,7 +223,7 @@ w_cut=2*pi*10; %10 Hz
 % filtro=tf(w_cut^2,[1 2*psi*w_cut w_cut^2]);
 
 filtro=designfilt('lowpassiir','FilterOrder',2,...
-    'PassbandFrequency',w_cut, ...
+    'PassbandFrequency',5, ...
     'SampleRate',1/deltat);
 N_filtro = filtord(filtro);
 fvtool(filtro)
@@ -328,10 +328,10 @@ ylabel('$\ddot{q}$','Interpreter','latex')
 
 
 subplot(2,2,4)
-plot(t,-G*x(1:2*N,:))
+plot(t,-x(end,:))
 hold on
 grid on
-plot(t,-G*x(1:2*N,:)+u)
+plot(t,-x(end,:)+u)
 plot(t,u)
 title('Aileron deflection')
 legend('Controller output','Controlled','Non controlled')

@@ -95,7 +95,7 @@ B_u = [zeros(N,1);
 % 3 -> Controller based on modal velocities and engines velocities
 % 4 -> Controller based on allieviation of the loads at the root of the
 %      wing and at the root of the engines' support
-controller=1;
+controller=4;
 
 switch controller
     
@@ -104,6 +104,7 @@ switch controller
         C_z = C_z/N;
         D_zu = zeros(N,1);
         W_zz = sqrt(lambda)/(sum(sum(sqrt(lambda))));
+        weight = 0.6;
     case 2
         % Define relative importance of modes velocity engines' acceleration
         % 1 -> Only modes velocity count
@@ -168,12 +169,12 @@ switch controller
         C_z = C_z/sqrt(norm(full(C_z*C_z')));
         D_zu = zeros(size(C_z,1),1);
         W_zz=eye(size(C_z,1))/(size(C_z,1));
+        weight = 0.012;
 end
 
 %% Normalizing weight matrixes
 % weight=1 ->   Only u counts
 % Weight=0 ->   Only z counts
-weight = 0.01;
 
 W_zz=(1-weight)*W_zz/norm(W_zz);
 % W_zz = (1-weight) * (lambda)/(sum(sum(lambda)));
@@ -219,31 +220,32 @@ SYS_notcontrolled = ss(A, B_u, C_y, D_yu);
 % SYS_controlled = ss(A_controlled, B_u, C_y, D_yu);
 %% Actuator transfer function
 w_cut_f=2*pi*10; 
-w_cut1=2*pi*10;
-w_cut2=2*pi*20;
+w_cut1=2*pi*5;
+w_cut2=2*pi*15;
 % psi=10;
 % filtro=tf(w_cut^2,[1 2*psi*w_cut w_cut^2]);
 denominator=conv([1 w_cut1],[1 w_cut2]);
 mechanical_actuator=tf(w_cut1*w_cut2, denominator);
 
-filtro = designfilt('lowpassiir','PassbandFrequency',w_cut_f,...
-  'StopbandFrequency',2*w_cut_f,'PassbandRipple',1,...
-  'StopbandAttenuation',80,'SampleRate',1/deltat,'DesignMethod','butter');
-N_filtro = filtord(filtro);
-fvtool(filtro)
-[num_f, den_f]=tf(filtro);
-filtro_tf = tf(num_f, den_f);
-
+% filtro = designfilt('lowpassiir','PassbandFrequency',w_cut_f,...
+%   'StopbandFrequency',2*w_cut_f,'PassbandRipple',1,...
+%   'StopbandAttenuation',80,'SampleRate',1/deltat,'DesignMethod','butter');
+% N_filtro = filtord(filtro);
+% fvtool(filtro)
+% [num_f, den_f]=tf(filtro);
+% filtro_tf = tf(num_f, den_f);
+% 
 figure
 bode(mechanical_actuator)
 title('Mechanical actuator')
 grid on
-filtered_actuator=series(filtro_tf,mechanical_actuator);
-figure 
-bode(filtered_actuator)
-title('Controlled actuator')
-grid on
-actuator=ss(filtered_actuator*[G zeros(1,N) zeros(1,size(C_stresses,1))]);
+% filtered_actuator=series(filtro_tf,mechanical_actuator);
+% figure 
+% bode(filtered_actuator)
+% title('Controlled actuator')
+% grid on
+
+actuator=ss(mechanical_actuator*[G zeros(1,N) zeros(1,size(C_stresses,1))]);
 % actuator=ss([G zeros(1,N) zeros(1,size(C_stresses,1))]);
 SYS_controlled = feedback(SYS_notcontrolled,actuator);
 
@@ -285,7 +287,7 @@ for i =1:length(t)
     
 end
 %% Plot of the output
-q0 = zeros(2*N,1);                 %[q0;0;0]
+q0 = zeros(2*N,1);                 
 [z,~,x] = lsim(SYS_controlled, u, t,zeros(size(SYS_controlled.A,1),1)); % i added 2 state for the filter dynamic
 [y_nc,~,x_nc] = lsim(SYS_notcontrolled, u, t,q0);
 z = z';
@@ -342,10 +344,10 @@ ylabel('$\ddot{q}$','Interpreter','latex')
 
 
 subplot(2,2,4)
-plot(t,-G*x(1:2*N,:))
+plot(t,-x(end,:))
 hold on
 grid on
-plot(t,-G*x(1:2*N,:)+u)
+plot(t,-x(end,:)+u)
 plot(t,u)
 title('Aileron deflection')
 legend('Controller output','Controlled','Non controlled')
