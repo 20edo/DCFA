@@ -88,8 +88,6 @@ B_u = [zeros(N,1);
 %     M_red\ones(N,1)];
 
 %% Performance indicator
-% % C_z = [-M_red\K_red -M_red\C_red];
-% % D_zu = [M_red\(q*Fb)];
 % 1 -> Controller based only on modal velocities
 % 2 -> Controller based on modal velocities and engines accelerations
 % 3 -> Controller based on modal velocities and engines velocities
@@ -104,7 +102,7 @@ switch controller
         C_z = C_z/N;
         D_zu = zeros(N,1);
         W_zz = sqrt(lambda)/(sum(sum(sqrt(lambda))));
-        weight = 0.9;
+        weight = 0.1;
     case 2
         % Define relative importance of modes velocity engines' acceleration
         % 1 -> Only modes velocity count
@@ -192,15 +190,15 @@ G = inv(R)*(B_u'*P+S');
 %% State space model
 A_controlled = A-B_u*G;
 
-%% loads static sol
-q0_sol_static = [(K-q*Ka)\(q*fa+wing.f)];
-q0_sol_static_red = V'*q0_sol_static;
-load_static = wing.load(7:end,7:end)*q0_sol_static;
-if 0
-    plot(load_static(3:6:end))
-end
-q0 = [q0_sol_static_red;
-    zeros(N,1)];
+% %% loads static sol
+% q0_sol_static = [(K-q*Ka)\(q*fa+wing.f)];
+% q0_sol_static_red = V'*q0_sol_static;
+% load_static = wing.load(7:end,7:end)*q0_sol_static;
+% if 0
+%     plot(load_static(3:6:end))
+% end
+% q0 = [q0_sol_static_red;
+%     zeros(N,1)];
 %% Recover displacements, velocities, accelerations and physical stresses 
 elements_correnti=[wing.b(1).A(:,[7:12 end-11:end-6]) wing.b(2).A(:,[7:12 end-11:end-6]) wing.b(3).A(:,[7:12])];
 elements_correnti=elements_correnti';
@@ -220,8 +218,8 @@ SYS_notcontrolled = ss(A, B_u, C_y, D_yu);
 % SYS_controlled = ss(A_controlled, B_u, C_y, D_yu);
 %% Actuator transfer function
 w_cut_f=2*pi*10; 
-w_cut1=2*pi*5;
-w_cut2=2*pi*15;
+w_cut1=2*pi*200;
+w_cut2=2*pi*250;
 % psi=10;
 % filtro=tf(w_cut^2,[1 2*psi*w_cut w_cut^2]);
 denominator=conv([1 w_cut1],[1 w_cut2]);
@@ -245,18 +243,20 @@ grid on
 % title('Controlled actuator')
 % grid on
 
-actuator=ss(mechanical_actuator*[G zeros(1,N) zeros(1,size(C_stresses,1))]);
+Gain = ss([G zeros(1,N) zeros(1,size(C_stresses,1))]);
+actuator=series(mechanical_actuator,Gain);
 % actuator=ss([G zeros(1,N) zeros(1,size(C_stresses,1))]);
 SYS_controlled = feedback(SYS_notcontrolled,actuator);
 
-%% Margine di guadagno e di fase
+%% Margine di guadagno e di fase di beta
 A_beta = SYS_controlled.A;
 B_beta = SYS_controlled.B;
 SYS = ss(A_beta,B_beta,[zeros(1,21) 1], 0);
 figure
 bode(SYS)
 [gm,pm,wcg,wcp] = margin(SYS)
-
+Gain_beta = SYS_controlled.A(11:20,end)./B_u(11:end); %
+Gain_beta = abs(Gain_beta(1));
 %% Define the input
 % Define time axis
 t = [0:deltat:7];
@@ -352,10 +352,10 @@ ylabel('$\ddot{q}$','Interpreter','latex')
 
 
 subplot(2,2,4)
-plot(t,-x(end,:))
+plot(t,-x(end,:)*Gain_beta)
 hold on
 grid on
-plot(t,-x(end,:)+u)
+plot(t,-x(end,:)*Gain_beta+u)
 plot(t,u)
 title('Aileron deflection')
 legend('Controller output','Controlled','Non controlled')

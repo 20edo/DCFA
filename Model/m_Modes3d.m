@@ -262,6 +262,7 @@ clear r h i j
 w = sqrt(diag(lambda)-options.alpha); 
 w(1:6)=real(w(1:6));
 U(:,1:6)=real(U(:,1:6));
+freq = w/2/pi;
 
 %% Add the zeros for the constrained displacements
 for j=1:length(model.en)
@@ -387,7 +388,7 @@ if options.plot_deformed
             trisurf(f,p(:,1),p(:,2),p(:,3), ...
                 'FaceColor',options.plotColor,'FaceAlpha',0.8);
             axis('equal');
-            title({['Deformed model for mode:',num2str(i)];['Frequency:',num2str(w(i)),'Hz']});
+            title({['Deformed model for mode:',num2str(i)];['Frequency:',num2str(freq(i)),'Hz']});
             hold on
             xlabel('x')
             ylabel('y')

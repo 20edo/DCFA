@@ -311,7 +311,7 @@ if options.plot_original
             'FaceColor',options.plotColor,'FaceAlpha',0.8);
         %pdeplot3D(model)
         axis('equal');
-        title('Original beam without deformation');
+        title('Original model without deformation');
         axis equal
         hold on
         xlabel('x')
@@ -328,7 +328,7 @@ if options.plot_deformed
     fig = trisurf(f,p(:,1),p(:,2),p(:,3), ...
         'FaceColor',options.plotColor,'FaceAlpha',0.8);
     axis('equal');
-    title('Deformed beam');
+    title('Deformed model');
     hold on
     xlabel('x')
     ylabel('y')
