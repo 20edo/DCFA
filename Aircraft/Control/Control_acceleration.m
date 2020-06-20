@@ -70,9 +70,9 @@ K_red = V'*(K-q*Ka)*V;
 C_red = V'*(C-q/v*Ca)*V;
 M_red = V'*M*V;
 
-csi=2e-2;
-C_struct = 2*csi*diag(freq'*M_red);
-C_red = C_red + C_struct;
+% csi=2e-2;
+% C_struct = 2*csi*diag(freq'*M_red);
+% C_red = C_red + C_struct;
 %% External input
 % I'm taking into account the force given by the aileron deflection
 Fb = transpose(V)*fb;
@@ -95,7 +95,7 @@ B_u = [zeros(N,1);
 % 3 -> Controller based on modal velocities and engines velocities
 % 4 -> Controller based on allieviation of the loads at the root of the
 %      wing and at the root of the engines' support
-controller=4;
+controller=1;
 
 switch controller
     
@@ -104,7 +104,7 @@ switch controller
         C_z = C_z/N;
         D_zu = zeros(N,1);
         W_zz = sqrt(lambda)/(sum(sum(sqrt(lambda))));
-        weight = 0.6;
+        weight = 0.9;
     case 2
         % Define relative importance of modes velocity engines' acceleration
         % 1 -> Only modes velocity count
@@ -169,7 +169,7 @@ switch controller
         C_z = C_z/sqrt(norm(full(C_z*C_z')));
         D_zu = zeros(size(C_z,1),1);
         W_zz=eye(size(C_z,1))/(size(C_z,1));
-        weight = 0.012;
+        weight = 0.03;
 end
 
 %% Normalizing weight matrixes
@@ -249,9 +249,17 @@ actuator=ss(mechanical_actuator*[G zeros(1,N) zeros(1,size(C_stresses,1))]);
 % actuator=ss([G zeros(1,N) zeros(1,size(C_stresses,1))]);
 SYS_controlled = feedback(SYS_notcontrolled,actuator);
 
+%% Margine di guadagno e di fase
+A_beta = SYS_controlled.A;
+B_beta = SYS_controlled.B;
+SYS = ss(A_beta,B_beta,[zeros(1,21) 1], 0);
+figure
+bode(SYS)
+[gm,pm,wcg,wcp] = margin(SYS)
+
 %% Define the input
 % Define time axis
-t = [0:deltat:5];
+t = [0:deltat:7];
 beta = deg2rad(2);
 % input =
 % 1     -> impulse
