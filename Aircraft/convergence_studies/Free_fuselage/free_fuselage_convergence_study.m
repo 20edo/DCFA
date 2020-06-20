@@ -24,7 +24,7 @@ cd generate_model
 %% Perform analysis
 
 % nel_tot=500;          % Exact (reference) eigenvalues
-nel_tot=50:15:300;
+nel_tot=50:10:300;
 t=zeros(size(nel_tot));
 number=100;      % Number of eigenvalues considered
 w_esatta(number+1:end)=[];
@@ -53,28 +53,28 @@ for i =1:length(nel_tot)
     einf(i)=errorinf;
 end
 
-%% Plot
-
 cd ..
 cd convergence_studies\Free_fuselage\ % Move to the right folder 
 
+%% Plot
+
 fig=figure;
-set(gcf, 'Position',  [0, 0, 5000, 4000])
+set(gcf, 'Position',  [0, 0, 600, 400])
 subplot(1,3,1)
     loglog(nel_tot,einf)
     grid on
-    xlabel('Number of elements')
-    ylabel('Norm INF error')
+    xlabel('Number of elements','interpreter','latex')
+    ylabel('Norm INF error','interpreter','latex')
 subplot(1,3,2)
     loglog(nel_tot,e2)
     grid on
-    xlabel('Number of elements')
-    ylabel('Norm 2 error')
+    xlabel('Number of elements','interpreter','latex')
+    ylabel('Norm 2 error','interpreter','latex')
 subplot(1,3,3)
     loglog(nel_tot,t)
     grid on
-    xlabel('Number of elements')
-    ylabel('Time spent')
+    xlabel('Number of elements','interpreter','latex')
+    ylabel('Time spent \quad [s]','interpreter','latex')
 
 if 1
     saveas(fig,'Convergence_free_fuselage_eig','epsc')
