@@ -67,7 +67,7 @@ K = wing.K;
 Ka = wing.Ka;
 
 %% Number of problem to be solved
-problem=1;
+problem=5;
 %% #1
 % initial roll acceleration p_dot for prescribed aileron deflection beta
 %% #2
@@ -84,18 +84,19 @@ problem=1;
 M = 0.7;
 v = M*a;
 q = 1/2*rho*v.^2;
-beta_vect = 1:30;
+beta_vect = deg2rad([2,5,10,20]);
+p_input_vect = deg2rad([5,10,20,40]);
 switch problem
     case 1
-%         for i=1:length(beta_vect)
-%             beta = beta_vect(i);
+        for i=1:length(beta_vect)
+            beta = beta_vect(i);
             A = [K-q*Ka, Sq
                 -q*lq, Jx];
             b = q*[fb; lb]*beta;
             sol = A\b;
             p_dot = sol(end);
             p_dot = rad2deg(p_dot);
-%             p_dot_vect(i) = p_dot;
+            p_dot_vect(i) = p_dot;
             [V,D] = eig(full([K, Sq; zeros(1,size(K,1)), Jx]),full([Ka, zeros(size(Ka,1),1); lq, 0]));
             q_div = diag(D);
             [q_div,I] = sort(real(q_div));
@@ -104,9 +105,7 @@ switch problem
             if q > q_div
                 warning('You are over the divergence dynamic pressure for the manouver')
             end
-%         end
-        figure
-        plot(beta_vect,p_dot_vect)
+        end
     case 2
         p_dot = 1;
         A = [K-q*Ka, -q*fb; -q*lq, -q*lb];
@@ -124,19 +123,23 @@ switch problem
         end
         
     case 3
-        beta = deg2rad(10);
-        A = [K-q*Ka, -q*fp; -q*lq, -q*lp];
-        b = q*[fb; lb]*beta;
-        sol = A\b;
-        p_fract_vinf = sol(end);
-        p_fract_vinf = rad2deg(p_fract_vinf);
-        [V,D] = eig(full([K, zeros(size(K,1),1); zeros(1,size(K,1)), 0]),full([Ka, fp; lq, lp]));
-        q_div = diag(D);
-        [q_div,I] = sort(real(q_div));
-        q_div(q_div<1)=[];
-        q_div = q_div(1);
-        if q > q_div
-            warning('You are over the divergence dynamic pressure for the manouver')
+        for i=1:length(beta_vect)
+            beta = beta_vect(i);
+            A = [K-q*Ka, -q*fp; -q*lq, -q*lp];
+            b = q*[fb; lb]*beta;
+            sol = A\b;
+            p_fract_vinf = sol(end);
+            p_fract_vinf = rad2deg(p_fract_vinf);
+            p_fract_vinf_vect(i) = p_fract_vinf;
+            p_vect = p_fract_vinf_vect*v;
+            [V,D] = eig(full([K, zeros(size(K,1),1); zeros(1,size(K,1)), 0]),full([Ka, fp; lq, lp]));
+            q_div = diag(D);
+            [q_div,I] = sort(real(q_div));
+            q_div(q_div<1)=[];
+            q_div = q_div(1);
+            if q > q_div
+                warning('You are over the divergence dynamic pressure for the manouver')
+            end
         end
     case 4
         p_fract_vinf = 0.05;
@@ -155,20 +158,22 @@ switch problem
             warning('You are over the control reversal dynamic pressure for the manouver')
         end
     case 5
-        p_fract_vinf = 0.05;
-        p_fract_vinf = deg2rad(p_fract_vinf);
-        A = [K-q*Ka, Sq; -q*lq, Jx];
-        b = q*[fp; lp]*p_fract_vinf;
-        sol = A\b;
-        p_dot = sol(end);
-        p_dot = rad2deg(p_dot);
-        [V,D] = eig(full([K, Sq; zeros(1,size(K,1)), Jx]),full([Ka, zeros(size(Ka,1),1); lq, 0]));
-        q_div = diag(D);
-        [q_div,I] = sort(real(q_div));
-        q_div(q_div<1)=[];
-        q_div = q_div(1);
-        if q > q_div
-            warning('You are over the divergence dynamic pressure for the manouver')
+        for i = 1:length(p_input_vect)
+            p_fract_vinf = p_input_vect(i)/v;
+            A = [K-q*Ka, Sq; -q*lq, Jx];
+            b = q*[fp; lp]*p_fract_vinf;
+            sol = A\b;
+            p_dot = sol(end);
+            p_dot = rad2deg(p_dot);
+            p_dot_vect(i) = p_dot;
+            [V,D] = eig(full([K, Sq; zeros(1,size(K,1)), Jx]),full([Ka, zeros(size(Ka,1),1); lq, 0]));
+            q_div = diag(D);
+            [q_div,I] = sort(real(q_div));
+            q_div(q_div<1)=[];
+            q_div = q_div(1);
+            if q > q_div
+                warning('You are over the divergence dynamic pressure for the manouver')
+            end
         end
     case 6
         p_dot = 0.04;
@@ -210,7 +215,10 @@ end
 
 %% Control aeroelastic
 
-q_ref=linspace(1,600*1e3,5*1e2);
+v_ref = linspace(1,2000,1e3);
+[T, a, P, rho] = atmosisa(10000);
+q_ref = 1/2*rho*v_ref.^2;
+% q_ref=linspace(1,600*1e3,5*1e2);
 elastic_control=zeros(size(q_ref));
 
 for i=1:length(q_ref)
@@ -235,35 +243,36 @@ for i=1:length(q_ref)
     
 end
 
+% Control aeroelastic correction - Plot
+if 0
+    figure(3)
+    hold on
+    plot(v_ref,elastic_control,'LineWidth',2)
+    xlabel('VTAS $[\frac{m}{s}]$','fontsize',14,'Interpreter','latex')
+    ylabel('$\frac{\dot{p}}{\dot{p_r}}$','fontsize',14,'Interpreter','latex')
+    title('h = $10000$ m','fontsize',14,'Interpreter','latex')
+    grid on
+    plot(1560,0,'.','MarkerSize',20,'LineWidth',2)
+    ylim([-0.2 1.5])
+    set(gcf, 'Position',  [40, 40, 400, 300])
+    saveas(figure(3),'consistent_1','epsc')
+end
+
+
+
+
 
 % Plot
 
-figure
-hold on
-title('Pdot_comparison rigid vs elastic')
-plot(q_ref,p_dot1,'b')
-plot(q_ref,p_dot_r1,'r')
-grid
-legend('Elastic pdot','Rigid pdot')
-% ylim([-10 10])
-hold off
-
-
-
-
-
-% Control aeroelastic correction
-
-if 1
-    figure
-    plot(q_ref,elastic_control)
-    xlabel('Dynamic pressure')
-    ylabel('$\frac{\dot{p}}{\dot{p_r}}$','Interpreter','latex')
-    title('Roll control aeroelastic correction (steady aerodynamics)')
-    grid on
-    ylim([-2 2])
-end
-
+% figure
+% hold on
+% title('Pdot_comparison rigid vs elastic')
+% plot(q_ref,p_dot1,'b')
+% plot(q_ref,p_dot_r1,'r')
+% grid
+% legend('Elastic pdot','Rigid pdot')
+% % ylim([-10 10])
+% hold off
 
 %% Roll damping aeroelastic correction
 
@@ -290,12 +299,15 @@ for i=1:length(q_ref)
 end
 
 % Plot
-if 1
-    figure
-    plot(q_ref,elastic_damping)
-    xlabel('Dynamic pressure')
-    ylabel('$\frac{\dot{p}}{\dot{p_r}}$','Interpreter','latex')
-    title('Roll aeroelastic damping correction (steady aerodynamics)')
+if 0
+    figure(4)
+    hold on
+    plot(v_ref,elastic_damping,'LineWidth',2)
+    xlabel('VTAS $[\frac{m}{s}]$','fontsize',14,'Interpreter','latex')
+    ylabel('$\frac{\dot{p}}{\dot{p_r}}$','fontsize',14,'Interpreter','latex')
+    title('h = $10000$ m','fontsize',14,'Interpreter','latex')
     grid on
+    set(gcf, 'Position',  [40, 40, 400, 300])
+    saveas(figure(4),'consistent_2','epsc')
 end
 
