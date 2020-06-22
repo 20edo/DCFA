@@ -93,7 +93,7 @@ B_u = [zeros(N,1);
 % 3 -> Controller based on modal velocities and engines velocities
 % 4 -> Controller based on allieviation of the loads at the root of the
 %      wing and at the root of the engines' support
-controller=1;
+controller=4;
 
 switch controller
     
@@ -102,7 +102,7 @@ switch controller
         C_z = C_z/N;
         D_zu = zeros(N,1);
         W_zz = sqrt(lambda)/(sum(sum(sqrt(lambda))));
-        weight = 0.1;
+        weight = 0.95;
     case 2
         % Define relative importance of modes velocity engines' acceleration
         % 1 -> Only modes velocity count
@@ -167,7 +167,7 @@ switch controller
         C_z = C_z/sqrt(norm(full(C_z*C_z')));
         D_zu = zeros(size(C_z,1),1);
         W_zz=eye(size(C_z,1))/(size(C_z,1));
-        weight = 0.03;
+        weight = 0.15;
 end
 
 %% Normalizing weight matrixes
@@ -218,8 +218,8 @@ SYS_notcontrolled = ss(A, B_u, C_y, D_yu);
 % SYS_controlled = ss(A_controlled, B_u, C_y, D_yu);
 %% Actuator transfer function
 w_cut_f=2*pi*10; 
-w_cut1=2*pi*200;
-w_cut2=2*pi*250;
+w_cut1=2*pi*5;
+w_cut2=2*pi*15;
 % psi=10;
 % filtro=tf(w_cut^2,[1 2*psi*w_cut w_cut^2]);
 denominator=conv([1 w_cut1],[1 w_cut2]);
