@@ -14,13 +14,13 @@ B = [1 0 0 0;
     0 0 1 0; 
     0 0 0 1]; 
 BN = B*N; 
-
-BN(1,:) = diff(BN(1,:),s)*2/L;
-BN(2,:) = diff(diff(diff(BN(2,:),s),s),s)*(2/L)^3;
-BN(3,:) = diff(diff(diff(BN(3,:),s),s),s)*(2/L)^3;
-BN(4,:) = diff(BN(4,:),s)*2/L;
-BN(5,:) = diff(diff(BN(3,:),s),s)*(2/L)^2; 
-BN(6,:) = diff(diff(BN(2,:),s),s)*(2/L)^2; 
+AN = BN; 
+BN(1,:) = diff(AN(1,:),s)*2/L;
+BN(2,:) = diff(diff(diff(AN(2,:),s),s),s)*(2/L)^3;
+BN(3,:) = diff(diff(diff(AN(3,:),s),s),s)*(2/L)^3;
+BN(4,:) = diff(AN(4,:),s)*2/L;
+BN(5,:) = diff(diff(AN(3,:),s),s)*(2/L)^2; 
+BN(6,:) = diff(diff(AN(2,:),s),s)*(2/L)^2; 
 % BN([2,3,5,6],:) = diff(BN([2,3,5,6],:),s)*(2/L);
 
 

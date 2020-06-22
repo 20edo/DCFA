@@ -87,8 +87,8 @@ load_recovery = [[      -EA/L, -(12*EA*yA)/L^3, -(12*EA*zA)/L^3,     0, (6*EA*zA
 [ (EA*yA)/L,     (12*EJz)/L^3,    (12*EJyz)/L^3,     0,  -(6*EJyz)/L^2,     (6*EJz)/L^2, -(EA*yA)/L,   -(12*EJz)/L^3,  -(12*EJyz)/L^3,    0,  -(6*EJyz)/L^2,     (6*EJz)/L^2]
 [ (EA*zA)/L,    (12*EJyz)/L^3,    -(12*EJy)/L^3,     0,    (6*EJy)/L^2,    (6*EJyz)/L^2, -(EA*zA)/L,  -(12*EJyz)/L^3,    (12*EJy)/L^3,    0,    (6*EJy)/L^2,    (6*EJyz)/L^2]
 [          0,                0,                0, -GJ/L,              0,               0,           0,               0,               0, GJ/L,              0,               0]
-[          0,                0,                0,     0,              0,               0,           0,               0,               0,    0,              0,               0]
-[          0,                0,                0,     0,              0,               0,           0,               0,               0,    0,              0,               0]];
+[          0,                0,                0,     0,         -EJy/L,               0,           0,               0,               0,    0,          EJy/L,               0]
+[          0,                0,                0,     0,              0,          -EJz/L,           0,               0,               0,    0,              0,           EJz/L]];
 
 el.load = [load_recovery; zeros(6,12)]; 
 
