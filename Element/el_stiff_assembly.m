@@ -83,12 +83,12 @@ el.K=K;
 
 
 %% Assembly matrix for loads recovery 
-load_recovery = [[      -EA/L,            0,             0,     0, -(EA*zA)/L,  (EA*yA)/L,        EA/L,             0,            0,    0,  (EA*zA)/L, -(EA*yA)/L]
-[ (EA*yA)/L,            0,             0,     0,      EJyz/L,      -EJz/L, -(EA*yA)/L,             0,            0,    0,     -EJyz/L,       EJz/L]
-[ (EA*zA)/L,            0,             0,     0,       EJy/L,     -EJyz/L, -(EA*zA)/L,             0,            0,    0,      -EJy/L,      EJyz/L]
-[          0,            0,             0, -GJ/L,           0,           0,           0,             0,            0, GJ/L,           0,           0]
-[          0,            0, -(12*EJy)/L^3,     0, (6*EJy)/L^2,           0,           0,             0, (12*EJy)/L^3,    0, (6*EJy)/L^2,           0]
-[          0, (12*EJz)/L^3,             0,     0,           0, (6*EJz)/L^2,           0, -(12*EJz)/L^3,            0,    0,           0, (6*EJz)/L^2]];
+load_recovery = [[      -EA/L, -(12*EA*yA)/L^3, -(12*EA*zA)/L^3,     0, (6*EA*zA)/L^2, -(6*EA*yA)/L^2,        EA/L, (12*EA*yA)/L^3, (12*EA*zA)/L^3,    0, (6*EA*zA)/L^2, -(6*EA*yA)/L^2]
+[ (EA*yA)/L,     (12*EJz)/L^3,    (12*EJyz)/L^3,     0,  -(6*EJyz)/L^2,     (6*EJz)/L^2, -(EA*yA)/L,   -(12*EJz)/L^3,  -(12*EJyz)/L^3,    0,  -(6*EJyz)/L^2,     (6*EJz)/L^2]
+[ (EA*zA)/L,    (12*EJyz)/L^3,    -(12*EJy)/L^3,     0,    (6*EJy)/L^2,    (6*EJyz)/L^2, -(EA*zA)/L,  -(12*EJyz)/L^3,    (12*EJy)/L^3,    0,    (6*EJy)/L^2,    (6*EJyz)/L^2]
+[          0,                0,                0, -GJ/L,              0,               0,           0,               0,               0, GJ/L,              0,               0]
+[          0,                0,                0,     0,              0,               0,           0,               0,               0,    0,              0,               0]
+[          0,                0,                0,     0,              0,               0,           0,               0,               0,    0,              0,               0]];
 
 el.load = [load_recovery; zeros(6,12)]; 
 
