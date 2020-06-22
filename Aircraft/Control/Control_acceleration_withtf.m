@@ -64,7 +64,7 @@ freq = w/2/pi;
 max_w = w(end);
 max_freq = max_w/2/pi;
 % deltat = 1/(max_freq*8); %Nyquist
-deltat = 0.001;
+deltat = 0.000244141;
 %% Reduced matrixes
 K_red = V'*(K-q*Ka)*V;
 C_red = V'*(C-q/v*Ca)*V;
@@ -167,55 +167,10 @@ switch controller
         C_z = C_z/sqrt(norm(full(C_z*C_z')));
         D_zu = zeros(size(C_z,1),1);
         W_zz=eye(size(C_z,1))/(size(C_z,1));
-        weight = 0.15;
+        weight = 0.99;
 end
 
-%% Normalizing weight matrixes
-% weight=1 ->   Only u counts
-% Weight=0 ->   Only z counts
 
-W_zz=(1-weight)*W_zz/norm(W_zz);
-% W_zz = (1-weight) * (lambda)/(sum(sum(lambda)));
-
-W_uu = (weight);
-
-%% Setting up the Riccati equation
-Q = C_z'*W_zz*C_z;
-S = C_z'*W_zz*D_zu;
-R = D_zu'*W_zz*D_zu+W_uu;
-
-P = are(A-B_u*inv(R)*S', B_u*inv(R)*B_u', C_z'*W_zz*C_z-S*inv(R)*S');
-G = inv(R)*(B_u'*P+S');
-
-%% State space model
-A_controlled = A-B_u*G;
-
-% %% loads static sol
-% q0_sol_static = [(K-q*Ka)\(q*fa+wing.f)];
-% q0_sol_static_red = V'*q0_sol_static;
-% load_static = wing.load(7:end,7:end)*q0_sol_static;
-% if 0
-%     plot(load_static(3:6:end))
-% end
-% q0 = [q0_sol_static_red;
-%     zeros(N,1)];
-%% Recover displacements, velocities, accelerations and physical stresses 
-elements_correnti=[wing.b(1).A(:,[7:12 end-11:end-6]) wing.b(2).A(:,[7:12 end-11:end-6]) wing.b(3).A(:,[7:12])];
-elements_correnti=elements_correnti';
-C_stresses=elements_correnti*wing.navier(:,7:end)*V;
-
-C_y = [eye(N) zeros(N); %displacements
-    zeros(N) eye(N); %velocities
-    -M_red\K_red -M_red\C_red; %accelerations
-    C_stresses zeros(size(C_stresses))]; %internal stresses
-
-D_yu = [zeros(N,1);
-    zeros(N,1);
-    M_red\(q*Fb);
-    zeros(size(C_stresses,1),1)];
-
-SYS_notcontrolled = ss(A, B_u, C_y, D_yu);
-% SYS_controlled = ss(A_controlled, B_u, C_y, D_yu);
 %% Actuator transfer function
 w_cut_f=2*pi*10; 
 w_cut1=2*pi*5;
@@ -243,20 +198,84 @@ grid on
 % title('Controlled actuator')
 % grid on
 
+%% Actuated system
+elements_correnti=[wing.b(1).A(:,[7:12 end-11:end-6]) wing.b(2).A(:,[7:12 end-11:end-6]) wing.b(3).A(:,[7:12])];
+elements_correnti=elements_correnti';
+C_stresses=elements_correnti*wing.navier(:,7:end)*V;
+
+C_y = [eye(N) zeros(N); %displacements
+    zeros(N) eye(N); %velocities
+    -M_red\K_red -M_red\C_red; %accelerations
+    C_stresses zeros(size(C_stresses))]; %internal stresses
+
+D_yu = [zeros(N,1);
+    zeros(N,1);
+    M_red\(q*Fb);
+    zeros(size(C_stresses,1),1)];
+
+SYS_notcontrolled = ss(A, B_u, C_y, D_yu);
+SYS_notcontrolled = series(mechanical_actuator,SYS_notcontrolled);
+% Add beta and betado to to the output
+C=[SYS_notcontrolled.C;
+    zeros(2,size(SYS_notcontrolled.C,2)-2) eye(2)];
+D=[SYS_notcontrolled.D; 0; 0];
+
+SYS_notcontrolled = ss(SYS_notcontrolled.A,SYS_notcontrolled.B, C, D);
+
+% SYS_controlled = ss(A_controlled, B_u, C_y, D_yu);
+%% Normalizing weight matrixes
+% weight=1 ->   Only u counts
+% Weight=0 ->   Only z counts
+
+W_zz=(1-weight)*W_zz/norm(W_zz);
+% W_zz = (1-weight) * (lambda)/(sum(sum(lambda)));
+
+W_uu = (weight);
+
+%% Setting up the Riccati equation
+A=SYS_notcontrolled.A;
+B_u=SYS_notcontrolled.B;
+C_z=[ C_z zeros(size(C_z,1),2);
+     zeros(2,size(C_z,2)) zeros(2)];
+W_zz=[ W_zz zeros(size(W_zz,1),2);
+    zeros(2,size(W_zz,2)) zeros(2)];
+D_zu=[D_zu; zeros(2,1)];
+
+Q = C_z'*W_zz*C_z;
+S = C_z'*W_zz*D_zu;
+R = D_zu'*W_zz*D_zu+W_uu;
+
+P = are(A-B_u*inv(R)*S', B_u*inv(R)*B_u', C_z'*W_zz*C_z-S*inv(R)*S');
+G = inv(R)*(B_u'*P+S');
+
 Gain = ss([G zeros(1,N) zeros(1,size(C_stresses,1))]);
-actuator=series(mechanical_actuator,Gain);
+actuator=Gain;
 % actuator=ss([G zeros(1,N) zeros(1,size(C_stresses,1))]);
 SYS_controlled = feedback(SYS_notcontrolled,actuator);
+
+%% State space model
+A_controlled = A-B_u*G;
+
+% %% loads static sol
+% q0_sol_static = [(K-q*Ka)\(q*fa+wing.f)];
+% q0_sol_static_red = V'*q0_sol_static;
+% load_static = wing.load(7:end,7:end)*q0_sol_static;
+% if 0
+%     plot(load_static(3:6:end))
+% end
+% q0 = [q0_sol_static_red;
+%     zeros(N,1)];
 
 %% Margine di guadagno e di fase di beta
 A_beta = SYS_controlled.A;
 B_beta = SYS_controlled.B;
-SYS = ss(A_beta,B_beta,[zeros(1,21) 1], 0);
+SYS = ss(A_beta,B_beta,[zeros(1,20) 1 0], 0);
 figure
 bode(SYS)
+title('Bode of controlled system')
 [gm,pm,wcg,wcp] = margin(SYS)
-Gain_beta = SYS_controlled.A(11:20,end)./B_u(11:end); %
-Gain_beta = abs(Gain_beta(1));
+Gain_beta = SYS_controlled.A(N+1:2*N,end)./(M_red\(q*Fb)); %
+Gain_beta = abs(Gain_beta(end));
 %% Define the input
 % Define time axis
 t = [0:deltat:7];
@@ -295,13 +314,14 @@ for i =1:length(t)
     
 end
 %% Plot of the output
-q0 = zeros(2*N,1);                 
+q0 = zeros(2*N+2,1);                 
 [z,~,x] = lsim(SYS_controlled, u, t,zeros(size(SYS_controlled.A,1),1)); % i added 2 state for the filter dynamic
 [y_nc,~,x_nc] = lsim(SYS_notcontrolled, u, t,q0);
 z = z';
 x = x';
 y_nc = y_nc';
 x_nc = x_nc';
+
 %% I'm recovering the physical coordinates from the modal ones
 for i = 1:length(t)
     z_sol(:,i) = V*z(1:N,i); 
