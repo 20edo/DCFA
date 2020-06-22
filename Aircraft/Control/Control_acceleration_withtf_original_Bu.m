@@ -215,7 +215,7 @@ D_yu = [zeros(N,1);
 
 SYS_notcontrolled = ss(A, B_u, C_y, D_yu);
 SYS_notcontrolled = series(mechanical_actuator,SYS_notcontrolled);
-% Add beta and betado to to the output
+% Add beta and betadot to to the output
 C=[SYS_notcontrolled.C;
     zeros(2,size(SYS_notcontrolled.C,2)-2) eye(2)];
 D=[SYS_notcontrolled.D; 0; 0];
@@ -249,22 +249,8 @@ P = are(A-B_u*inv(R)*S', B_u*inv(R)*B_u', C_z'*W_zz*C_z-S*inv(R)*S');
 G = inv(R)*(B_u'*P+S');
 
 Gain = ss([G zeros(1,N) zeros(1,size(C_stresses,1))]);
-actuator=Gain;
 % actuator=ss([G zeros(1,N) zeros(1,size(C_stresses,1))]);
-SYS_controlled = feedback(SYS_notcontrolled,actuator);
-
-%% State space model
-A_controlled = A-B_u*G;
-
-% %% loads static sol
-% q0_sol_static = [(K-q*Ka)\(q*fa+wing.f)];
-% q0_sol_static_red = V'*q0_sol_static;
-% load_static = wing.load(7:end,7:end)*q0_sol_static;
-% if 0
-%     plot(load_static(3:6:end))
-% end
-% q0 = [q0_sol_static_red;
-%     zeros(N,1)];
+SYS_controlled = feedback(SYS_notcontrolled,Gain);
 
 %% Margine di guadagno e di fase di beta
 A_beta = SYS_controlled.A;
@@ -288,7 +274,7 @@ beta = deg2rad(2);
 % 5     -> randn
 % 6     -> sin
 % 7     -> sinc
-input=3;
+input=2;
 switch input
     case 1
         u_func= @(t) beta.*(t<=0);
@@ -313,6 +299,15 @@ for i =1:length(t)
     u(i)=u_func(t(i));
     
 end
+%% Update B matrix (the disturbance does not come from the aileron and do not need an actuator
+SYS_controlled.B=[zeros(N,1)
+    M_red\(q*Fb)
+    0
+    0];
+SYS_notcontrolled.B=[zeros(N,1)
+    M_red\(q*Fb)
+    0
+    0];
 %% Plot of the output
 q0 = zeros(2*N+2,1);                 
 [z,~,x] = lsim(SYS_controlled, u, t,zeros(size(SYS_controlled.A,1),1)); % i added 2 state for the filter dynamic
