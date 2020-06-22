@@ -101,7 +101,7 @@ for i=2:length(v)
     X_old = X;
     e_old = e;
     eig_(i,:) = e_old;
-    X_save(i,:,:) = X; 
+    X_save(i,:,:) = X;
 end
 
 %% V-g plot
@@ -109,32 +109,54 @@ close all
 
 g = 2*real(eig_)./abs(imag(eig_));
 %% Plot frequency diagram and V-G diagram
-figure(1)
-hold on
-subplot(3,1,1)
-plot(v,abs(imag(eig_))/(2*pi));
-ylabel('Frequency \quad [Hz]','fontsize',14,'interpreter','latex')
-xlabel('VTAS \quad $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
-grid on
-
-subplot(3,1,2)
-plot(v,g);
-ylabel('g','fontsize',14,'interpreter','latex')
-xlabel('VTAS \quad $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
-grid on
-ylim([-0.3,0.15])
-
-subplot(3,1,3)
-plot(v,g);
-ylabel('g','fontsize',14,'interpreter','latex')
-xlabel('VTAS \quad $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
-grid on
-ylim([-0.06,0.04])
-set(gcf, 'Position',  [0, 0, 700, 800])
-saveas(figure(1),'flutter_1','epsc')
-
+if 0
+    figure(1)
+    hold on
+    subplot(3,1,1)
+    plot(v,abs(imag(eig_))/(2*pi),'LineWidth',1.5);
+    ylabel('Frequency \quad [Hz]','fontsize',14,'interpreter','latex')
+    xlabel('VTAS \quad $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
+    title('h = $10000$ m','fontsize',18,'interpreter','latex');
+    grid on
+    
+    subplot(3,1,2)
+    plot(v,g,'LineWidth',1.5);
+    ylabel('g','fontsize',14,'interpreter','latex')
+    xlabel('VTAS \quad $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
+    grid on
+    ylim([-0.3,0.15])
+    
+    subplot(3,1,3)
+    plot(v,g,'LineWidth',1.5);
+    ylabel('g','fontsize',14,'interpreter','latex')
+    xlabel('VTAS \quad $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
+    grid on
+    ylim([-0.06,0.04])
+    xlim([0,400])
+    set(gcf, 'Position',  [0, 0, 700, 800])
+    saveas(figure(1),'flutter_1','epsc')
+end
+%% Plot the value of the reduced frequency
+if 0
+    chord=7.72;
+    l = chord/2;
+    red_freq = zeros(size(g));
+    for i=1:size(eig_,2)
+        red_freq(:, i) = l*abs(imag(eig_(:,i)))./v';
+    end
+    figure(2)
+    plot(v,red_freq,'LineWidth',1.5)
+    ylabel('k \quad [-]','fontsize',14,'interpreter','latex')
+    xlabel('VTAS \quad $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
+    title('h = $10000$ m','fontsize',14,'interpreter','latex');
+    ylim([0,0.5])
+    grid on
+    set(gcf, 'Position',  [40, 40, 500, 500])
+    saveas(figure(2),'flutter_4','epsc')
+end
 %% Plot the corresponding modeshapes
 if 0
+    close all
     figure
     phi = deg2rad(50);
     for i=4:5
@@ -157,59 +179,72 @@ if 0
     for k = 1:2*n
         if imag(e_zero(k))>=-0.1
             subplot(2,(num+mod(num,2))/2,i)
-            freq = [num2str(abs(imag(e_zero(k)))/(2*pi)),' Hz']; 
+            freq = [num2str(abs(imag(e_zero(k)))/(2*pi)),' [Hz]'];
             m_plot_eigenshape2(wing,options,real(exp(1i*phi)*V*(X_zero(:,k))*30));
-            title(freq)
+            view(-65,35)
+            title(freq,'fontsize',18,'interpreter','latex')
             i = i+1;
         end
     end
-    
+    set(gcf, 'Position',  [0, 0, 2000, 2000])
 end
 
 %% Plot the flutter eigenshape
 for i=1:length(v)
-   if  ~isempty(find(g(i,:)>0))
-       break
-   end
-end
-k = find(g(i,:)>0); 
-k = k(1); 
-flutter_mode = X_save(i,:,k)';
-
-angle = 0:5:360;
-for g = 1:length(angle)
-close all 
-    phi = deg2rad(angle(g));
-    for i=4:5
-        wing.b(i).ssh = true;
+    if  ~isempty(find(g(i,:)>0))
+        break
     end
-    options.plot_original          = 1;
-    options.plot_deformed          = 1;
-    options.plotColor              = 'green';
-    options.saveSTL                = 0;
-    options.point_section          = 8;
-    options.N                      = 1;        % we have only one eig
-m_plot_eigenshape2(wing,options,real(exp(1i*phi)*V*flutter_mode*15));
-figure(1)
-zlim([-10,10]);
-xlim([10,40]); 
-ylim([-5,35]);
-view(-75,35)
-FR(g) = getframe(figure(1));
 end
-%% 
-  % create the video writer with 1 fps
-  writerObj = VideoWriter('myVideo.avi');
-  writerObj.FrameRate = 10;
-  % set the seconds per image
-% open the video writer
-open(writerObj);
-% write the frames to the video
-F = [FR,FR,FR,FR,FR,FR]; 
-for i=1:length(F)
-    % convert the image to a frame
-    frame = F(i) ;    
-    writeVideo(writerObj, frame);
+k = find(g(i,:)>0);
+k = k(1);
+flutter_mode = X_save(i,:,k)';
+disp('flutter velocity')
+disp(v(i));
+disp('flutter mach')
+disp(v(i)/a)
+
+if 0
+    angle = 40;
+    if 0
+        angle = 0:5:360;
+    end
+    for g = 1:length(angle)
+        close all
+        phi = deg2rad(angle(g));
+        for i=4:5
+            wing.b(i).ssh = true;
+        end
+        options.plot_original          = 1;
+        options.plot_deformed          = 1;
+        options.plotColor              = 'green';
+        options.saveSTL                = 0;
+        options.point_section          = 8;
+        options.N                      = 1;        % we have only one eig
+        m_plot_eigenshape2(wing,options,real(exp(1i*phi)*V*flutter_mode*15));
+        figure(1)
+        zlim([-10,10]);
+        xlim([10,40]);
+        ylim([-5,35]);
+        view(-75,35)
+        FR(g) = getframe(figure(1));
+    end
+    %%
+    if 0
+        % create the video writer with 1 fps
+        writerObj = VideoWriter('myVideo3.avi','Uncompressed AVI');
+        writerObj.FrameRate = 100;
+        % set the seconds per image
+        % open the video writer
+        open(writerObj);
+        % write the frames to the video
+        F = [FR,FR,FR,FR,FR,FR];
+        for i=1:length(F)
+            % convert the image to a frame
+            frame = F(i) ;
+            writeVideo(writerObj, frame);
+        end
+        % close the writer object
+        close(writerObj);
+    end
 end
-% close the writer object
-close(writerObj);
+
