@@ -24,7 +24,7 @@ node_1=en_ground([0,0,0]);
 L_shaped_structure.en=node_1;
 
 %% Build and add the first beam to the model
-beam_1=b_constant_p_square(1,0.1,70*1e9,27*1e9,2700,30);  % Build beam
+beam_1=b_constant_p_square(1,0.1,70*1e9,27*1e9,2700,10);  % Build beam
 beam_1.name='beam_1';       % Give a name to the beam (optional)
 beam_1.o=[0,0,0]';          % Set the origin of the first beam
 beam_1.vx=[1,0,0]';         % Set the versor of the first beam 
@@ -38,7 +38,7 @@ Straigth_structure = L_shaped_structure;
 
 
 %% Build and add the second beam to the model
-beam_2=b_constant_p_square(2,0.1,70*1e9,27*1e9,2700,30);
+beam_2=b_constant_p_square(0.5,0.1,70*1e9,27*1e9,2700,10);
 beam_2.name='beam_2';
 beam_2.o=beam_1.o+beam_1.L*beam_1.vx;   % Beam 2 origin is coincident with the end of beam 1
 beam_2.vx=[0,1,0]';                     % Beam 2 is aligned with the global y axis
@@ -70,7 +70,7 @@ L_shaped_structure=m_static_solution(L_shaped_structure);
 
 %% Build a T structure with a lumped mass at the -y end
 
-beam_3=b_constant_p_square(2,0.30,70*1e9,27*1e9,2700,30);
+beam_3=b_constant_p_square(0.5,0.1,70*1e9,27*1e9,2700,10);
 beam_3.name='beam_3';
 beam_3.o=beam_1.o+beam_1.L*beam_1.vx;   % Beam 3 origin is coincident with the end of beam 1
 beam_3.vx=[0,-1,0]';                    % Beam 3 is aligned with the global -y axis
@@ -126,12 +126,29 @@ options.plot_deformed          = 1;
 options.plotColor              = 'green';
 options.saveSTL                = 0;
 options.point_section          = 2;
-[fig] = m_plot3d(Straigth_structure,options)
+[fig] = m_plot3d(T_shaped_structure,options)
+figure(1) 
+title('')
+saveas(figure(1),'assembly_1','epsc')
 % hold on 
 % quiver3(0,0,0,5,0,0)
 % quiver3(0,0,0,0,5,0)
 % quiver3(0,0,0,0,0,5)
+%% 
+figure(3) 
+spy(T_shaped_structure.b(1).A) 
+xlabel('')
+saveas(figure(3),'assembly_2','epsc')
 
+figure(4) 
+spy(T_shaped_structure.b(2).A) 
+xlabel('')
+saveas(figure(4),'assembly_3','epsc')
+
+figure(5) 
+spy(T_shaped_structure.b(3).A) 
+xlabel('')
+saveas(figure(5),'assembly_4','epsc')
 
 
 
