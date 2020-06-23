@@ -138,24 +138,6 @@ for i=2:length(v)
     X_old = X;
     e_old = e;
     eig_(i,:) = e_old;
-    
-    close all
-
-g = 2*real(eig_)./(imag(eig_));
-
-figure
-hold on
-subplot(2,1,1)
-plot(v,abs(imag(eig_)));
-ylabel('imag(eig)')
-grid on
-
-subplot(2,1,2)
-plot(v,g);
-ylabel('g')
-grid on
-ylim([-0.05,0.05])
-    
 end
 
 %% V-g plot

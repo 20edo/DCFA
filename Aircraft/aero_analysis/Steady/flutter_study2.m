@@ -108,7 +108,7 @@ end
 close all
 
 g = 2*real(eig_)./abs(imag(eig_));
-%% Plot frequency diagram and V-G diagram
+%% Plot frequency diagram and V-G diagram all togheter
 if 0
     figure(1)
     hold on
@@ -135,6 +135,40 @@ if 0
     xlim([0,400])
     set(gcf, 'Position',  [0, 0, 700, 800])
     saveas(figure(1),'flutter_1','epsc')
+end
+%% V-G diagram separated
+if 1
+    figure(1)
+    hold on
+    plot(v,abs(imag(eig_))/(2*pi),'LineWidth',1.5);
+    ylabel('Frequency \quad [Hz]','fontsize',14,'interpreter','latex')
+    xlabel('VTAS \quad $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
+    title('h = $10000$ m','fontsize',14,'interpreter','latex');
+    grid on
+    set(gcf, 'Position',  [0, 0, 700, 250])
+    saveas(figure(1),'flutter_5','epsc')
+    
+    figure(2)
+    hold on
+    plot(v,g,'LineWidth',1.5);
+    ylabel('g','fontsize',14,'interpreter','latex')
+    xlabel('VTAS \quad $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
+    title('h = $10000$ m','fontsize',14,'interpreter','latex');
+    grid on
+    ylim([-0.3,0.15])
+    set(gcf, 'Position',  [0, 0, 700, 250])
+    saveas(figure(2),'flutter_6','epsc')
+    
+    figure(3)
+    plot(v,g,'LineWidth',1.5);
+    ylabel('g','fontsize',14,'interpreter','latex')
+    xlabel('VTAS \quad $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
+    grid on
+    ylim([-0.06,0.04])
+    xlim([0,400])
+    title('h = $10000$ m','fontsize',14,'interpreter','latex');
+    set(gcf, 'Position',  [0, 0, 700, 250])
+    saveas(figure(3),'flutter_7','epsc')
 end
 %% Plot the value of the reduced frequency
 if 0

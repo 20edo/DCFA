@@ -62,7 +62,7 @@ Cs = V'*Cs*V;
 % the solution of the problem is given by polyeig(K,C,M)
 
 %% Tracking of eigenvalues trough eigenvectors
-v = [0:10:200];
+v = [0:10:800];
 q = 1/2*rho.*v.^2;
 
 
@@ -183,7 +183,7 @@ grid on
 ylim([-0.05,0.05])
 
 %% Plot the corresponding modeshapes
-if 1
+if 0
     figure
     phi = deg2rad(45);
     for i=4:5
