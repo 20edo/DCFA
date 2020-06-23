@@ -180,6 +180,17 @@ if 1
     
     figure(2)
     hold on
+    plot(v,abs(imag(eig_))/(2*pi),'LineWidth',1.5);
+    ylabel('Frequency \quad [Hz]','fontsize',14,'interpreter','latex')
+    xlabel('VTAS \quad $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
+    title('h = $10000$ m','fontsize',14,'interpreter','latex');
+    grid on
+    ylim([0,0.75])
+    set(gcf, 'Position',  [0, 0, 700, 250])
+    saveas(figure(2),'un_flutter_2','epsc')
+    
+    figure(3)
+    hold on
     plot(v,g,'LineWidth',1.5);
     ylabel('g','fontsize',14,'interpreter','latex')
     xlabel('VTAS \quad $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
@@ -187,9 +198,9 @@ if 1
     grid on
     ylim([-0.3,0.15])
     set(gcf, 'Position',  [0, 0, 700, 250])
-    saveas(figure(2),'un_flutter_2','epsc')
+    saveas(figure(3),'un_flutter_3','epsc')
     
-    figure(3)
+    figure(4)
     plot(v,g,'LineWidth',1.5);
     ylabel('g','fontsize',14,'interpreter','latex')
     xlabel('VTAS \quad $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
@@ -197,24 +208,45 @@ if 1
     ylim([-0.04,0.02])
     title('h = $10000$ m','fontsize',14,'interpreter','latex');
     set(gcf, 'Position',  [0, 0, 700, 250])
-    saveas(figure(3),'un_flutter_3','epsc')
+    saveas(figure(4),'un_flutter_4','epsc')
 end
 
 
 
 %% Plot the partecipation of each mode 
 if 1
-    figure(4)
+    figure(5)
     plot(v,abs(X_save(:,:,3)),'LineWidth',1.5)
     ylabel('Mode contribution','fontsize',14,'interpreter','latex')
     xlabel('VTAS \quad $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
     title('$3^{rd}$ mode','fontsize',14,'interpreter','latex');
     grid on
+    hold on
+    p = plot(568*ones(1e3,1),linspace(0,1.2,1e3),'Color','k');
+    legend(p(1),'Flutter velocity','Location','northwest')
 %     xlim([2,1000])
     set(gcf, 'Position',  [0, 0, 500, 400])
-    saveas(figure(4),'un_flutter_4','epsc')
+    saveas(figure(5),'un_flutter_5','epsc')
 end
 
+%% Plot the reduced frequences 
+if 1
+    chord=7.72;
+    l = chord/2;
+    red_freq = zeros(size(g));
+    for i=1:size(eig_,2)
+        red_freq(:, i) = l*abs(imag(eig_(:,i)))./v';
+    end
+    figure(6)
+    plot(v,red_freq,'LineWidth',1.5)
+    ylabel('k \quad [-]','fontsize',14,'interpreter','latex')
+    xlabel('VTAS \quad $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
+    title('h = $10000$ m','fontsize',14,'interpreter','latex');
+    ylim([0,0.4])
+    grid on
+    set(gcf, 'Position',  [40, 40, 500, 500])
+    saveas(figure(6),'un_flutter_6','epsc')
+end
 
 %% Plot the corresponding modeshapes
 if 0

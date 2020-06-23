@@ -187,6 +187,9 @@ if 1
     xlabel('VTAS \quad $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
     title('$3^{rd}$ mode','fontsize',14,'interpreter','latex');
     grid on
+    hold on 
+    p = plot(286*ones(1e3,1),linspace(0,1.2,1e3),'Color','k');
+    legend(p(1),'Flutter velocity')
 %     xlim([2,1000])
     set(gcf, 'Position',  [0, 0, 500, 400])
     saveas(figure(4),'flutter_8','epsc')
@@ -198,6 +201,9 @@ if 1
     xlabel('VTAS \quad $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
     title('$4^{rd}$ mode','fontsize',14,'interpreter','latex');
     grid on
+    hold on 
+    p = plot(277*ones(1e3,1),linspace(0,1.2,1e3),'Color','k');
+    legend(p(1),'Flutter velocity')
 %     xlim([2,1000])
     set(gcf, 'Position',  [0, 0, 500, 400])
     saveas(figure(5),'flutter_9','epsc')
