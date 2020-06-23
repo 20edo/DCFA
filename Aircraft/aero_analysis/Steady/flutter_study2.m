@@ -72,20 +72,26 @@ q = 1/2*rho.*v.^2;
 % First iteration
 
 [X_old,e_old] = polyeig(K,Cs,M);
+[nn,II] = sort(imag(e_old));
+e_old = e_old(II);
+X_old = X_old(:,II);
+e_old = e_old(length(e_old)/2+1:end);
+X_old = X_old(:,size(X_old,2)/2+1:end);
 X_zero = X_old;
 e_zero = e_old;
+
 % Initialize non linear system variables
 A=zeros(size(M,1)+1);
 b=zeros(size(M,1)+1,1);
 
-eig_ = zeros(length(v),2*n);
+eig_ = zeros(length(v),length(e_old));
 eig_(1,:) = e_old;
 X_save = zeros(length(v),size(X_old,1),size(X_old,2));
-
+X_save(1,:,:) = X_old;
 % Following iterations
 for i=2:length(v)
-    X = zeros(size(M,1),2*size(M,1));
-    e = zeros(2*size(M,1),1);
+    X = zeros(size(X_old));
+    e = zeros(size(e_old));
     for k=1:size(X_old,2)
         A(1:size(M,1),1:size(M,1))=e_old(k)^2*M+e_old(k)*(Cs-q(i)/v(i)*Ca)+K-q(i)*Ka;
         A(1:size(M,1),end)=(2*e_old(k)*M+Cs-q(i)/v(i)*Ca)*X_old(:,k);
@@ -103,6 +109,9 @@ for i=2:length(v)
     eig_(i,:) = e_old;
     X_save(i,:,:) = X;
 end
+
+
+
 
 %% V-g plot
 close all
@@ -169,6 +178,29 @@ if 1
     title('h = $10000$ m','fontsize',14,'interpreter','latex');
     set(gcf, 'Position',  [0, 0, 700, 250])
     saveas(figure(3),'flutter_7','epsc')
+end
+%% Plot the partecipation of each mode 
+if 1
+    figure(4)
+    plot(v,abs(X_save(:,:,3)),'LineWidth',1.5)
+    ylabel('Mode contribution','fontsize',14,'interpreter','latex')
+    xlabel('VTAS \quad $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
+    title('$3^{rd}$ mode','fontsize',14,'interpreter','latex');
+    grid on
+%     xlim([2,1000])
+    set(gcf, 'Position',  [0, 0, 500, 400])
+    saveas(figure(4),'flutter_8','epsc')
+    
+ 
+    figure(5)
+    plot(v,abs(X_save(:,:,4)),'LineWidth',1.5)
+    ylabel('Mode contribution','fontsize',14,'interpreter','latex')
+    xlabel('VTAS \quad $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
+    title('$4^{rd}$ mode','fontsize',14,'interpreter','latex');
+    grid on
+%     xlim([2,1000])
+    set(gcf, 'Position',  [0, 0, 500, 400])
+    saveas(figure(5),'flutter_9','epsc')
 end
 %% Plot the value of the reduced frequency
 if 0

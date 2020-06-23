@@ -62,7 +62,7 @@ Cs = V'*Cs*V;
 % the solution of the problem is given by polyeig(K,C,M)
 
 %% Tracking of eigenvalues trough eigenvectors
-v = [0:10:800];
+v = [0:15:800];
 q = 1/2*rho.*v.^2;
 
 
@@ -84,7 +84,7 @@ end
 X_old = X_pulito;
 e_old = e_pulito;
 [nn,II] = sort(imag(e_old));
-e_old = e_old(II); 
+e_old = e_old(II);
 X_old = X_old(:,II);
 X_zero = X_old;
 e_zero = e_old;
@@ -115,6 +115,7 @@ exitflag=zeros(length(v),length(e_old));
 t=zeros(length(v),length(e_old));
 
 X_save = zeros(length(v),size(X_old,1),size(X_old,2));
+X_save(1,:,:) = X_old;
 % Following iterations
 for i=2:length(v)
     for k=1:length(e_old)
@@ -123,17 +124,17 @@ for i=2:length(v)
             'ScaleProblem','jacobian','UseParallel',true);
         [x,~,exitflag(i,k)] = fsolve(@(Unknown) funz(wing,v(i),V,q(i),scaling,Unknown(2:end),Unknown(1)),[e_old(k);X_old(:,k)],options);
         e=x(1);
-        X=x(2:end);
-%         if 1 %sum(d_e < 0.1) == 1
-%             e = e(find(d_e == min(d_e)));
-%             X = X(:,find(d_e == min(d_e)));
-%         else
-%             guess = find(d_e < 0.1);
-%             d_v = vecnorm(X_old(:,guess)-X);
-%             index = guess(find(d_v == min(d_v)));
-%             e = e(index);
-%             X = X(:,index);
-%         end
+        X=x(2:end)/norm(x(2:end));
+        %         if 1 %sum(d_e < 0.1) == 1
+        %             e = e(find(d_e == min(d_e)));
+        %             X = X(:,find(d_e == min(d_e)));
+        %         else
+        %             guess = find(d_e < 0.1);
+        %             d_v = vecnorm(X_old(:,guess)-X);
+        %             index = guess(find(d_v == min(d_v)));
+        %             e = e(index);
+        %             X = X(:,index);
+        %         end
         X_old(:,k) = X;
         e_old(k) = e*scaling;
         phrase = ['Eig number ',num2str(k),' out of ',num2str(length(e_old)),'; Velocity ',num2str(i),' out of ',num2str(length(v))];
@@ -141,46 +142,79 @@ for i=2:length(v)
         t(i,k)=toc;
     end
     eig_(i,:) = e_old;
-    X_save(i,:,k) = X; 
-%     scaling=sum(abs(eig_(i,:)));
+    X_save(i,:,:) = X_old;
+    %     scaling=sum(abs(eig_(i,:)));
 end
 
-%% V-g plot
-close all
+%% V-g plot all togheter
+if 0
+    close all
+    
+    g = 2*real(eig_)./abs(imag(eig_));
+       
+    figure
+    hold on
+    subplot(2,1,1)
+    plot(v,abs(imag(eig_)));
+    ylabel('imag(eig)')
+    grid on
+    
+    subplot(2,1,2)
+    plot(v,g);
+    ylabel('g')
+    grid on
+    ylim([-0.05,0.05])
+end
+%% V-G diagram separated
+if 1
+    g = 2*real(eig_)./abs(imag(eig_));
+    figure(1)
+    hold on
+    plot(v,abs(imag(eig_))/(2*pi),'LineWidth',1.5);
+    ylabel('Frequency \quad [Hz]','fontsize',14,'interpreter','latex')
+    xlabel('VTAS \quad $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
+    title('h = $10000$ m','fontsize',14,'interpreter','latex');
+    grid on
+    set(gcf, 'Position',  [0, 0, 700, 250])
+    saveas(figure(1),'un_flutter_1','epsc')
+    
+    figure(2)
+    hold on
+    plot(v,g,'LineWidth',1.5);
+    ylabel('g','fontsize',14,'interpreter','latex')
+    xlabel('VTAS \quad $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
+    title('h = $10000$ m','fontsize',14,'interpreter','latex');
+    grid on
+    ylim([-0.3,0.15])
+    set(gcf, 'Position',  [0, 0, 700, 250])
+    saveas(figure(2),'un_flutter_2','epsc')
+    
+    figure(3)
+    plot(v,g,'LineWidth',1.5);
+    ylabel('g','fontsize',14,'interpreter','latex')
+    xlabel('VTAS \quad $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
+    grid on
+    ylim([-0.04,0.02])
+    title('h = $10000$ m','fontsize',14,'interpreter','latex');
+    set(gcf, 'Position',  [0, 0, 700, 250])
+    saveas(figure(3),'un_flutter_3','epsc')
+end
 
-g = 2*real(eig_)./abs(imag(eig_));
 
-% figure
-% hold on
-% for j = 2:2:size(eig_,2)
-%     
-% subplot(2,1,1)
-% hold on 
-% plot(v,abs(imag(eig_(:,j))))
-% hold off 
-% ylabel('imag(eig)')
-% grid on
-% 
-% subplot(2,1,2)
-% hold on 
-% plot(v,g(:,j))
-% hold off 
-% ylabel('g')
-% grid on
-% end
 
-figure
-hold on
-subplot(2,1,1)
-plot(v,abs(imag(eig_)));
-ylabel('imag(eig)')
-grid on
+%% Plot the partecipation of each mode 
+if 1
+    figure(4)
+    plot(v,abs(X_save(:,:,3)),'LineWidth',1.5)
+    ylabel('Mode contribution','fontsize',14,'interpreter','latex')
+    xlabel('VTAS \quad $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
+    title('$3^{rd}$ mode','fontsize',14,'interpreter','latex');
+    grid on
+%     xlim([2,1000])
+    set(gcf, 'Position',  [0, 0, 500, 400])
+    saveas(figure(4),'un_flutter_4','epsc')
+end
 
-subplot(2,1,2)
-plot(v,g);
-ylabel('g')
-grid on
-ylim([-0.05,0.05])
 
 %% Plot the corresponding modeshapes
 if 0
@@ -209,5 +243,5 @@ if 0
     end
 end
 
-load handel
-sound(y,Fs)
+% load handel
+% sound(y,Fs)

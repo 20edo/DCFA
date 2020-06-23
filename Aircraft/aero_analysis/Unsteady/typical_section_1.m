@@ -81,7 +81,7 @@ Cs = V'*Cs*V;
 % the solution of the problem is given by polyeig(K,C,M)
 
 %% Tracking of eigenvalues trough eigenvectors
-v = [100:10:200];
+v = [0:10:200];
 q = 1/2*rho.*v.^2;
 
 
