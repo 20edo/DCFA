@@ -22,7 +22,7 @@ cd ..
 cd generate_model
 
 %% Perform analysis
-
+save=1;
 % nel_tot=500;          % Exact (reference) eigenvalues
 nel_tot=50:10:300;
 t=zeros(size(nel_tot));
@@ -59,26 +59,33 @@ cd convergence_studies\Free_fuselage\ % Move to the right folder
 %% Plot
 
 fig=figure;
-set(gcf, 'Position',  [0, 0, 600, 400])
-subplot(1,3,1)
-    loglog(nel_tot,einf)
-    grid on
-    xlabel('Number of elements','interpreter','latex')
-    ylabel('Norm INF error','interpreter','latex')
-subplot(1,3,2)
-    loglog(nel_tot,e2)
-    grid on
-    xlabel('Number of elements','interpreter','latex')
-    ylabel('Norm 2 error','interpreter','latex')
-subplot(1,3,3)
-    loglog(nel_tot,t)
-    grid on
-    xlabel('Number of elements','interpreter','latex')
-    ylabel('Time spent \quad [s]','interpreter','latex')
-
-if 1
-    saveas(fig,'Convergence_free_fuselage_eig','epsc')
+set(gcf, 'Position', [0, 0, 600, 400])
+loglog(nel_tot,einf)
+grid on
+xlabel('Number of elements','interpreter','latex')
+ylabel('Norm INF error','interpreter','latex')
+if save
+    saveas(fig,'Norminf_convergence_free_fuselage','epsc')
 end
+fig=figure;
+set(gcf, 'Position', [0, 0, 600, 400])
+loglog(nel_tot,e2)
+grid on
+xlabel('Number of elements','interpreter','latex')
+ylabel('Norm 2 error','interpreter','latex')
+if save
+    saveas(fig,'Norm2_convergence_free_fuselage','epsc')
+end
+fig=figure;
+set(gcf, 'Position', [0, 0, 600, 400])
+loglog(nel_tot,t)
+grid on
+xlabel('Number of elements','interpreter','latex')
+ylabel('Time spent \quad [s]','interpreter','latex')
+if save
+    saveas(fig,'Time_convergence_free_fuselage','epsc')
+end
+
 %% plot Modes
 if 0
     options.plot_original = 1;
