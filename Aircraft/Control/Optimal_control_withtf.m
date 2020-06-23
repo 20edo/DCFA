@@ -43,7 +43,6 @@ wing = m_add_mass_forces(wing, 1, [0 0 -1]');
 %% Compute properties
 
 wing=m_compute_matrices(wing);
-% wing.navier = eye(size(wing.navier));
 %% Matrix of the model
 K = wing.K;
 C = wing.C;
@@ -61,8 +60,7 @@ alpha = 0;
 %  sampling frequency in time
 w = sqrt(diag(lambda)-alpha); 
 freq = w/2/pi;
-max_w = w(end);
-max_freq = max_w/2/pi;
+max_freq = freq(end)/2/pi;
 % deltat = 1/(max_freq*8); %Nyquist
 deltat = 0.000244141;
 %% Reduced matrixes
@@ -76,16 +74,12 @@ M_red = V'*M*V;
 %% External input
 % I'm taking into account the force given by the aileron deflection
 Fb = transpose(V)*fb;
-
 %% Matrix assembly of the model
 A = [zeros(N) eye(N);
     -M_red\K_red -M_red\C_red];
 
 B_u = [zeros(N,1);
     M_red\(q*Fb)];
-
-% B_d = [zeros(N,1);
-%     M_red\ones(N,1)];
 
 %% Performance indicator
 % 1 -> Controller based only on modal velocities
@@ -99,7 +93,7 @@ switch controller
     
     case 1
         C_z = [zeros(N) eye(N)];
-        C_z = C_z/N;
+%         C_z = C_z/N;
         D_zu = zeros(N,1);
         W_zz = sqrt(lambda)/(sum(sum(sqrt(lambda))));
         weight = 0.95;
@@ -162,6 +156,8 @@ switch controller
         % element before and after the engines' support)
         elements_correnti=[wing.b(1).A(:,[7:12 end-11:end-6]) wing.b(2).A(:,[7:12 end-11:end-6]) wing.b(3).A(:,[7:12])];
         elements_correnti=elements_correnti';
+        % matrix of the physical internal stresses in the considered
+        % sections
         C_z=elements_correnti*wing.navier(:,7:end)*V;
         C_z=[C_z zeros(size(C_z))];
         C_z = C_z/sqrt(norm(full(C_z*C_z')));
@@ -170,34 +166,28 @@ switch controller
         weight = 0.99;
 end
 
+%% Normalizing weight matrixes
+% weight=1 ->   Only u counts
+% Weight=0 ->   Only z counts
+
+W_zz=(1-weight)*W_zz/norm(W_zz);
+% W_zz = (1-weight) * (lambda)/(sum(sum(lambda)));
+
+W_uu = (weight);
 
 %% Actuator transfer function
 w_cut_f=2*pi*10; 
 w_cut1=2*pi*5;
 w_cut2=2*pi*15;
 % psi=10;
-% filtro=tf(w_cut^2,[1 2*psi*w_cut w_cut^2]);
+% filtro=tf(w_cut_f^2,[1 2*psi*w_cut_f w_cut_f^2]);
 denominator=conv([1 w_cut1],[1 w_cut2]);
 mechanical_actuator=tf(w_cut1*w_cut2, denominator);
 
-% filtro = designfilt('lowpassiir','PassbandFrequency',w_cut_f,...
-%   'StopbandFrequency',2*w_cut_f,'PassbandRipple',1,...
-%   'StopbandAttenuation',80,'SampleRate',1/deltat,'DesignMethod','butter');
-% N_filtro = filtord(filtro);
-% fvtool(filtro)
-% [num_f, den_f]=tf(filtro);
-% filtro_tf = tf(num_f, den_f);
-% 
 figure
 bode(mechanical_actuator)
 title('Mechanical actuator')
 grid on
-% filtered_actuator=series(filtro_tf,mechanical_actuator);
-% figure 
-% bode(filtered_actuator)
-% title('Controlled actuator')
-% grid on
-
 %% Actuated system
 elements_correnti=[wing.b(1).A(:,[7:12 end-11:end-6]) wing.b(2).A(:,[7:12 end-11:end-6]) wing.b(3).A(:,[7:12])];
 elements_correnti=elements_correnti';
@@ -215,23 +205,12 @@ D_yu = [zeros(N,1);
 
 SYS_notcontrolled = ss(A, B_u, C_y, D_yu);
 SYS_notcontrolled = series(mechanical_actuator,SYS_notcontrolled);
-% Add beta and betado to to the output
+% Add beta and betadot to the output
 C=[SYS_notcontrolled.C;
     zeros(2,size(SYS_notcontrolled.C,2)-2) eye(2)];
 D=[SYS_notcontrolled.D; 0; 0];
 
 SYS_notcontrolled = ss(SYS_notcontrolled.A,SYS_notcontrolled.B, C, D);
-
-% SYS_controlled = ss(A_controlled, B_u, C_y, D_yu);
-%% Normalizing weight matrixes
-% weight=1 ->   Only u counts
-% Weight=0 ->   Only z counts
-
-W_zz=(1-weight)*W_zz/norm(W_zz);
-% W_zz = (1-weight) * (lambda)/(sum(sum(lambda)));
-
-W_uu = (weight);
-
 %% Setting up the Riccati equation
 A=SYS_notcontrolled.A;
 B_u=SYS_notcontrolled.B;
@@ -249,30 +228,15 @@ P = are(A-B_u*inv(R)*S', B_u*inv(R)*B_u', C_z'*W_zz*C_z-S*inv(R)*S');
 G = inv(R)*(B_u'*P+S');
 
 Gain = ss([G zeros(1,N) zeros(1,size(C_stresses,1))]);
-actuator=Gain;
 % actuator=ss([G zeros(1,N) zeros(1,size(C_stresses,1))]);
-SYS_controlled = feedback(SYS_notcontrolled,actuator);
-
-%% State space model
-A_controlled = A-B_u*G;
-
-% %% loads static sol
-% q0_sol_static = [(K-q*Ka)\(q*fa+wing.f)];
-% q0_sol_static_red = V'*q0_sol_static;
-% load_static = wing.load(7:end,7:end)*q0_sol_static;
-% if 0
-%     plot(load_static(3:6:end))
-% end
-% q0 = [q0_sol_static_red;
-%     zeros(N,1)];
-
+SYS_controlled = feedback(SYS_notcontrolled,Gain);
 %% Margine di guadagno e di fase di beta
 A_beta = SYS_controlled.A;
 B_beta = SYS_controlled.B;
 SYS = ss(A_beta,B_beta,[zeros(1,20) 1 0], 0);
 figure
 bode(SYS)
-title('Bode of controlled system')
+title('Bode of Beta of the controlled system')
 [gm,pm,wcg,wcp] = margin(SYS)
 Gain_beta = SYS_controlled.A(N+1:2*N,end)./(M_red\(q*Fb)); %
 Gain_beta = abs(Gain_beta(end));
@@ -313,10 +277,9 @@ for i =1:length(t)
     u(i)=u_func(t(i));
     
 end
-%% Plot of the output
-q0 = zeros(2*N+2,1);                 
-[z,~,x] = lsim(SYS_controlled, u, t,zeros(size(SYS_controlled.A,1),1)); % i added 2 state for the filter dynamic
-[y_nc,~,x_nc] = lsim(SYS_notcontrolled, u, t,q0);
+%% Plot of the output               
+[z,~,x] = lsim(SYS_controlled, u, t);
+[y_nc,~,x_nc] = lsim(SYS_notcontrolled, u, t);
 z = z';
 x = x';
 y_nc = y_nc';

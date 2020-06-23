@@ -93,12 +93,6 @@ problem=1;
 % impulse input
 %% #3
 % step input
-%% #4 
-% aileron deflection beta for prescribed asymptotic roll rate 
-%% #5 
-% initial roll acc p_dot for prescribed roll rate p
-%% 6 
-% roll rate p required for prescribed roll acceleration 
 
 %% Define the intput & output
 % t = [0:deltat:5];
@@ -149,13 +143,20 @@ if 0
     options.saveSTL                = 0;
     options.point_section          = 8;
     options.N                      = 1;         % we have only one eig
-    m_plot_eigenshape(wing,options,y_sol_static*10);
-    m_plot_eigenshape_easy(wing,y_sol_static*10)
+    m_plot_eigenshape(wing,options,y_sol_static);
+    m_plot_eigenshape_easy(wing,y_sol_static)
 end
 %% video of the easy-model in response to the input
 if 0
     FR=m_plot_video_easy(wing,t,y_sol+y_sol_static); %y_sol*100+y_sol_static*10
 end
+%% carichi
+carichi = wing.load*[zeros(6,1); y_sol_static];
+T_z = carichi(1:6:end);
+figure
+plot(T_z)
+hold on
+plot(q*fa(1:6:end))
 
 
 
