@@ -214,7 +214,7 @@ end
 
 
 %% Plot the partecipation of each mode 
-if 0
+if 1
     figure(5)
     plot(v,abs(X_save(:,:,3)),'LineWidth',1.5)
     ylabel('Mode contribution','fontsize',14,'interpreter','latex')

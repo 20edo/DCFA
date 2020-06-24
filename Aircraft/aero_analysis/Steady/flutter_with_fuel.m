@@ -94,7 +94,7 @@ save velocity
 %% Cycle in order to make:
 % discharge_from_inside
 % discharge_from_outside
-if 1
+if 0
     contator = 1;
     while contator<=length(velocity)-1
         flutter_study2
@@ -221,10 +221,13 @@ velocity_all = velocity(1:end-1);
 
 figure(1)
 plot(perc_in,velocity_in,perc_out,velocity_out,perc_all,velocity_all,'LineWidth',1.5)
+hold on 
+plot(perc_out(8),velocity_out(8),'.','MarkerSize',20,'LineWidth',2,'Color',[0.6350, 0.0780, 0.1840])
+plot(perc_out(11),velocity_out(11),'.','MarkerSize',20,'LineWidth',2,'Color',[0.3010, 0.7450, 0.9330])
 ylabel('Flutter velocity \quad $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
 xlabel('Fuel discharged \quad $[\%]$','fontsize',14,'interpreter','latex')
 title('h = $10000$ m','fontsize',14,'interpreter','latex');
 grid on
-legend('Discharge T1 $\rightarrow$ T2 $\rightarrow$ T3','Discharge T3 $\rightarrow$ T2 $\rightarrow$ T1','Discharge all tanks together','fontsize',12,'interpreter','latex')
+legend('Discharge T1 $\rightarrow$ T2 $\rightarrow$ T3','Discharge T3 $\rightarrow$ T2 $\rightarrow$ T1','Discharge all tanks together','Condition A','Condition B','fontsize',12,'interpreter','latex')
 set(gcf, 'Position',  [0, 0, 800, 500])
 saveas(figure(1),'flutter_with_fuel','epsc')

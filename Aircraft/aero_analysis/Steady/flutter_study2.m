@@ -146,7 +146,8 @@ if 0
 %     saveas(figure(1),'flutter_1','epsc')
 end
 %% V-G diagram separated
-if 0
+if 1
+    close all
     figure(1)
     hold on
     plot(v,abs(imag(eig_))/(2*pi),'LineWidth',1.5);
@@ -155,7 +156,7 @@ if 0
     title('h = $10000$ m','fontsize',14,'interpreter','latex');
     grid on
     set(gcf, 'Position',  [0, 0, 700, 250])
-    saveas(figure(1),'flutter_5','epsc')
+    saveas(figure(1),'flutter_14','epsc')
     
     figure(2)
     hold on
@@ -164,9 +165,9 @@ if 0
     xlabel('VTAS \quad $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
     title('h = $10000$ m','fontsize',14,'interpreter','latex');
     grid on
-    ylim([-0.3,0.15])
+    ylim([-0.25,0.05])
     set(gcf, 'Position',  [0, 0, 700, 250])
-    saveas(figure(2),'flutter_6','epsc')
+    saveas(figure(2),'flutter_15','epsc')
     
     figure(3)
     plot(v,g,'LineWidth',1.5);
@@ -177,22 +178,22 @@ if 0
     xlim([0,400])
     title('h = $10000$ m','fontsize',14,'interpreter','latex');
     set(gcf, 'Position',  [0, 0, 700, 250])
-    saveas(figure(3),'flutter_7','epsc')
+    saveas(figure(3),'flutter_16','epsc')
 end
 %% Plot the partecipation of each mode 
-if 0
-    figure(4)
-    plot(v,abs(X_save(:,:,3)),'LineWidth',1.5)
-    ylabel('Mode contribution','fontsize',14,'interpreter','latex')
-    xlabel('VTAS \quad $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
-    title('$3^{rd}$ mode','fontsize',14,'interpreter','latex');
-    grid on
-    hold on 
-    p = plot(286*ones(1e3,1),linspace(0,1.2,1e3),'Color','k');
-    legend(p(1),'Flutter velocity')
-%     xlim([2,1000])
-    set(gcf, 'Position',  [0, 0, 500, 400])
-%     saveas(figure(4),'flutter_8','epsc')
+if 1
+%     figure(4)
+%     plot(v,abs(X_save(:,:,3)),'LineWidth',1.5)
+%     ylabel('Mode contribution','fontsize',14,'interpreter','latex')
+%     xlabel('VTAS \quad $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
+%     title('$3^{rd}$ mode','fontsize',14,'interpreter','latex');
+%     grid on
+%     hold on 
+%     p = plot(676*ones(1e3,1),linspace(0,1.2,1e3),'Color','k');
+%     legend(p(1),'Flutter velocity','Location','northeast')
+% %     xlim([2,1000])
+%     set(gcf, 'Position',  [0, 0, 500, 400])
+%     saveas(figure(4),'flutter_13','epsc')
     
  
     figure(5)
@@ -202,11 +203,11 @@ if 0
     title('$4^{rd}$ mode','fontsize',14,'interpreter','latex');
     grid on
     hold on 
-    p = plot(277*ones(1e3,1),linspace(0,1.2,1e3),'Color','k');
+    p = plot(225*ones(1e3,1),linspace(0,1.2,1e3),'Color','k');
     legend(p(1),'Flutter velocity')
 %     xlim([2,1000])
     set(gcf, 'Position',  [0, 0, 500, 400])
-%     saveas(figure(5),'flutter_9','epsc')
+    saveas(figure(5),'flutter_17','epsc')
 end
 %% Plot the value of the reduced frequency
 if 0

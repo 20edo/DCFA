@@ -35,8 +35,9 @@ if 0
         clearvars -except velocity contator
         save velocity
     end
+    save flutter_engines
 end
-save flutter_engines
+
 %%
 clear all
 load flutter_engines
@@ -60,7 +61,7 @@ if 1
     xlabel('Horizontal offset $[m]$','fontsize',14,'Interpreter','latex')
     ylabel('Vertical offset $[m]$','fontsize',14,'Interpreter','latex')
     title('h = $10000$ m','fontsize',14,'Interpreter','latex')
-    legend(p(1),'Actual position')
+    legend(p(1),'Actual position','fontsize',14)
     set(gcf, 'Position',  [0, 0, 2000, 2000])
-    saveas(figure(1),'flutter_engine','epsc')
+    saveas(figure(1),'flutter_with_engine','epsc')
 end
