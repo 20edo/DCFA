@@ -22,7 +22,7 @@ save velocity
 %% Cycle in order to make:
 % discharge_from_inside
 % discharge_from_outside
-if 1
+if 0
     contator = 1;
     while contator<=length(velocity)-1
         flutter_study2
@@ -64,6 +64,3 @@ if 1
     set(gcf, 'Position',  [0, 0, 2000, 2000])
     saveas(figure(1),'flutter_engine','epsc')
 end
-
-load handel
-sound(y,Fs)
