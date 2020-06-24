@@ -64,14 +64,14 @@ C = [0 0 0 0 0 0;
     
 x=[-5.5 0 -2]';                      % Relative position of the engine wrt nodes in the wings
 
-% %% For the study of different positions of the engines
-% load pos.mat
-% i = pos(end,1); 
-% x(1) = pos(i,1); 
-% x(3) = pos(i,2); 
-% i = i+1; 
-% pos(end,1) = i; 
-% save pos
+%% For the study of different positions of the engines
+load pos.mat
+i = pos(end,1); 
+x(1) = pos(i,1); 
+x(3) = pos(i,2); 
+i = i+1; 
+pos(end,1) = i; 
+save pos
 
 
 
