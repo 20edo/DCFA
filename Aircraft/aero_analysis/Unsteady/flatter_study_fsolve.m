@@ -275,5 +275,70 @@ if 0
     end
 end
 
+%% Plot the flutter eigenshape
+clearvars -except X_save g eig_ v a V wing
+if 1
+    for i=1:length(v)
+        if  ~isempty(find(g(i,:)>0))
+            break
+        end
+    end
+    k = find(g(i,:)>0);
+    k = k(1);
+    flutter_mode = X_save(i,:,k)';
+    disp('flutter velocity')
+    disp(v(i));
+    disp('flutter mach')
+    disp(v(i)/a)
+end
+%%
+if 1
+    angle = 145;
+    if 1
+        angle = 0:5:360;
+    end
+    for g = 1:length(angle)
+        close all
+        phi = deg2rad(angle(g));
+        for i=4:5
+            wing.b(i).ssh = true;
+        end
+        options.plot_original          = 1;
+        options.plot_deformed          = 1;
+        options.plotColor              = 'green';
+        options.saveSTL                = 0;
+        options.point_section          = 8;
+        options.N                      = 1;        % we have only one eig
+        m_plot_eigenshape2(wing,options,real(exp(1i*phi)*V*flutter_mode*15));
+        figure(1)
+        zlim([-10,10]);
+        xlim([10,40]);
+        ylim([-5,35]);
+        view(-75,35)
+        set(gcf, 'Position',  [0, 0, 2000, 2000])
+        FR(g) = getframe(figure(1));
+    end
+    %%
+    if 1
+        % create the video writer with 1 fps
+        writerObj = VideoWriter('myVideo3.avi','Uncompressed AVI');
+        writerObj.FrameRate = 100;
+        % set the seconds per image
+        % open the video writer
+        open(writerObj);
+        % write the frames to the video
+        F = [FR,FR,FR,FR,FR,FR];
+        for i=1:length(F)
+            % convert the image to a frame
+            frame = F(i) ;
+            writeVideo(writerObj, frame);
+        end
+        % close the writer object
+        close(writerObj);
+    end
+end
+   
+
+
 % load handel
 % sound(y,Fs)

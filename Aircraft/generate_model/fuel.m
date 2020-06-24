@@ -20,15 +20,79 @@ G=0;        % Shear modulus
 rho=804;    % Density
 
 %% Fuel percentage
+study = 1; 
+% 1 -> reference condition 
+% 2 -> 100% of fuel 
+% 3 -> no fuel 
+% 4 -> fuel only in the internal tanks
+% 5 -> fuel only in the external tanks 
+%
+switch study
+    case 1 
 % Tanks are ordered from the fuselage to the tip of the wing
 % Right
 fuel_t1=1;      % Percentage of fuel tank1
 fuel_t2=1;      % Percentage of fuel tank2
-fuel_t3=0.50;      % Percentage of fuel tank3
+fuel_t3=0.5;      % Percentage of fuel tank3
 % Left
 fuel_t4=1;      % Percentage of fuel tank4
 fuel_t5=1;      % Percentage of fuel tank5
-fuel_t6=0.50;      % Percentage of fuel tank6
+fuel_t6=0.5;      % Percentage of fuel tank6
+    case 2 
+       % Tanks are ordered from the fuselage to the tip of the wing
+% Right
+fuel_t1=1;      % Percentage of fuel tank1
+fuel_t2=1;      % Percentage of fuel tank2
+fuel_t3=1;      % Percentage of fuel tank3
+% Left
+fuel_t4=1;      % Percentage of fuel tank4
+fuel_t5=1;      % Percentage of fuel tank5
+fuel_t6=1;      % Percentage of fuel tank6 
+    case 3 
+        % Tanks are ordered from the fuselage to the tip of the wing
+% Right
+fuel_t1=0;      % Percentage of fuel tank1
+fuel_t2=0;      % Percentage of fuel tank2
+fuel_t3=0;      % Percentage of fuel tank3
+% Left
+fuel_t4=0;      % Percentage of fuel tank4
+fuel_t5=0;      % Percentage of fuel tank5
+fuel_t6=0;      % Percentage of fuel tank6
+    case 4 
+        % Tanks are ordered from the fuselage to the tip of the wing
+% Right
+fuel_t1=1;      % Percentage of fuel tank1
+fuel_t2=0;      % Percentage of fuel tank2
+fuel_t3=0;      % Percentage of fuel tank3
+% Left
+fuel_t4=1;      % Percentage of fuel tank4
+fuel_t5=0;      % Percentage of fuel tank5
+fuel_t6=0;      % Percentage of fuel tank6
+    case 5 
+% Tanks are ordered from the fuselage to the tip of the wing
+% Right
+fuel_t1=0;      % Percentage of fuel tank1
+fuel_t2=0;      % Percentage of fuel tank2
+fuel_t3=0.1;      % Percentage of fuel tank3
+% Left
+fuel_t4=0;      % Percentage of fuel tank4
+fuel_t5=0;      % Percentage of fuel tank5
+fuel_t6=0.1;      % Percentage of fuel tank6
+end
+%% Study of the change of the fuel 
+% load carb.mat
+% i = carb(end,1); 
+% fuel_t1=carb(i,1);      % Percentage of fuel tank1
+% fuel_t2=carb(i,2);      % Percentage of fuel tank2
+% fuel_t3=carb(i,3);      % Percentage of fuel tank3
+% % Left
+% fuel_t4=carb(i,1);      % Percentage of fuel tank4
+% fuel_t5=carb(i,2);      % Percentage of fuel tank5
+% fuel_t6=carb(i,3);      % Percentage of fuel tank6
+% i = i+1; 
+% carb(end,1) = i; 
+% save carb
+
 
 %% Tank
 % Tank1

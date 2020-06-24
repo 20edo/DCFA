@@ -143,10 +143,10 @@ if 0
     ylim([-0.06,0.04])
     xlim([0,400])
     set(gcf, 'Position',  [0, 0, 700, 800])
-    saveas(figure(1),'flutter_1','epsc')
+%     saveas(figure(1),'flutter_1','epsc')
 end
 %% V-G diagram separated
-if 1
+if 0
     figure(1)
     hold on
     plot(v,abs(imag(eig_))/(2*pi),'LineWidth',1.5);
@@ -180,7 +180,7 @@ if 1
     saveas(figure(3),'flutter_7','epsc')
 end
 %% Plot the partecipation of each mode 
-if 1
+if 0
     figure(4)
     plot(v,abs(X_save(:,:,3)),'LineWidth',1.5)
     ylabel('Mode contribution','fontsize',14,'interpreter','latex')
@@ -192,7 +192,7 @@ if 1
     legend(p(1),'Flutter velocity')
 %     xlim([2,1000])
     set(gcf, 'Position',  [0, 0, 500, 400])
-    saveas(figure(4),'flutter_8','epsc')
+%     saveas(figure(4),'flutter_8','epsc')
     
  
     figure(5)
@@ -206,7 +206,7 @@ if 1
     legend(p(1),'Flutter velocity')
 %     xlim([2,1000])
     set(gcf, 'Position',  [0, 0, 500, 400])
-    saveas(figure(5),'flutter_9','epsc')
+%     saveas(figure(5),'flutter_9','epsc')
 end
 %% Plot the value of the reduced frequency
 if 0
@@ -262,7 +262,7 @@ if 0
 end
 
 %% Plot the flutter eigenshape
-for i=1:length(v)
+for i=2:length(v)
     if  ~isempty(find(g(i,:)>0))
         break
     end
@@ -281,6 +281,7 @@ if 0
         angle = 0:5:360;
     end
     for g = 1:length(angle)
+        disp(angle(g))
         close all
         phi = deg2rad(angle(g));
         for i=4:5
@@ -298,6 +299,7 @@ if 0
         xlim([10,40]);
         ylim([-5,35]);
         view(-75,35)
+        set(gcf, 'Position',  [0, 0, 2000, 2000])
         FR(g) = getframe(figure(1));
     end
     %%

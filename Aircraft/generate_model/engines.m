@@ -62,8 +62,17 @@ C = [0 0 0 0 0 0;
     0 0 0 0 0 +(Iy-J1)*omega; %-dphi * (Iy-J1)*omega * psi_dot
     0 0 0 0 +(J1-Iz)*omega 0]; %-dphi * (J1-Iz)*omega * phi_dot
     
-
 x=[-5.5 0 -2]';                      % Relative position of the engine wrt nodes in the wings
+load pos.mat
+i = pos(end,1); 
+x(1) = pos(i,1); 
+x(3) = pos(i,2); 
+i = i+1; 
+pos(end,1) = i; 
+save pos
+
+
+
 
 Node17=en_free(aircraft.en(8).x+x);
 Node18=en_free(aircraft.en(9).x+x);
