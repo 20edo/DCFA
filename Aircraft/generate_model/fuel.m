@@ -79,19 +79,19 @@ fuel_t4=0;      % Percentage of fuel tank4
 fuel_t5=0;      % Percentage of fuel tank5
 fuel_t6=0.1;      % Percentage of fuel tank6
 end
-% %% Study of the change of the fuel 
-% load carb.mat
-% i = carb(end,1); 
-% fuel_t1=carb(i,1);      % Percentage of fuel tank1
-% fuel_t2=carb(i,2);      % Percentage of fuel tank2
-% fuel_t3=carb(i,3);      % Percentage of fuel tank3
-% % Left
-% fuel_t4=carb(i,1);      % Percentage of fuel tank4
-% fuel_t5=carb(i,2);      % Percentage of fuel tank5
-% fuel_t6=carb(i,3);      % Percentage of fuel tank6
-% i = i+1; 
-% carb(end,1) = i; 
-% save carb
+%% Study of the change of the fuel 
+load carb.mat
+i = carb(end,1); 
+fuel_t1=carb(i,1);      % Percentage of fuel tank1
+fuel_t2=carb(i,2);      % Percentage of fuel tank2
+fuel_t3=carb(i,3);      % Percentage of fuel tank3
+% Left
+fuel_t4=carb(i,1);      % Percentage of fuel tank4
+fuel_t5=carb(i,2);      % Percentage of fuel tank5
+fuel_t6=carb(i,3);      % Percentage of fuel tank6
+i = i+1; 
+carb(end,1) = i; 
+save carb
 
 
 %% Tank

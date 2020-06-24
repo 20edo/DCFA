@@ -2,43 +2,88 @@ clear all; clc; close all;
 cd ..
 cd ..
 cd generate_model\
-inside = 0;
-carb = [    1.0000    1.0000    1.0000
-    0.9000    1.0000    1.0000
-    0.8000    1.0000    1.0000
-    0.7000    1.0000    1.0000
-    0.6000    1.0000    1.0000
-    0.5000    1.0000    1.0000
-    0.4000    1.0000    1.0000
-    0.3000    1.0000    1.0000
-    0.2000    1.0000    1.0000
-    0.1000    1.0000    1.0000
-    0    1.0000    1.0000
-    0    0.9000    1.0000
-    0    0.8000    1.0000
-    0    0.7000    1.0000
-    0    0.6000    1.0000
-    0    0.5000    1.0000
-    0    0.4000    1.0000
-    0    0.3000    1.0000
-    0    0.2000    1.0000
-    0    0.1000    1.0000
-    0         0    1.0000
-    0         0    0.9000
-    0         0    0.8000
-    0         0    0.7000
-    0         0    0.6000
-    0         0    0.5000
-    0         0    0.4000
-    0         0    0.3000
-    0         0    0.2000
-    0         0    0.1000
-    0         0         0
-    1         1         1];
-save carb
-if ~inside
-    carb = flip(carb,2);
+%% Problem
+% 1 -> discharge from inside
+% 2 -> discharge from outside
+% 3 -> discharge all toghether
+problem = 3;
+%%%% !!! CHANGE PROBLEM ALSO DOWN BEFORE RUNNING !!! %%%%
+switch problem
+    case 1
+        carb = [    1.0000    1.0000    1.0000
+            0.9000    1.0000    1.0000
+            0.8000    1.0000    1.0000
+            0.7000    1.0000    1.0000
+            0.6000    1.0000    1.0000
+            0.5000    1.0000    1.0000
+            0.4000    1.0000    1.0000
+            0.3000    1.0000    1.0000
+            0.2000    1.0000    1.0000
+            0.1000    1.0000    1.0000
+            0    1.0000    1.0000
+            0    0.9000    1.0000
+            0    0.8000    1.0000
+            0    0.7000    1.0000
+            0    0.6000    1.0000
+            0    0.5000    1.0000
+            0    0.4000    1.0000
+            0    0.3000    1.0000
+            0    0.2000    1.0000
+            0    0.1000    1.0000
+            0         0    1.0000
+            0         0    0.9000
+            0         0    0.8000
+            0         0    0.7000
+            0         0    0.6000
+            0         0    0.5000
+            0         0    0.4000
+            0         0    0.3000
+            0         0    0.2000
+            0         0    0.1000
+            0         0         0
+            1         1         1];
+    case 2
+        carb = [    1.0000    1.0000    1.0000
+            0.9000    1.0000    1.0000
+            0.8000    1.0000    1.0000
+            0.7000    1.0000    1.0000
+            0.6000    1.0000    1.0000
+            0.5000    1.0000    1.0000
+            0.4000    1.0000    1.0000
+            0.3000    1.0000    1.0000
+            0.2000    1.0000    1.0000
+            0.1000    1.0000    1.0000
+            0    1.0000    1.0000
+            0    0.9000    1.0000
+            0    0.8000    1.0000
+            0    0.7000    1.0000
+            0    0.6000    1.0000
+            0    0.5000    1.0000
+            0    0.4000    1.0000
+            0    0.3000    1.0000
+            0    0.2000    1.0000
+            0    0.1000    1.0000
+            0         0    1.0000
+            0         0    0.9000
+            0         0    0.8000
+            0         0    0.7000
+            0         0    0.6000
+            0         0    0.5000
+            0         0    0.4000
+            0         0    0.3000
+            0         0    0.2000
+            0         0    0.1000
+            0         0         0
+            1         1         1];
+        carb = flip(carb,2);
+    case 3
+        temp = linspace(1,0,31);
+        carb(:,1) = temp';
+        carb(:,2) = temp';
+        carb(:,3) = temp';
+        carb = [carb; 1,1,1]; 
 end
+
 max = size(carb,1)-1;
 save carb
 cd ..
@@ -49,7 +94,7 @@ save velocity
 %% Cycle in order to make:
 % discharge_from_inside
 % discharge_from_outside
-if 0
+if 1
     contator = 1;
     while contator<=length(velocity)-1
         flutter_study2
@@ -62,9 +107,19 @@ if 0
         clearvars -except velocity contator
         save velocity
     end
+    problem = 3; 
+    switch problem
+        case 1
+            save discharge_from_inside.mat
+        case 2
+            save discharge_from_outside.mat
+        case 3
+            save discharge_all.mat
+    end
 end
 
 %% Display results
+close all 
 fuel_max = [2.2687e+04; 8.7519e+03; 1.0802e+04];
 carb = [    1.0000    1.0000    1.0000
     0.9000    1.0000    1.0000
@@ -151,11 +206,25 @@ perc_out = 100-perc;
 velocity_out = velocity(1:end-1);
 % figure
 % plot(perc_out,velocity_out)
+clear carb
+temp = linspace(1,0,31);
+        carb(:,1) = temp';
+        carb(:,2) = temp';
+        carb(:,3) = temp';
+        carb = [carb; 1,1,1]; 
+        load discharge_all.mat
+for i=1:length(velocity)-1
+    perc(i) = carb(i,:)*fuel_max/(sum(fuel_max))*100;
+end
+perc_all = 100-perc;
+velocity_all = velocity(1:end-1);
 
-plot(perc_in,velocity_in,perc_out,velocity_out,'LineWidth',1.5)
+figure(1)
+plot(perc_in,velocity_in,perc_out,velocity_out,perc_all,velocity_all,'LineWidth',1.5)
 ylabel('Flutter velocity \quad $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
 xlabel('Fuel discharged \quad $[\%]$','fontsize',14,'interpreter','latex')
 title('h = $10000$ m','fontsize',14,'interpreter','latex');
 grid on
-legend('Discharged from inside','Discharged from outside','interpreter','latex')
-set(gcf, 'Position',  [0, 0, 700, 400])
+legend('Discharge T1 $\rightarrow$ T2 $\rightarrow$ T3','Discharge T3 $\rightarrow$ T2 $\rightarrow$ T1','Discharge all tanks together','fontsize',12,'interpreter','latex')
+set(gcf, 'Position',  [0, 0, 800, 500])
+saveas(figure(1),'flutter_with_fuel','epsc')
