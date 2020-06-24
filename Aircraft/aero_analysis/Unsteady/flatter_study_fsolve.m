@@ -214,7 +214,7 @@ end
 
 
 %% Plot the partecipation of each mode 
-if 1
+if 0
     figure(5)
     plot(v,abs(X_save(:,:,3)),'LineWidth',1.5)
     ylabel('Mode contribution','fontsize',14,'interpreter','latex')
@@ -230,7 +230,7 @@ if 1
 end
 
 %% Plot the reduced frequences 
-if 1
+if 0
     chord=7.72;
     l = chord/2;
     red_freq = zeros(size(g));
@@ -292,7 +292,7 @@ if 1
     disp(v(i)/a)
 end
 %%
-if 1
+if 0
     angle = 145;
     if 1
         angle = 0:5:360;
@@ -319,7 +319,7 @@ if 1
         FR(g) = getframe(figure(1));
     end
     %%
-    if 1
+    if 0
         % create the video writer with 1 fps
         writerObj = VideoWriter('myVideo3.avi','Uncompressed AVI');
         writerObj.FrameRate = 100;

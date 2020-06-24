@@ -20,7 +20,7 @@ G=0;        % Shear modulus
 rho=804;    % Density
 
 %% Fuel percentage
-study = 1; 
+study = 3; 
 % 1 -> reference condition 
 % 2 -> 100% of fuel 
 % 3 -> no fuel 
@@ -79,7 +79,7 @@ fuel_t4=0;      % Percentage of fuel tank4
 fuel_t5=0;      % Percentage of fuel tank5
 fuel_t6=0.1;      % Percentage of fuel tank6
 end
-%% Study of the change of the fuel 
+% %% Study of the change of the fuel 
 % load carb.mat
 % i = carb(end,1); 
 % fuel_t1=carb(i,1);      % Percentage of fuel tank1
