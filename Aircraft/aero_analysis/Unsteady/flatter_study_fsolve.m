@@ -176,7 +176,7 @@ if 1
     title('h = $10000$ m','fontsize',14,'interpreter','latex');
     grid on
     set(gcf, 'Position',  [0, 0, 700, 250])
-    saveas(figure(1),'un_flutter_1','epsc')
+    saveas(figure(1),'un_flutter_7','epsc')
     
     figure(2)
     hold on
@@ -187,7 +187,7 @@ if 1
     grid on
     ylim([0,0.75])
     set(gcf, 'Position',  [0, 0, 700, 250])
-    saveas(figure(2),'un_flutter_2','epsc')
+    saveas(figure(2),'un_flutter_8','epsc')
     
     figure(3)
     hold on
@@ -198,7 +198,7 @@ if 1
     grid on
     ylim([-0.3,0.15])
     set(gcf, 'Position',  [0, 0, 700, 250])
-    saveas(figure(3),'un_flutter_3','epsc')
+    saveas(figure(3),'un_flutter_9','epsc')
     
     figure(4)
     plot(v,g,'LineWidth',1.5);
@@ -208,7 +208,7 @@ if 1
     ylim([-0.04,0.02])
     title('h = $10000$ m','fontsize',14,'interpreter','latex');
     set(gcf, 'Position',  [0, 0, 700, 250])
-    saveas(figure(4),'un_flutter_4','epsc')
+    saveas(figure(4),'un_flutter_10','epsc')
 end
 
 
@@ -222,11 +222,11 @@ if 1
     title('$3^{rd}$ mode','fontsize',14,'interpreter','latex');
     grid on
     hold on
-    p = plot(568*ones(1e3,1),linspace(0,1.2,1e3),'Color','k');
+    p = plot(420*ones(1e3,1),linspace(0,1.2,1e3),'Color','k');
     legend(p(1),'Flutter velocity','Location','northwest')
 %     xlim([2,1000])
     set(gcf, 'Position',  [0, 0, 500, 400])
-    saveas(figure(5),'un_flutter_5','epsc')
+    saveas(figure(5),'un_flutter_11','epsc')
 end
 
 %% Plot the reduced frequences 

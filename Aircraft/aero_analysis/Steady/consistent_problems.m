@@ -194,7 +194,7 @@ end
 
 %% Plot consistent problem
 % Deformative shape plot
-if 0
+if 1
     % switch on the aero properties for the plot
     for i=4:5
         wing.b(i).ssh = true;
@@ -213,7 +213,7 @@ if 0
     m_plot_eigenshape(wing,options,sol(1:end-1)*40)
 end
 
-%% Control aeroelastic
+%% Control aeroelastic - Problem 1
 
 v_ref = linspace(1,2000,1e3);
 [T, a, P, rho] = atmosisa(10000);
@@ -233,7 +233,7 @@ for i=1:length(q_ref)
     
     % Rigid solution problem 1
     
-    A_r = [K, Sq
+    A_r = [K-q*Ka, Sq
         -0*lq, Jx];
     b_r = q*[fb; lb]*beta;
     sol_r = A_r\b_r;
@@ -258,8 +258,46 @@ if 0
     saveas(figure(3),'consistent_1','epsc')
 end
 
+%% Aeroelastic - problem 2
+v_ref = linspace(1,2000,1e3);
+[T, a, P, rho] = atmosisa(10000);
+q_ref = 1/2*rho*v_ref.^2;
+% q_ref=linspace(1,600*1e3,5*1e2);
+elastic_p_2=zeros(size(q_ref));
 
-
+for i=1:length(q_ref)
+    % Elastic solution, problem 1
+    q=q_ref(i);
+    beta = deg2rad(2);
+    A = [K-q*Ka, -q*fp; -q*lq, -q*lp];
+    b = q*[fb; lb]*beta;
+    sol = A\b;
+    p_fract_vinf(i) = sol(end);
+    
+    % Rigid solution problem 1
+    
+    A_r = [K-q*Ka, -q*fp; -0*lq, -q*lp];
+    b_r = q*[fb; lb]*beta;
+    sol_r = A_r\b_r;
+    p_fract_vinf_r(i) = sol_r(end);
+    elastic_p_2(i)=p_fract_vinf(i)/p_fract_vinf_r(i);
+    
+    
+end
+if 1
+    figure(5)
+    hold on
+    plot(v_ref,elastic_p_2,'LineWidth',2)
+    xlabel('VTAS $[\frac{m}{s}]$','fontsize',14,'Interpreter','latex')
+    ylabel('$\frac{{p}}{{p_r}}$','fontsize',14,'Interpreter','latex')
+    title('h = $10000$ m','fontsize',14,'Interpreter','latex')
+    grid on
+    plot(1560,0,'.','MarkerSize',20,'LineWidth',2)
+    ylim([-0.2 1.5])
+    set(gcf, 'Position',  [40, 40, 400, 300])
+    saveas(figure(5),'consistent_3','epsc')
+end
+%%
 
 
 % Plot
@@ -290,7 +328,7 @@ for i=1:length(q_ref)
     
     % Rigid solution, problem 5
     
-    A_r = [K, Sq
+    A_r = [K-q*Ka, Sq
         -0*lq, Jx];
     b_r= q*[fp; lp]*p_fract_vinf;
     sol_r = A_r\b_r;
