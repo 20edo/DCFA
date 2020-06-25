@@ -1,4 +1,4 @@
-%%
+%
 
 clear all, clc
 syms lambda q c Vinf e L x a real 

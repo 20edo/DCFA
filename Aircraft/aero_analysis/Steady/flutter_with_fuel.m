@@ -97,7 +97,7 @@ save velocity
 if 0
     contator = 1;
     while contator<=length(velocity)-1
-        flutter_study2
+        flutter_study_as_linear
         flutter_velocity = v(i);
         load velocity
         contator = velocity(end)
