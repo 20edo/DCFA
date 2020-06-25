@@ -1,5 +1,5 @@
-% This is a script to study the flutter problem at 10.000 m for the clamped
-% wing
+% This is a script to study the unsteady flutter problem at 10.000 m for the clamped
+% wing using the built in function of MATLAB
 
 % DCFA swept wing assignement
 %
@@ -176,7 +176,7 @@ if 1
     title('h = $10000$ m','fontsize',14,'interpreter','latex');
     grid on
     set(gcf, 'Position',  [0, 0, 700, 250])
-    saveas(figure(1),'un_flutter_12','epsc')
+%     saveas(figure(1),'un_flutter_12','epsc')
     
 %     figure(2)
 %     hold on
@@ -198,7 +198,7 @@ if 1
     grid on
     ylim([-0.25,0.15])
     set(gcf, 'Position',  [0, 0, 700, 250])
-    saveas(figure(3),'un_flutter_13','epsc')
+%     saveas(figure(3),'un_flutter_13','epsc')
     
 %     figure(4)
 %     plot(v,g,'LineWidth',1.5);

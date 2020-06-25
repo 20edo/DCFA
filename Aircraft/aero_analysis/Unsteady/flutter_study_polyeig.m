@@ -10,6 +10,7 @@
 %
 %
 %
+%%% !!! THIS SCRIPT HAS NEVER BEEN USED IN THE ANALYSIS !!! %%%
 clear all , close all, clc
 cd ..
 cd ..
