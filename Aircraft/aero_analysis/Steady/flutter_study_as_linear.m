@@ -156,7 +156,7 @@ if 1
     title('h = $10000$ m','fontsize',14,'interpreter','latex');
     grid on
     set(gcf, 'Position',  [0, 0, 700, 250])
-    saveas(figure(1),'flutter_14','epsc')
+%     saveas(figure(1),'flutter_14','epsc')
     
     figure(2)
     hold on
@@ -167,7 +167,7 @@ if 1
     grid on
     ylim([-0.25,0.05])
     set(gcf, 'Position',  [0, 0, 700, 250])
-    saveas(figure(2),'flutter_15','epsc')
+%     saveas(figure(2),'flutter_15','epsc')
     
     figure(3)
     plot(v,g,'LineWidth',1.5);
@@ -178,7 +178,7 @@ if 1
     xlim([0,400])
     title('h = $10000$ m','fontsize',14,'interpreter','latex');
     set(gcf, 'Position',  [0, 0, 700, 250])
-    saveas(figure(3),'flutter_16','epsc')
+%     saveas(figure(3),'flutter_16','epsc')
 end
 %% Plot the partecipation of each mode 
 if 1
@@ -193,7 +193,7 @@ if 1
     legend(p(1),'Flutter velocity','Location','northeast')
 %     xlim([2,1000])
     set(gcf, 'Position',  [0, 0, 500, 400])
-    saveas(figure(4),'flutter_13','epsc')
+%     saveas(figure(4),'flutter_13','epsc')
     
  
     figure(5)
@@ -207,7 +207,7 @@ if 1
     legend(p(1),'Flutter velocity')
 %     xlim([2,1000])
     set(gcf, 'Position',  [0, 0, 500, 400])
-    saveas(figure(5),'flutter_17','epsc')
+%     saveas(figure(5),'flutter_17','epsc')
 end
 %% Plot the value of the reduced frequency
 if 0
@@ -225,10 +225,10 @@ if 0
     ylim([0,0.5])
     grid on
     set(gcf, 'Position',  [40, 40, 500, 500])
-    saveas(figure(2),'flutter_4','epsc')
+%     saveas(figure(2),'flutter_4','epsc')
 end
 %% Plot the corresponding modeshapes
-if 1
+if 0
     figure
     phi = deg2rad(40);
     for i=4:5
@@ -305,13 +305,13 @@ if 0
     %%
     if 0
         % create the video writer with 1 fps
-        writerObj = VideoWriter('myVideo3.avi');
-        writerObj.FrameRate = 100;
+        writerObj = VideoWriter('steady_flutter_right_frequency.avi');
+        writerObj.FrameRate = 277;
         % set the seconds per image
         % open the video writer
         open(writerObj);
         % write the frames to the video
-        F = [FR,FR,FR,FR,FR,FR];
+        F = [FR,FR,FR,FR,FR,FR,FR,FR,FR,FR,FR,FR,FR];
         for i=1:length(F)
             % convert the image to a frame
             frame = F(i) ;

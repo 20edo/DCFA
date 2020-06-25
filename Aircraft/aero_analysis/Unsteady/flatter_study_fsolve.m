@@ -321,13 +321,13 @@ if 1
     %%
     if 1
         % create the video writer with 1 fps
-        writerObj = VideoWriter('myVideo3.avi');
-        writerObj.FrameRate = 100;
+        writerObj = VideoWriter('quasi-steady_flutter_right_frequency.avi');
+        writerObj.FrameRate = 218;
         % set the seconds per image
         % open the video writer
         open(writerObj);
         % write the frames to the video
-        F = [FR,FR,FR,FR,FR,FR];
+        F = [FR,FR,FR,FR,FR,FR,FR,FR,FR,FR,FR];
         for i=1:length(F)
             % convert the image to a frame
             frame = F(i) ;
