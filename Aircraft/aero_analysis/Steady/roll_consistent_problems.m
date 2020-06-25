@@ -67,7 +67,7 @@ K = wing.K;
 Ka = wing.Ka;
 
 %% Number of problem to be solved
-problem=5;
+problem=1;
 %% #1
 % initial roll acceleration p_dot for prescribed aileron deflection beta
 %% #2
@@ -83,13 +83,15 @@ problem=5;
 [T, a, P, rho] = atmosisa(10000);
 M = 0.7;
 v = M*a;
+v = 1000; 
 q = 1/2*rho*v.^2;
 beta_vect = deg2rad([2,5,10,20]);
 p_input_vect = deg2rad([5,10,20,40]);
 switch problem
     case 1
-        for i=1:length(beta_vect)
-            beta = beta_vect(i);
+%         for i=1:length(beta_vect)
+%             beta = beta_vect(i);
+            beta = deg2rad(2); 
             A = [K-q*Ka, Sq
                 -q*lq, Jx];
             b = q*[fb; lb]*beta;
@@ -105,7 +107,7 @@ switch problem
             if q > q_div
                 warning('You are over the divergence dynamic pressure for the manouver')
             end
-        end
+%         end
     case 2
         p_dot = 1;
         A = [K-q*Ka, -q*fb; -q*lq, -q*lb];
@@ -195,6 +197,7 @@ end
 %% Plot consistent problem
 % Deformative shape plot
 if 1
+    close all 
     % switch on the aero properties for the plot
     for i=4:5
         wing.b(i).ssh = true;
@@ -210,7 +213,7 @@ if 1
             sol(g) = -sol(g);
         end
     end
-    m_plot_eigenshape(wing,options,sol(1:end-1)*40)
+    m_plot_eigenshape(wing,options,sol(1:end-1)*20)
 end
 
 %% Control aeroelastic - Problem 1

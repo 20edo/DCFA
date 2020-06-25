@@ -305,7 +305,7 @@ if 0
     %%
     if 0
         % create the video writer with 1 fps
-        writerObj = VideoWriter('myVideo3.avi','Uncompressed AVI');
+        writerObj = VideoWriter('myVideo3.avi');
         writerObj.FrameRate = 100;
         % set the seconds per image
         % open the video writer

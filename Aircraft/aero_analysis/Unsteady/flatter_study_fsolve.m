@@ -292,7 +292,7 @@ if 1
     disp(v(i)/a)
 end
 %%
-if 0
+if 1
     angle = 145;
     if 1
         angle = 0:5:360;
@@ -319,9 +319,9 @@ if 0
         FR(g) = getframe(figure(1));
     end
     %%
-    if 0
+    if 1
         % create the video writer with 1 fps
-        writerObj = VideoWriter('myVideo3.avi','Uncompressed AVI');
+        writerObj = VideoWriter('myVideo3.avi');
         writerObj.FrameRate = 100;
         % set the seconds per image
         % open the video writer
