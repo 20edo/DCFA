@@ -73,16 +73,6 @@ M_red = V'*M*V;
 %% External input
 % I'm taking into account the force given by the aileron deflection
 Fb = transpose(V)*fb;
-%% Actuator transfer function
-w_cut1=2*pi*5;
-w_cut2=2*pi*15;
-denominator=conv([1 w_cut1],[1 w_cut2]);
-mechanical_actuator=tf(w_cut1*w_cut2, denominator);
-
-figure
-bode(mechanical_actuator)
-title('Mechanical actuator')
-grid on
 %% Matrix assembly of the model
 A = [zeros(N) eye(N);
     -M_red\K_red -M_red\C_red];
@@ -95,22 +85,22 @@ B_u = [zeros(N,1);
 % 3 -> Controller based on modal velocities and engines velocities
 % 4 -> Controller based on allieviation of the loads at the root of the
 %      wing and at the root of the engines' support
-controller=4;
+controller=1;
 
 switch controller
     
     case 1
         C_z = [zeros(N) eye(N)];
+        C_z = C_z/N;
         D_zu = zeros(N,1);
-        risp = abs(freqresp(mechanical_actuator,w));
-        risp = risp(1,:);
-        W_zz = eye(N).*diag(risp);
+        W_zz = sqrt(lambda)/(sum(sum(sqrt(lambda))));
         weight = 0.99;
     case 2
         % Define relative importance of modes velocity engines' acceleration
         % 1 -> Only modes velocity count
         % 0 -> Only engines' acceleration count
         rho=1;
+        %
         Minv=inv(M);
         index=1:12;
         % Matrix to value engines' acceleration in physical coordinates
@@ -153,7 +143,7 @@ switch controller
         C_z_e=C_z_e/sqrt(norm(C_z_e*C_z_e'));
         C_z_v=C_z_v/sqrt(norm(C_z_v*C_z_v'));
         C_z=(1-rho)*C_z_e+rho*C_z_v;
-        %         % Define input matrix in physical coordinates      
+        %         % Define input matrix in physical coordinates      NOT NECESSARY,
         %         THERE IS NO AERO-FORCE ON THE ENGINES
         %         D_zu_phy=[Minv(index,index)*q*fb(index) zeros(index(end),size(K,1)-index(end))];
         % Define the input matrix
@@ -170,18 +160,31 @@ switch controller
         C_z=[C_z zeros(size(C_z))];
         C_z = C_z/sqrt(norm(full(C_z*C_z')));
         D_zu = zeros(size(C_z,1),1);
-%         W_zz=eye(size(C_z,1))/(size(C_z,1));
-        W_zz = eye(size(C_z,1));
-        W_zz(1:3:end,1:3:end) = W_zz(1:3:end,1:3:end)/10;
-        weight = 0.01;
+        W_zz=eye(size(C_z,1))/(size(C_z,1));
+        weight = 0.99;
 end
 
 %% Normalizing weight matrixes
 % weight=1 ->   Only u counts
 % Weight=0 ->   Only z counts
+
 W_zz=(1-weight)*W_zz/norm(W_zz);
+% W_zz = (1-weight) * (lambda)/(sum(sum(lambda)));
 
 W_uu = (weight);
+%% Actuator transfer function
+w_cut_f=2*pi*10; 
+w_cut1=2*pi*5;
+w_cut2=2*pi*15;
+% psi=10;
+% filtro=tf(w_cut_f^2,[1 2*psi*w_cut_f w_cut_f^2]);
+denominator=conv([1 w_cut1],[1 w_cut2]);
+mechanical_actuator=tf(w_cut1*w_cut2, denominator);
+
+figure
+bode(mechanical_actuator)
+title('Mechanical actuator')
+grid on
 %% Actuated system
 elements_correnti=[wing.b(1).A(:,[7:12 end-11:end-6]) wing.b(2).A(:,[7:12 end-11:end-6]) wing.b(3).A(:,[7:12])];
 elements_correnti=elements_correnti';
@@ -203,12 +206,16 @@ SYS_notcontrolled = series(mechanical_actuator,SYS_notcontrolled);
 C=[SYS_notcontrolled.C;
     zeros(2,size(SYS_notcontrolled.C,2)-2) eye(2)];
 D=[SYS_notcontrolled.D; 0; 0];
-C_z = [C_z zeros(size(C_z,1),2)];
 
 SYS_notcontrolled = ss(SYS_notcontrolled.A,SYS_notcontrolled.B, C, D);
 %% Setting up the Riccati equation
 A=SYS_notcontrolled.A;
 B_u=SYS_notcontrolled.B;
+C_z=[ C_z zeros(size(C_z,1),2);
+     zeros(2,size(C_z,2)) zeros(2)];
+W_zz=[ W_zz zeros(size(W_zz,1),2);
+    zeros(2,size(W_zz,2)) zeros(2)];
+D_zu=[D_zu; zeros(2,1)];
 
 Q = C_z'*W_zz*C_z;
 S = C_z'*W_zz*D_zu;
@@ -217,7 +224,8 @@ R = D_zu'*W_zz*D_zu+W_uu;
 P = are(A-B_u*inv(R)*S', B_u*inv(R)*B_u', C_z'*W_zz*C_z-S*inv(R)*S');
 G = inv(R)*(B_u'*P+S');
 
-SYS_controlled = ss(A-B_u*G,B_u,C,D);
+Gain = ss([G zeros(1,N) zeros(1,size(C_stresses,1))]);
+SYS_controlled = feedback(SYS_notcontrolled,Gain);
 %% Margine di guadagno e di fase di beta
 A_beta = SYS_controlled.A;
 B_beta = SYS_controlled.B;
@@ -240,7 +248,7 @@ beta = deg2rad(2);
 % 5     -> randn
 % 6     -> sin
 % 7     -> sinc
-input=3;
+input=2;
 switch input
     case 1
         u_func= @(t) beta.*(t<=0);
@@ -276,8 +284,8 @@ SYS_notcontrolled.B=[zeros(N,1)
     0];
 %% Plot of the output
 q0 = zeros(2*N+2,1);                 
-[z,~,x] = lsim(SYS_controlled, u, t); 
-[y_nc,~,x_nc] = lsim(SYS_notcontrolled, u, t);
+[z,~,x] = lsim(SYS_controlled, u, t,zeros(size(SYS_controlled.A,1),1)); % i added 2 state for the filter dynamic
+[y_nc,~,x_nc] = lsim(SYS_notcontrolled, u, t,q0);
 z = z';
 x = x';
 y_nc = y_nc';
@@ -285,448 +293,445 @@ x_nc = x_nc';
 
 %% I'm recovering the physical coordinates from the modal ones
 for i = 1:length(t)
-    z_sol(:,i) = -V*z(1:N,i); 
-    z_sol_v(:,i) = -V*z(N+1:2*N,i);
-    z_sol_acc(:,i) = -V*z(2*N+1:3*N,i);
-    y_sol_nc(:,i) = -V*y_nc(1:N,i);
-    y_sol_nc_v(:,i) = -V*y_nc(N+1:2*N,i);
-    y_sol_nc_acc(:,i) = -V*y_nc(2*N+1:3*N,i);
+    z_sol(:,i) = V*z(1:N,i); 
+    z_sol_v(:,i) = V*z(N+1:2*N,i);
+    z_sol_acc(:,i) = V*z(2*N+1:3*N,i);
+    y_sol_nc(:,i) = V*y_nc(1:N,i);
+    y_sol_nc_v(:,i) = V*y_nc(N+1:2*N,i);
+    y_sol_nc_acc(:,i) = V*y_nc(2*N+1:3*N,i);
 end
 z_sol_internalforces= z(3*N+1:end,:);
 y_sol_nc_internalforces = y_nc(3*N+1:end,:);
-%% beta
-[Beta] = lsim(mechanical_actuator,-G*x,t);
+
 %% plot the vertical acceleration of the tip of the wing
 % if we want to see the vertical acceleration of the tip of the wing
 % (if the model in input is the wing, if not it doesn't have any sense)
-if controller == 1
-    name = 'velocity';
-elseif controller == 4
-    name = 'loads';
-end
-if input == 1 
-    ingresso = 'impulse';
-elseif input == 2
-    ingresso = 'step';
-elseif input == 3
-    ingresso = 'rect';
-end
+figure
 
-% if controller == 1
-    figure('units','normalized','outerposition',[0 0 1 1])
-    subplot(2,2,1)
-    plot(t,z_sol(end-3,:))
-    hold on
-    grid on
-    plot(t,y_sol_nc(end-3,:),'k')
-    title('\quad Vertical displacement of the tip','Interpreter','latex','FontSize',14)
-    xlabel('$t \quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$q \quad[m]$','Interpreter','latex','FontSize',14)
-    
-    subplot(2,2,2)
-    plot(t,z_sol_v(end-3,:))
-    hold on
-    grid on
-    plot(t,y_sol_nc_v(end-3,:),'k')
-    title('\quad Vertical velocity of the tip','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\dot{q} \quad[m/s]$','Interpreter','latex','FontSize',14)
-    
-    subplot(2,2,3)
-    plot(t,z_sol_acc(end-3,:))
-    hold on
-    grid on
-    plot(t,y_sol_nc_acc(end-3,:),'k')
-    title('\quad Vertical acceleration of the tip','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\ddot{q} \quad[m/s^{2}]$','Interpreter','latex','FontSize',14)
-    
-    
-    subplot(2,2,4)
-%    plot(t,x(end,:)*Gain_beta)
-    plot(t,Beta)
-    hold on
-    grid on
-    plot(t,u,'k')
-    title('Aileron deflection','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\beta\quad[rad]$','Interpreter','latex','FontSize',14)
-% elseif controller == 4
-%     figure('units','normalized','outerposition',[0 0 1 1])
-%     plot(t,Beta)
-%     hold on
-%     grid on
-%     plot(t,u,'k')
-%     title('Aileron deflection','Interpreter','latex','FontSize',14)
-%     xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-%     ylabel('$\beta\quad[rad]$','Interpreter','latex','FontSize',14)
-% end
+subplot(2,2,1)
+plot(t,z_sol(end-3,:))
+hold on
+grid on
+plot(t,y_sol_nc(end-3,:))
+title('Vertical displacement of the tip')
+legend('displacements cotrolled','displacements not controlled','Location','southeast')
+xlabel('t[s]')
+ylabel('$q$','Interpreter','latex')
 
-fname = [name '_tf_extinput_tip_' ingresso];
-saveas(figure(3),fname,'epsc')
+
+subplot(2,2,2)
+plot(t,z_sol_v(end-3,:))
+hold on
+grid on
+plot(t,y_sol_nc_v(end-3,:))
+title('Vertical velocity of the tip')
+legend('velocities cotrolled','velocities not controlled')
+xlabel('$t\quad[s]$','Interpreter','latex')
+ylabel('$\dot{q}\quad[m]$','Interpreter','latex')
+
+subplot(2,2,3)
+plot(t,z_sol_acc(end-3,:))
+hold on
+grid on
+plot(t,y_sol_nc_acc(end-3,:))
+title('Vertical acceleration of the tip')
+legend('accelerations cotrolled','accelerations not controlled')
+xlabel('t(s)')
+ylabel('$\ddot{q}$','Interpreter','latex')
+
+
+subplot(2,2,4)
+plot(t,-x(end,:)*Gain_beta)
+hold on
+grid on
+plot(t,-x(end,:)*Gain_beta+u)
+plot(t,u)
+title('Aileron deflection')
+legend('Controller output','Controlled','Non controlled')
+xlabel('t(s)')
+ylabel('$\beta$','Interpreter','latex')
 
 %% Plot the engines' displacements
-figure('units','normalized','outerposition',[0 0 1 1])
+figure
 subplot(2,3,1)
 plot(t,z_sol(3,:))
 hold on
 grid on
-plot(t,y_sol_nc(3,:),'k')
-title('\quad\quad\quad\quad Vertical displacement of the inner engine','Interpreter','latex','FontSize',14)
-xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-ylabel('$q$ \quad[m]','Interpreter','latex','FontSize',14)
+plot(t,y_sol_nc(3,:))
+title('Vertical displacement of the inner engine')
+legend('displacements controlled','displacements not controlled')
+xlabel('t(s)')
+ylabel('$q$','Interpreter','latex')
 
 subplot(2,3,2)
 plot(t,z_sol_v(3,:))
 hold on
 grid on
-plot(t,y_sol_nc_v(3,:),'k')
-title('\quad Vertical velocity of the inner engine','Interpreter','latex','FontSize',14)
-xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-ylabel('$\dot{q} \quad[m/s]$','Interpreter','latex','FontSize',14)
+plot(t,y_sol_nc_v(3,:))
+title('Vertical velocity of the inner engine')
+legend('Velocity controlled','Velocity not controlled')
+xlabel('t(s)')
+ylabel('$\dot{q}$','Interpreter','latex')
 
 subplot(2,3,3)
 plot(t,z_sol_acc(3,:))
 hold on
 grid on
-plot(t,y_sol_nc_acc(3,:),'k')
-title('\quad Vertical acceleration of the inner engine','Interpreter','latex','FontSize',14)
-xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-ylabel('$\ddot{q} \quad[m/s^{2}]$','Interpreter','latex','FontSize',14)
+plot(t,y_sol_nc_acc(3,:))
+title('Vertical acceleration of the inner engine')
+legend('Acceleration controlled','Acceleration not controlled')
+xlabel('t(s)')
+ylabel('$\ddot{q}$','Interpreter','latex')
 
 
 subplot(2,3,4)
 plot(t,z_sol(6+3,:))
 hold on
 grid on
-plot(t,y_sol_nc(6+3,:),'k')
-title('\quad Vertical displacement of the outer engine','Interpreter','latex','FontSize',14)
-xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-ylabel('$q$ \quad[m]','Interpreter','latex','FontSize',14)
+plot(t,y_sol_nc(6+3,:))
+title('Vertical displacement of the outer engine')
+legend('displacements controlled','displacements not controlled')
+xlabel('t(s)')
+ylabel('$q$','Interpreter','latex')
 
 subplot(2,3,5)
 plot(t,z_sol_v(6+3,:))
 hold on
 grid on
-plot(t,y_sol_nc_v(6+3,:),'k')
-title('\quad Vertical velocity of the outer engine','Interpreter','latex','FontSize',14)
-xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-ylabel('$\dot{q} \quad[m/s]$','Interpreter','latex','FontSize',14)
+plot(t,y_sol_nc_v(6+3,:))
+title('Vertical velocity of the outer engine')
+legend('Velocity controlled','Velocity not controlled')
+xlabel('t(s)')
+ylabel('$\dot{q}$','Interpreter','latex')
 
 subplot(2,3,6)
 plot(t,z_sol_acc(6+3,:))
 hold on
 grid on
-plot(t,y_sol_nc_acc(6+3,:),'k')
-title('\quad Vertical acceleration of the outer engine','Interpreter','latex','FontSize',14)
-xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-ylabel('$\ddot{q} \quad[m/s^{2}]$','Interpreter','latex','FontSize',14)
+plot(t,y_sol_nc_acc(6+3,:))
+title('Vertical acceleration of the outer engine')
+legend('Acceleration controlled','Acceleration not controlled')
+xlabel('t(s)')
+ylabel('$\ddot{q}$','Interpreter','latex')
 
-fname = [name '_tf_extinput_engine_' ingresso];
-saveas(figure(4),fname,'epsc')
 %% Plot the stresses for in the CORRENTI for each section
 if controller == 4
     % plot of the stress of the 6 CORRENTI in the root section
-    figure('units','normalized','outerposition',[0 0 1 1])
+    figure
     subplot(2,3,1)
     plot(t,z_sol_internalforces(1,:))
     hold on
     grid on
-    plot(t,y_sol_nc_internalforces(1,:),'k')
-    title('Stress 1','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\sigma \quad[Pa]$','Interpreter','latex','FontSize',14)
+    plot(t,y_sol_nc_internalforces(1,:))
+    title('Stress 1 at root section')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
     
     subplot(2,3,2)
     plot(t,z_sol_internalforces(2,:))
     hold on
     grid on
-    plot(t,y_sol_nc_internalforces(2,:),'k')
-    title('Stress 2','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\sigma \quad[Pa]$','Interpreter','latex','FontSize',14)
+    plot(t,y_sol_nc_internalforces(2,:))
+    title('Stress 2 at root section')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
     
     subplot(2,3,3)
     plot(t,z_sol_internalforces(3,:))
     hold on
     grid on
-    plot(t,y_sol_nc_internalforces(3,:),'k')
-    title('Stress 3','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\sigma \quad[Pa]$','Interpreter','latex','FontSize',14)
+    plot(t,y_sol_nc_internalforces(3,:))
+    title('Stress 3 at root section')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
     
     
     subplot(2,3,4)
     plot(t,z_sol_internalforces(4,:))
     hold on
     grid on
-    plot(t,y_sol_nc_internalforces(4,:),'k')
-    title('Stress 4','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\sigma \quad[Pa]$','Interpreter','latex','FontSize',14)
+    plot(t,y_sol_nc_internalforces(4,:))
+    title('Stress 4 at root section')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
     
     subplot(2,3,5)
     plot(t,z_sol_internalforces(5,:))
     hold on
     grid on
-    plot(t,y_sol_nc_internalforces(5,:),'k')
-    title('Stress 5','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\sigma \quad[Pa]$','Interpreter','latex','FontSize',14)
+    plot(t,y_sol_nc_internalforces(5,:))
+    title('Stress 5 at root section')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
     
     subplot(2,3,6)
     plot(t,z_sol_internalforces(6,:))
     hold on
     grid on
-    plot(t,y_sol_nc_internalforces(6,:),'k')
-    title('Stress 6','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\sigma \quad[Pa]$','Interpreter','latex','FontSize',14)
-    
-    fname = [name '_tf_extinput_s1_' ingresso];
-    saveas(figure(5),fname,'epsc')
+    plot(t,y_sol_nc_internalforces(6,:))
+    title('Stress 6 at root section')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
     
     % plot of the stress in the 6 CORRENTI in the section before the first
     % engine
-    figure('units','normalized','outerposition',[0 0 1 1])
+    figure
     subplot(2,3,1)
     plot(t,z_sol_internalforces(7,:))
     hold on
     grid on
-    plot(t,y_sol_nc_internalforces(7,:),'k')
-    title('Stress 1','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\sigma \quad[Pa]$','Interpreter','latex','FontSize',14)
+    plot(t,y_sol_nc_internalforces(7,:))
+    title('Stress 1 at the section before the first engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
     
     subplot(2,3,2)
     plot(t,z_sol_internalforces(8,:))
     hold on
     grid on
-    plot(t,y_sol_nc_internalforces(8,:),'k')
-    title('Stress 2','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\sigma \quad[Pa]$','Interpreter','latex','FontSize',14)
+    plot(t,y_sol_nc_internalforces(8,:))
+    title('Stress 2 at the section before the first engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
     
     subplot(2,3,3)
     plot(t,z_sol_internalforces(9,:))
     hold on
     grid on
-    plot(t,y_sol_nc_internalforces(9,:),'k')
-    title('Stress 3','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\sigma \quad[Pa]$','Interpreter','latex','FontSize',14)
+    plot(t,y_sol_nc_internalforces(9,:))
+    title('Stress 3 at the section before the first engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
     
     
     subplot(2,3,4)
     plot(t,z_sol_internalforces(10,:))
     hold on
     grid on
-    plot(t,y_sol_nc_internalforces(10,:),'k')
-    title('Stress 4','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\sigma \quad[Pa]$','Interpreter','latex','FontSize',14)
+    plot(t,y_sol_nc_internalforces(10,:))
+    title('Stress 4 at the section before the first engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
     
     subplot(2,3,5)
     plot(t,z_sol_internalforces(11,:))
     hold on
     grid on
-    plot(t,y_sol_nc_internalforces(11,:),'k')
-    title('Stress 5','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\sigma \quad[Pa]$','Interpreter','latex','FontSize',14)
+    plot(t,y_sol_nc_internalforces(11,:))
+    title('Stress 5 at the section before the first engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
     
     subplot(2,3,6)
     plot(t,z_sol_internalforces(12,:))
     hold on
     grid on
-    plot(t,y_sol_nc_internalforces(12,:),'k')
-    title('Stress 6','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\sigma \quad[Pa]$','Interpreter','latex','FontSize',14)
-    
-    fname = [name '_tf_extinput_s2_' ingresso];
-    saveas(figure(6),fname,'epsc')
+    plot(t,y_sol_nc_internalforces(12,:))
+    title('Stress 6 at the section before the first engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
     
     % plot of the stress in the 6 CORRENTI in the section after the first
     % engine
-    figure('units','normalized','outerposition',[0 0 1 1])
+    figure
     subplot(2,3,1)
     plot(t,z_sol_internalforces(13,:))
     hold on
     grid on
-    plot(t,y_sol_nc_internalforces(13,:),'k')
-    title('Stress 1','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\sigma \quad[Pa]$','Interpreter','latex','FontSize',14)
+    plot(t,y_sol_nc_internalforces(13,:))
+    title('Stress 1 at the section after the first engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
     
     subplot(2,3,2)
     plot(t,z_sol_internalforces(14,:))
     hold on
     grid on
-    plot(t,y_sol_nc_internalforces(14,:),'k')
-    title('Stress 2','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\sigma \quad[Pa]$','Interpreter','latex','FontSize',14)
+    plot(t,y_sol_nc_internalforces(14,:))
+    title('Stress 2 at the section after the first engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
     
     subplot(2,3,3)
     plot(t,z_sol_internalforces(15,:))
     hold on
     grid on
-    plot(t,y_sol_nc_internalforces(15,:),'k')
-    title('Stress 3','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\sigma \quad[Pa]$','Interpreter','latex','FontSize',14)
+    plot(t,y_sol_nc_internalforces(15,:))
+    title('Stress 3 at the section after the first engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
     
     
     subplot(2,3,4)
     plot(t,z_sol_internalforces(16,:))
     hold on
     grid on
-    plot(t,y_sol_nc_internalforces(16,:),'k')
-    title('Stress 4','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\sigma \quad[Pa]$','Interpreter','latex','FontSize',14)
+    plot(t,y_sol_nc_internalforces(16,:))
+    title('Stress 4 at the section after the first engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
     
     subplot(2,3,5)
     plot(t,z_sol_internalforces(17,:))
     hold on
     grid on
-    plot(t,y_sol_nc_internalforces(17,:),'k')
-    title('Stress 5','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\sigma \quad[Pa]$','Interpreter','latex','FontSize',14)
+    plot(t,y_sol_nc_internalforces(17,:))
+    title('Stress 5 at the section after the first engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
     
     subplot(2,3,6)
     plot(t,z_sol_internalforces(18,:))
     hold on
     grid on
-    plot(t,y_sol_nc_internalforces(18,:),'k')
-    title('Stress 6','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\sigma \quad[Pa]$','Interpreter','latex','FontSize',14)
-    
-    fname = [name '_tf_extinput_s3_' ingresso];
-    saveas(figure(7),fname,'epsc')
+    plot(t,y_sol_nc_internalforces(18,:))
+    title('Stress 6 at the section after the first engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
     
     % plot of the stress in the 6 CORRENTI in the section before the second
     % engine
-    figure('units','normalized','outerposition',[0 0 1 1])
+    figure
     subplot(2,3,1)
     plot(t,z_sol_internalforces(19,:))
     hold on
     grid on
-    plot(t,y_sol_nc_internalforces(19,:),'k')
-    title('Stress 1','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\sigma \quad[Pa]$','Interpreter','latex','FontSize',14)
+    plot(t,y_sol_nc_internalforces(19,:))
+    title('Stress 1 at the section before the second engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
     
     subplot(2,3,2)
     plot(t,z_sol_internalforces(20,:))
     hold on
     grid on
-    plot(t,y_sol_nc_internalforces(20,:),'k')
-    title('Stress 2','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\sigma \quad[Pa]$','Interpreter','latex','FontSize',14)
+    plot(t,y_sol_nc_internalforces(20,:))
+    title('Stress 2 at the section before the second engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
     
     subplot(2,3,3)
     plot(t,z_sol_internalforces(21,:))
     hold on
     grid on
-    plot(t,y_sol_nc_internalforces(21,:),'k')
-    title('Stress 3','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\sigma \quad[Pa]$','Interpreter','latex','FontSize',14)
+    plot(t,y_sol_nc_internalforces(21,:))
+    title('Stress 3 at the section before the second engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
     
     
     subplot(2,3,4)
     plot(t,z_sol_internalforces(22,:))
     hold on
     grid on
-    plot(t,y_sol_nc_internalforces(22,:),'k')
-    title('Stress 4','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\sigma \quad[Pa]$','Interpreter','latex','FontSize',14)
+    plot(t,y_sol_nc_internalforces(22,:))
+    title('Stress 4 at the section before the second engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
     
     subplot(2,3,5)
     plot(t,z_sol_internalforces(23,:))
     hold on
     grid on
-    plot(t,y_sol_nc_internalforces(23,:),'k')
-    title('Stress 5','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\sigma \quad[Pa]$','Interpreter','latex','FontSize',14)
+    plot(t,y_sol_nc_internalforces(23,:))
+    title('Stress 5 at the section before the second engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
     
     subplot(2,3,6)
     plot(t,z_sol_internalforces(24,:))
     hold on
     grid on
-    plot(t,y_sol_nc_internalforces(24,:),'k')
-    title('Stress 6','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\sigma \quad[Pa]$','Interpreter','latex','FontSize',14)
-    
-    fname = [name '_tf_extinput_s4_' ingresso];
-    saveas(figure(8),fname,'epsc')
+    plot(t,y_sol_nc_internalforces(24,:))
+    title('Stress 6 at the section before the second engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
     
     % plot of the stress in the 6 CORRENTI in the section after the second
     % engine
-    figure('units','normalized','outerposition',[0 0 1 1])
+    figure
     subplot(2,3,1)
     plot(t,z_sol_internalforces(25,:))
     hold on
     grid on
-    plot(t,y_sol_nc_internalforces(25,:),'k')
-    title('Stress 1','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\sigma \quad[Pa]$','Interpreter','latex','FontSize',14)
+    plot(t,y_sol_nc_internalforces(25,:))
+    title('Stress 1 at the section after the second engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
     
     subplot(2,3,2)
     plot(t,z_sol_internalforces(26,:))
     hold on
     grid on
-    plot(t,y_sol_nc_internalforces(26,:),'k')
-    title('Stress 2','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\sigma \quad[Pa]$','Interpreter','latex','FontSize',14)
+    plot(t,y_sol_nc_internalforces(26,:))
+    title('Stress 2 at the section after the second engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
     
     subplot(2,3,3)
     plot(t,z_sol_internalforces(27,:))
     hold on
     grid on
-    plot(t,y_sol_nc_internalforces(27,:),'k')
-    title('Stress 3','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\sigma \quad[Pa]$','Interpreter','latex','FontSize',14)
+    plot(t,y_sol_nc_internalforces(27,:))
+    title('Stress 3 at the section after the second engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
     
     
     subplot(2,3,4)
     plot(t,z_sol_internalforces(28,:))
     hold on
     grid on
-    plot(t,y_sol_nc_internalforces(28,:),'k')
-    title('Stress 4','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\sigma \quad[Pa]$','Interpreter','latex','FontSize',14)
+    plot(t,y_sol_nc_internalforces(28,:))
+    title('Stress 4 at the section after the second engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
     
     subplot(2,3,5)
     plot(t,z_sol_internalforces(29,:))
     hold on
     grid on
-    plot(t,y_sol_nc_internalforces(29,:),'k')
-    title('Stress 5','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\sigma \quad[Pa]$','Interpreter','latex','FontSize',14)
+    plot(t,y_sol_nc_internalforces(29,:))
+    title('Stress 5 at the section after the second engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
     
     subplot(2,3,6)
     plot(t,z_sol_internalforces(30,:))
     hold on
     grid on
-    plot(t,y_sol_nc_internalforces(30,:),'k')
-    title('Stress 6','Interpreter','latex','FontSize',14)
-    xlabel('$t\quad[s]$','Interpreter','latex','FontSize',14)
-    ylabel('$\sigma \quad[Pa]$','Interpreter','latex','FontSize',14)
-    
-    fname = [name '_tf_extinput_s5_' ingresso];
-    saveas(figure(9),fname,'epsc')
+    plot(t,y_sol_nc_internalforces(30,:))
+    title('Stress 6 at the section after the second engine')
+    legend('stress controlled','stress not controlled')
+    xlabel('t(s)')
+    ylabel('$\sigma$','Interpreter','latex')
 end
