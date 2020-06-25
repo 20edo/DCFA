@@ -182,18 +182,18 @@ if 1
 end
 %% Plot the partecipation of each mode 
 if 1
-%     figure(4)
-%     plot(v,abs(X_save(:,:,3)),'LineWidth',1.5)
-%     ylabel('Mode contribution','fontsize',14,'interpreter','latex')
-%     xlabel('VTAS \quad $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
-%     title('$3^{rd}$ mode','fontsize',14,'interpreter','latex');
-%     grid on
-%     hold on 
-%     p = plot(676*ones(1e3,1),linspace(0,1.2,1e3),'Color','k');
-%     legend(p(1),'Flutter velocity','Location','northeast')
-% %     xlim([2,1000])
-%     set(gcf, 'Position',  [0, 0, 500, 400])
-%     saveas(figure(4),'flutter_13','epsc')
+    figure(4)
+    plot(v,abs(X_save(:,:,3)),'LineWidth',1.5)
+    ylabel('Mode contribution','fontsize',14,'interpreter','latex')
+    xlabel('VTAS \quad $[\frac{m}{s}]$','fontsize',14,'interpreter','latex')
+    title('$3^{rd}$ mode','fontsize',14,'interpreter','latex');
+    grid on
+    hold on 
+    p = plot(676*ones(1e3,1),linspace(0,1.2,1e3),'Color','k');
+    legend(p(1),'Flutter velocity','Location','northeast')
+%     xlim([2,1000])
+    set(gcf, 'Position',  [0, 0, 500, 400])
+    saveas(figure(4),'flutter_13','epsc')
     
  
     figure(5)
@@ -228,10 +228,9 @@ if 0
     saveas(figure(2),'flutter_4','epsc')
 end
 %% Plot the corresponding modeshapes
-if 0
-    close all
+if 1
     figure
-    phi = deg2rad(50);
+    phi = deg2rad(40);
     for i=4:5
         wing.b(i).ssh = true;
     end
@@ -249,7 +248,7 @@ if 0
     e_zero = e_zero(II);
     X_zero = X_zero(:,II);
     
-    for k = 1:2*n
+    for k = 1:length(e_zero)
         if imag(e_zero(k))>=-0.1
             subplot(2,(num+mod(num,2))/2,i)
             freq = [num2str(abs(imag(e_zero(k)))/(2*pi)),' [Hz]'];

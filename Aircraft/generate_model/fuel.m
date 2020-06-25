@@ -20,7 +20,7 @@ G=0;        % Shear modulus
 rho=804;    % Density
 
 %% Fuel percentage
-study = 5; 
+study = 4; 
 % 1 -> reference condition 
 % 2 -> 100% of fuel 
 % 3 -> no fuel 
